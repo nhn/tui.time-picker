@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "TOAST UI Components: TimePicker",
   "main": "dist/tui-time-picker",
   "scripts": {
@@ -15,8 +15,8 @@
     "doc": "jsdoc -c jsdoc.conf.json && npm run cpy-dist2doc"
   },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/nhnent/tui.time-picker"
+    "type": "git",
+    "url": "https://github.com/nhnent/tui.time-picker"
   },
   "keywords": [
     "nhnent",
