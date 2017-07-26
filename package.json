@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "TOAST UI Components: TimePicker",
   "main": "dist/tui-time-picker",
   "scripts": {
