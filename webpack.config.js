@@ -1,8 +1,10 @@
 /**
- * webpack.config.js.js created on 2017. 07
+ * Configs file for bundling
  * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
  */
+
 'use strict';
+
 var pkg = require('./package.json');
 var webpack = require('webpack');
 
