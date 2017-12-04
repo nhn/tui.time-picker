@@ -7,7 +7,7 @@
 'use strict';
 
 /**
- * Utils of calendar
+ * Utils
  * @namespace util
  * @ignore
  */

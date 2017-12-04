@@ -41,6 +41,8 @@ var mergeDefaultOptions = function(options) {
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
+ * @param {number} [options.hourStep=1] - Step value of hour
+ * @param {number} [options.minuteStep=1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @example
