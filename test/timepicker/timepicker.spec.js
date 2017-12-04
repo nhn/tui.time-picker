@@ -4,8 +4,6 @@
  */
 'use strict';
 
-var $ = require('jquery');
-
 var TimePicker = require('../../src/js/timepicker');
 
 describe('TimePicker', function() {

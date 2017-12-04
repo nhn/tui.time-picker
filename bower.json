@@ -9,17 +9,20 @@
     ],
     "license": "MIT",
     "ignore": [
-        ".*",
+        "**/.*",
+        "node_modules",
+        "bower_components",
         "examples",
         "src",
         "test",
         "jsdoc.conf.json",
         "karma.conf.js",
         "webpack.config.js",
-        "package.json"
+        "package.json",
+        "package-lock.json"
     ],
     "dependencies": {
-        "jquery": "~1.11.0",
-        "tui-code-snippet": "~1.2.5"
+        "jquery": "^1.11.0",
+        "tui-code-snippet": "^1.2.5"
     }
 }

@@ -1,11 +1,21 @@
-var pkg = require('./package.json');
-var webpack = require('webpack');
+/**
+ * Config file for testing
+ * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+ */
+
+'use strict';
+
 var webdriverConfig = {
     hostname: 'fe.nhnent.com',
     port: 4444,
     remoteHost: true
 };
 
+/**
+ * Set config by environment
+ * @param {object} defaultConfig - default config
+ * @param {string} server - server type ('ne' or local)
+ */
 function setConfig(defaultConfig, server) {
     if (server === 'ne') {
         defaultConfig.customLaunchers = {
@@ -33,6 +43,11 @@ function setConfig(defaultConfig, server) {
                 browserName: 'internet explorer',
                 version: 11
             },
+            'Edge': {
+                base: 'WebDriver',
+                config: webdriverConfig,
+                browserName: 'MicrosoftEdge'
+            },
             'Chrome-WebDriver': {
                 base: 'WebDriver',
                 config: webdriverConfig,
@@ -42,6 +57,11 @@ function setConfig(defaultConfig, server) {
                 base: 'WebDriver',
                 config: webdriverConfig,
                 browserName: 'firefox'
+            },
+            'Safari-WebDriver': {
+                base: 'WebDriver',
+                config: webdriverConfig,
+                browserName: 'safari'
             }
         };
         defaultConfig.browsers = [
@@ -49,8 +69,10 @@ function setConfig(defaultConfig, server) {
             'IE9',
             'IE10',
             'IE11',
+            'Edge',
             'Chrome-WebDriver',
             'Firefox-WebDriver'
+            // 'Safari-WebDriver' // active only when safari test is needed
         ];
         defaultConfig.reporters.push('coverage');
         defaultConfig.reporters.push('junit');
@@ -73,13 +95,12 @@ function setConfig(defaultConfig, server) {
             ]
         };
         defaultConfig.junitReporter = {
-            outputDir: 'report',
+            outputDir: 'report/junit',
             suite: ''
         };
     } else {
         defaultConfig.browsers = [
-            'PhantomJS',
-            'Chrome'
+            'ChromeHeadless'
         ];
     }
 }
@@ -102,7 +123,12 @@ module.exports = function(config) {
                     {
                         test: /\.js$/,
                         exclude: /(test|node_modules)/,
-                        loaders: ['istanbul-instrumenter', 'eslint-loader']
+                        loaders: ['istanbul-instrumenter']
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /(bower_components|node_modules)/,
+                        loader: 'eslint-loader'
                     },
                     {
                         test: /\.hbs$/,
@@ -127,6 +153,7 @@ module.exports = function(config) {
         singleRun: true
     };
 
+    /* eslint-disable */
     setConfig(defaultConfig, process.env.KARMA_SERVER);
     config.set(defaultConfig);
 };
