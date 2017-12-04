@@ -95,7 +95,7 @@ function setConfig(defaultConfig, server) {
             ]
         };
         defaultConfig.junitReporter = {
-            outputDir: 'report',
+            outputDir: 'report/junit',
             suite: ''
         };
     } else {
