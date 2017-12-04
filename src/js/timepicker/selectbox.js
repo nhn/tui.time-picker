@@ -78,6 +78,10 @@ var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
      */
     _setEvents: function() {
         this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
+        this.on('changeItems', function(items) {
+            this._items = items;
+            this._render();
+        }, this);
     },
 
     /**

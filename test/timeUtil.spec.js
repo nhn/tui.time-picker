@@ -4,16 +4,23 @@
  */
 'use strict';
 
-var timeUtil = require('../src/js/timeUtil');
+var util = require('../src/js/timeUtil');
 
 describe('getMeridiemHour()', function() {
     it('When "hour" is midnight(00:00), meridiem hour is 12.', function() {
-        expect(timeUtil.getMeridiemHour(0)).toEqual(12);
+        expect(util.getMeridiemHour(0)).toEqual(12);
     });
 
     it('When "hour" is over noon(12:00), meridiem hour is between 1~12.', function() {
-        expect(timeUtil.getMeridiemHour(12)).toEqual(12);
-        expect(timeUtil.getMeridiemHour(13)).toEqual(1);
-        expect(timeUtil.getMeridiemHour(23)).toEqual(11);
+        expect(util.getMeridiemHour(12)).toEqual(12);
+        expect(util.getMeridiemHour(13)).toEqual(1);
+        expect(util.getMeridiemHour(23)).toEqual(11);
+    });
+});
+
+describe('getRangeArr()', function() {
+    it('When the step value is set, range items are created for each step.', function() {
+        var items = util.getRangeArr(0, 60, 20);
+        expect(items).toEqual([0, 20, 40, 60]);
     });
 });
