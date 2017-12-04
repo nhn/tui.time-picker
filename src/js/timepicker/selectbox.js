@@ -9,7 +9,6 @@ var $ = require('jquery');
 var snippet = require('tui-code-snippet');
 
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
-var util = snippet;
 
 /**
  * @class
@@ -19,9 +18,9 @@ var util = snippet;
  * @param {Array.<number>} options.items - Items
  * @param {number} options.initialValue - Initial value
  */
-var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
+var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     init: function(container, options) {
-        options = util.extend({
+        options = snippet.extend({
             items: []
         }, options);
 
@@ -44,7 +43,7 @@ var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
          * @type {number}
          * @private
          */
-        this._selectedIndex = Math.max(0, util.inArray(options.initialValue, this._items));
+        this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
 
         /**
          * Element
@@ -92,7 +91,7 @@ var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
     _onChange: function(ev) {
         var newValue = Number(ev.target.value);
 
-        this._selectedIndex = util.inArray(newValue, this._items);
+        this._selectedIndex = snippet.inArray(newValue, this._items);
         this.fire('change', {
             value: newValue
         });
@@ -111,7 +110,7 @@ var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
      * @param {number} value - New value
      */
     setValue: function(value) {
-        var newIndex = util.inArray(value, this._items);
+        var newIndex = snippet.inArray(value, this._items);
 
         if (newIndex > -1 && newIndex !== this._selectedIndex) {
             this._selectedIndex = newIndex;
@@ -136,5 +135,5 @@ var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
     }
 });
 
-util.CustomEvents.mixin(Selectbox);
+snippet.CustomEvents.mixin(Selectbox);
 module.exports = Selectbox;

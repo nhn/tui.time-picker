@@ -106,4 +106,20 @@ describe('TimePicker', function() {
             expect(timepickerNoMeridiem.getMinute()).toEqual(prev);
         });
     });
+
+    describe('should not change when step is invalid', function() {
+        it('hour', function() {
+            var prev = timepickerNoMeridiem.getHour();
+
+            timepickerNoMeridiem.setHourStep(2);
+            expect(timepickerNoMeridiem.getHour()).toBe(prev);
+        });
+
+        it('minute', function() {
+            var prev = timepickerNoMeridiem.getMinute();
+
+            timepickerNoMeridiem.setMinuteStep(30);
+            expect(timepickerNoMeridiem.getMinute()).toBe(prev);
+        });
+    });
 });

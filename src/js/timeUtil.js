@@ -38,6 +38,8 @@ var utils = {
         var arr = [];
         var i;
 
+        step = step || 1;
+
         if (start > end) {
             for (i = end; i >= start; i -= step) {
                 arr.push(i);

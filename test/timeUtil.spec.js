@@ -19,7 +19,12 @@ describe('getMeridiemHour()', function() {
 });
 
 describe('getRangeArr()', function() {
-    it('When the step value is set, range items are created for each step.', function() {
+    it('When the step value is not set, range items are created by one step.', function() {
+        var items = util.getRangeArr(0, 5);
+        expect(items).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it('When the step value is set, range items are created by each step.', function() {
         var items = util.getRangeArr(0, 60, 20);
         expect(items).toEqual([0, 20, 40, 60]);
     });

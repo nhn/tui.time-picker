@@ -379,6 +379,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             return;
         }
 
+        if (!snippet.inArray(hour, this._getHourItems()) ||
+            !snippet.inArray(minute, this._getMinuteItems())) {
+            return;
+        }
+
         this._hour = hour;
         this._minute = minute;
 
