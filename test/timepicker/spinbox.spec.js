@@ -134,4 +134,20 @@ describe('TimePicker - Spinbox', function() {
             });
         });
     });
+
+    describe('custom event - changeItems', function() {
+        fit('should change value of each select items', function() {
+            var items = [10, 20, 30];
+            spinbox.fire('changeItems', items);
+
+            spinbox.setValue(10);
+            expect(spinbox.getValue()).toBe(10);
+
+            spinbox.setValue(20);
+            expect(spinbox.getValue()).toBe(20);
+
+            spinbox.setValue(30);
+            expect(spinbox.getValue()).toBe(30);
+        });
+    });
 });

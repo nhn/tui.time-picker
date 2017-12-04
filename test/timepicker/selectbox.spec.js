@@ -60,4 +60,20 @@ describe('TimePicker - Selectbox', function() {
             });
         });
     });
+
+    describe('custom event - changeItems', function() {
+        it('should change value of each select items', function() {
+            var items = [10, 20, 30];
+            selectbox.fire('changeItems', items);
+
+            selectbox.setValue(10);
+            expect(selectbox.getValue()).toBe(10);
+
+            selectbox.setValue(20);
+            expect(selectbox.getValue()).toBe(20);
+
+            selectbox.setValue(30);
+            expect(selectbox.getValue()).toBe(30);
+        });
+    });
 });

@@ -59,6 +59,16 @@ describe('TimePicker', function() {
             timepickerNoMeridiem.setMinute(25);
             expect(timepickerNoMeridiem.getMinute()).toBe(25);
         });
+
+        it('setHourStep, getHourStep', function() {
+            timepickerNoMeridiem.setHourStep(3);
+            expect(timepickerNoMeridiem.getHourStep()).toBe(3);
+        });
+
+        it('setMinuteStep, getMinuteStep', function() {
+            timepickerNoMeridiem.setMinuteStep(30);
+            expect(timepickerNoMeridiem.getMinuteStep()).toBe(30);
+        });
     });
 
     describe('changed from', function() {
