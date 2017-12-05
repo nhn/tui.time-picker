@@ -318,6 +318,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         return snippet.inArray(hour, this._getHourItems()) > -1 &&
             snippet.inArray(minute, this._getMinuteItems()) > -1;
     },
+
     /**
      * Set step of hour
      * @param {array} step - Step to create items of hour
