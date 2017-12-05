@@ -27,30 +27,35 @@
         <script type="text/javascript" src="https://cdn.rawgit.com/nhnent/tui.code-snippet/v1.2.5/dist/tui-code-snippet.js"></script>
         <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
         <script type="text/javascript" class="code-js">
+
             var tpSelectbox = new tui.TimePicker('#timepicker-selectbox', {
                 initialHour: 15,
                 initialMinute: 13,
                 inputType: 'selectbox',
                 showMeridiem: false
             });
+
             var tpSelectboxMeridiem = new tui.TimePicker('#timepicker-selectbox-meridiem', {
                 initialHour: 12,
                 initialMinute: 13,
                 inputType: 'selectbox',
                 showMeridiem: true
             });
+
             var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
                 initialHour: 22,
                 initialMinute: 33,
                 inputType: 'spinbox',
                 showMeridiem: false
             });
+
             var tpSpinboxMeridiem = new tui.TimePicker('#timepicker-spinbox-meridiem', {
                 initialHour: 16,
                 initialMinute: 25,
                 inputType: 'spinbox',
                 showMeridiem: true
             });
+
         </script>
     </body>
 </html>

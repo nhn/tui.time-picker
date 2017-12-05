@@ -4,5 +4,8 @@
     },
     "example02-meridiem": {
         "title": "3. Using meridiem"
+    },
+    "example03-step": {
+        "title": "3. Using step"
     }
 }
