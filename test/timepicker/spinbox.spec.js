@@ -136,7 +136,7 @@ describe('TimePicker - Spinbox', function() {
     });
 
     describe('custom event - changeItems', function() {
-        fit('should change value of each select items', function() {
+        it('should change value of each select items', function() {
             var items = [10, 20, 30];
             spinbox.fire('changeItems', items);
 
