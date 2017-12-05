@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>3. Using step</title>
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+        <link href="../dist/tui-time-picker.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="code-html">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p>2 hours / 30 minutes / show meridiem</p>
+                            <div id="timepicker-selectbox-step"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>2 hours / 10 minutes</p>
+                            <div id="timepicker-spinbox-step"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/nhnent/tui.code-snippet/v1.2.5/dist/tui-code-snippet.js"></script>
+        <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
+        <script type="text/javascript" class="code-js">
+
+            var tpSelectboxWithStep = new tui.TimePicker('#timepicker-selectbox-step', {
+                initialHour: 19,
+                initialMinute: 30,
+                inputType: 'selectbox',
+                hourStep: 2,
+                minuteStep: 30
+            });
+
+            var tpSpinboxWithStep = new tui.TimePicker('#timepicker-spinbox-step', {
+                initialHour: 14,
+                initialMinute: 20,
+                inputType: 'spinbox',
+                showMeridiem: false,
+                hourStep: 2,
+                minuteStep: 10
+            });
+
+        </script>
+    </body>
+</html>
