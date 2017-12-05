@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.1.0
+ * @version 1.1.1
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -394,6 +394,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    /**
+	     * Whether the hour and minute are in valid items or not
+	     * @param {number} hour - Hour value
+	     * @param {number} minute - Minute value
+	     * @returns {boolean} State
+	     * @private
+	     */
+	    _validItems: function(hour, minute) {
+	        if (this._showMeridiem) {
+	            hour = util.getMeridiemHour(hour);
+	        }
+
+	        return snippet.inArray(hour, this._getHourItems()) > -1 &&
+	            snippet.inArray(minute, this._getMinuteItems()) > -1;
+	    },
+
+	    /**
 	     * Set step of hour
 	     * @param {array} step - Step to create items of hour
 	     */
@@ -466,12 +482,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    setTime: function(hour, minute) {
 	        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
+
 	        if (!isNumber || (hour > 23) || (minute > 59)) {
 	            return;
 	        }
 
-	        if (!snippet.inArray(hour, this._getHourItems()) ||
-	            !snippet.inArray(minute, this._getMinuteItems())) {
+	        if (!this._validItems(hour, minute)) {
 	            return;
 	        }
 
@@ -480,6 +496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._syncToInputs();
 	        this._syncToMeridiemElements();
+
 	        /**
 	         * Change event - TimePicker
 	         * @event TimePicker#change
