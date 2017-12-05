@@ -315,8 +315,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             hour = util.getMeridiemHour(hour);
         }
 
-        return snippet.inArray(hour, this._getHourItems()) < 0 ||
-            snippet.inArray(minute, this._getMinuteItems()) < 0;
+        return snippet.inArray(hour, this._getHourItems()) > -1 &&
+            snippet.inArray(minute, this._getMinuteItems()) > -1;
     },
     /**
      * Set step of hour
@@ -396,7 +396,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             return;
         }
 
-        if (this._validItems(hour, minute)) {
+        if (!this._validItems(hour, minute)) {
             return;
         }
 
