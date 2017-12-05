@@ -101,6 +101,11 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             .on('click.spinbox', SELECTOR_DOWN_BUTTON, $.proxy(this._setNextValue, this, true))
             .on('keydown.spinbox', 'input', $.proxy(this._onKeyDownInputElement, this))
             .on('change.spinbox', 'input', $.proxy(this._onChangeInput, this));
+
+        this.on('changeItems', function(items) {
+            this._items = items;
+            this._render();
+        }, this);
     },
 
     /**

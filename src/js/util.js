@@ -7,8 +7,8 @@
 'use strict';
 
 /**
- * Utils of calendar
- * @namespace timeUtil
+ * Utils
+ * @namespace util
  * @ignore
  */
 var utils = {
@@ -31,18 +31,21 @@ var utils = {
      * Returns range arr
      * @param {number} start - Start value
      * @param {number} end - End value
+     * @param {number} [step] - Step value
      * @returns {Array}
      */
-    getRangeArr: function(start, end) {
+    getRangeArr: function(start, end, step) {
         var arr = [];
         var i;
 
+        step = step || 1;
+
         if (start > end) {
-            for (i = end; i >= start; i -= 1) {
+            for (i = end; i >= start; i -= step) {
                 arr.push(i);
             }
         } else {
-            for (i = start; i <= end; i += 1) {
+            for (i = start; i <= end; i += step) {
                 arr.push(i);
             }
         }
