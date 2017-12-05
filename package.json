@@ -5,7 +5,7 @@
   "scripts": {
     "test": "karma start --no-single-run",
     "test:ne": "KARMA_SERVER=ne karma start",
-    "bundle": "webpack && webpack -p",
+    "bundle": "webpack & webpack --production",
     "serve": "webpack-dev-server --inline --hot -d",
     "serve:ie8": "webpack-dev-server -d",
     "cpy-dist2doc": "mkdir -p doc/dist && cp -f -r dist doc",
