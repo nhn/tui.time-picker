@@ -11,7 +11,7 @@ var snippet = require('tui-code-snippet');
 
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
-var timeUtil = require('./../timeUtil');
+var util = require('./../util');
 var tmpl = require('./../../template/timepicker/index.hbs');
 
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
@@ -29,7 +29,9 @@ var mergeDefaultOptions = function(options) {
         initialHour: 0,
         initialMinute: 0,
         showMeridiem: true,
-        inputType: 'selectbox'
+        inputType: 'selectbox',
+        hourStep: 1,
+        minuteStep: 1
     }, options);
 };
 
@@ -39,6 +41,8 @@ var mergeDefaultOptions = function(options) {
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
+ * @param {number} [options.hourStep=1] - Step value of hour
+ * @param {number} [options.minuteStep=1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @example
@@ -114,6 +118,18 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._minute = options.initialMinute || 0;
 
         /**
+         * @type {number}
+         * @private
+         */
+        this._hourStep = options.hourStep || 1;
+
+        /**
+         * @type {number}
+         * @private
+         */
+        this._minuteStep = options.minuteStep || 1;
+
+        /**
          * TimePicker inputType
          * @type {'spinbox'|'selectbox'}
          * @private
@@ -177,17 +193,17 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
 
         if (showMeridiem) {
-            hour = timeUtil.getMeridiemHour(hour);
+            hour = util.getMeridiemHour(hour);
         }
 
         this._hourInput = new BoxComponent($hourElement, {
             initialValue: hour,
-            items: showMeridiem ? timeUtil.getRangeArr(1, 12) : timeUtil.getRangeArr(0, 23)
+            items: this._getHourItems()
         });
 
         this._minuteInput = new BoxComponent($minuteElement, {
             initialValue: this._minute,
-            items: timeUtil.getRangeArr(0, 59)
+            items: this._getMinuteItems()
         });
     },
 
@@ -217,7 +233,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var minute = this._minute;
 
         if (this._showMeridiem) {
-            hour = timeUtil.getMeridiemHour(hour);
+            hour = util.getMeridiemHour(hour);
         }
 
         this._hourInput.setValue(hour);
@@ -269,6 +285,60 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     },
 
     /**
+     * Get items of hour
+     * @returns {array} Hour item list
+     * @private
+     */
+    _getHourItems: function() {
+        var step = this._hourStep;
+
+        return this._showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
+    },
+
+    /**
+     * Get items of minute
+     * @returns {array} Minute item list
+     * @private
+     */
+    _getMinuteItems: function() {
+        return util.getRangeArr(0, 59, this._minuteStep);
+    },
+
+    /**
+     * Set step of hour
+     * @param {array} step - Step to create items of hour
+     */
+    setHourStep: function(step) {
+        this._hourStep = step;
+        this._hourInput.fire('changeItems', this._getHourItems());
+    },
+
+    /**
+     * Get step of hour
+     * @returns {number} Step of hour
+     */
+    getHourStep: function() {
+        return this._hourStep;
+    },
+
+    /**
+     * Set step of minute
+     * @param {array} step - Step to create items of minute
+     */
+    setMinuteStep: function(step) {
+        this._minuteStep = step;
+        this._minuteInput.fire('changeItems', this._getMinuteItems());
+    },
+
+    /**
+     * Get step of minute
+     * @returns {number} Step of minute
+     */
+    getMinuteStep: function() {
+        return this._minuteStep;
+    },
+
+    /**
      * Show time picker element
      */
     show: function() {
@@ -308,6 +378,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     setTime: function(hour, minute) {
         var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
         if (!isNumber || (hour > 23) || (minute > 59)) {
+            return;
+        }
+
+        if (!snippet.inArray(hour, this._getHourItems()) ||
+            !snippet.inArray(minute, this._getMinuteItems())) {
             return;
         }
 
