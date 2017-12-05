@@ -21,7 +21,7 @@ describe('getMeridiemHour()', function() {
 describe('getRangeArr()', function() {
     it('When the step value is not set, range items are created by one step.', function() {
         var items = util.getRangeArr(0, 5);
-        expect(items).toEqual([0, 1, 2, 3, 4]);
+        expect(items).toEqual([0, 1, 2, 3, 4, 5]);
     });
 
     it('When the step value is set, range items are created by each step.', function() {
