@@ -7,14 +7,14 @@ pids
 *.pid
 *.seed
 
-# Compiled files for DEV
-build
+# Compiled files
+dist
 
 # Dependency directory
 node_modules
 
 # Bower Components
-/lib
+bower_components
 
 #JSDOC
 doc
@@ -45,4 +45,3 @@ tags
 
 # etc
 .agignore
-dist
