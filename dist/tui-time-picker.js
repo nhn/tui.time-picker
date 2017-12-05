@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.0.0
+ * @version 1.1.0
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -100,7 +100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Spinbox = __webpack_require__(10);
 	var Selectbox = __webpack_require__(31);
-	var timeUtil = __webpack_require__(34);
+	var util = __webpack_require__(34);
 	var tmpl = __webpack_require__(35);
 
 	var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
@@ -118,7 +118,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        initialHour: 0,
 	        initialMinute: 0,
 	        showMeridiem: true,
-	        inputType: 'selectbox'
+	        inputType: 'selectbox',
+	        hourStep: 1,
+	        minuteStep: 1
 	    }, options);
 	};
 
@@ -128,6 +130,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} [options] - Options for initialization
 	 * @param {number} [options.initialHour = 0] - Initial setting value of hour
 	 * @param {number} [options.initialMinute = 0] - Initial setting value of minute
+	 * @param {number} [options.hourStep=1] - Step value of hour
+	 * @param {number} [options.minuteStep=1] - Step value of minute
 	 * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
 	 * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
 	 * @example
@@ -203,6 +207,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._minute = options.initialMinute || 0;
 
 	        /**
+	         * @type {number}
+	         * @private
+	         */
+	        this._hourStep = options.hourStep || 1;
+
+	        /**
+	         * @type {number}
+	         * @private
+	         */
+	        this._minuteStep = options.minuteStep || 1;
+
+	        /**
 	         * TimePicker inputType
 	         * @type {'spinbox'|'selectbox'}
 	         * @private
@@ -266,17 +282,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
 
 	        if (showMeridiem) {
-	            hour = timeUtil.getMeridiemHour(hour);
+	            hour = util.getMeridiemHour(hour);
 	        }
 
 	        this._hourInput = new BoxComponent($hourElement, {
 	            initialValue: hour,
-	            items: showMeridiem ? timeUtil.getRangeArr(1, 12) : timeUtil.getRangeArr(0, 23)
+	            items: this._getHourItems()
 	        });
 
 	        this._minuteInput = new BoxComponent($minuteElement, {
 	            initialValue: this._minute,
-	            items: timeUtil.getRangeArr(0, 59)
+	            items: this._getMinuteItems()
 	        });
 	    },
 
@@ -306,7 +322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var minute = this._minute;
 
 	        if (this._showMeridiem) {
-	            hour = timeUtil.getMeridiemHour(hour);
+	            hour = util.getMeridiemHour(hour);
 	        }
 
 	        this._hourInput.setValue(hour);
@@ -358,6 +374,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    /**
+	     * Get items of hour
+	     * @returns {array} Hour item list
+	     * @private
+	     */
+	    _getHourItems: function() {
+	        var step = this._hourStep;
+
+	        return this._showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
+	    },
+
+	    /**
+	     * Get items of minute
+	     * @returns {array} Minute item list
+	     * @private
+	     */
+	    _getMinuteItems: function() {
+	        return util.getRangeArr(0, 59, this._minuteStep);
+	    },
+
+	    /**
+	     * Set step of hour
+	     * @param {array} step - Step to create items of hour
+	     */
+	    setHourStep: function(step) {
+	        this._hourStep = step;
+	        this._hourInput.fire('changeItems', this._getHourItems());
+	    },
+
+	    /**
+	     * Get step of hour
+	     * @returns {number} Step of hour
+	     */
+	    getHourStep: function() {
+	        return this._hourStep;
+	    },
+
+	    /**
+	     * Set step of minute
+	     * @param {array} step - Step to create items of minute
+	     */
+	    setMinuteStep: function(step) {
+	        this._minuteStep = step;
+	        this._minuteInput.fire('changeItems', this._getMinuteItems());
+	    },
+
+	    /**
+	     * Get step of minute
+	     * @returns {number} Step of minute
+	     */
+	    getMinuteStep: function() {
+	        return this._minuteStep;
+	    },
+
+	    /**
 	     * Show time picker element
 	     */
 	    show: function() {
@@ -397,6 +467,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    setTime: function(hour, minute) {
 	        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
 	        if (!isNumber || (hour > 23) || (minute > 59)) {
+	            return;
+	        }
+
+	        if (!snippet.inArray(hour, this._getHourItems()) ||
+	            !snippet.inArray(minute, this._getMinuteItems())) {
 	            return;
 	        }
 
@@ -579,6 +654,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            .on('click.spinbox', SELECTOR_DOWN_BUTTON, $.proxy(this._setNextValue, this, true))
 	            .on('keydown.spinbox', 'input', $.proxy(this._onKeyDownInputElement, this))
 	            .on('change.spinbox', 'input', $.proxy(this._onChangeInput, this));
+
+	        this.on('changeItems', function(items) {
+	            this._items = items;
+	            this._render();
+	        }, this);
 	    },
 
 	    /**
@@ -1902,7 +1982,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var snippet = __webpack_require__(9);
 
 	var tmpl = __webpack_require__(32);
-	var util = snippet;
 
 	/**
 	 * @class
@@ -1912,9 +1991,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Array.<number>} options.items - Items
 	 * @param {number} options.initialValue - Initial value
 	 */
-	var Selectbox = util.defineClass(/** @lends Selectbox.prototype */ {
+	var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 	    init: function(container, options) {
-	        options = util.extend({
+	        options = snippet.extend({
 	            items: []
 	        }, options);
 
@@ -1937,7 +2016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @type {number}
 	         * @private
 	         */
-	        this._selectedIndex = Math.max(0, util.inArray(options.initialValue, this._items));
+	        this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
 
 	        /**
 	         * Element
@@ -1971,6 +2050,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    _setEvents: function() {
 	        this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
+	        this.on('changeItems', function(items) {
+	            this._items = items;
+	            this._render();
+	        }, this);
 	    },
 
 	    /**
@@ -1981,7 +2064,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _onChange: function(ev) {
 	        var newValue = Number(ev.target.value);
 
-	        this._selectedIndex = util.inArray(newValue, this._items);
+	        this._selectedIndex = snippet.inArray(newValue, this._items);
 	        this.fire('change', {
 	            value: newValue
 	        });
@@ -2000,7 +2083,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {number} value - New value
 	     */
 	    setValue: function(value) {
-	        var newIndex = util.inArray(value, this._items);
+	        var newIndex = snippet.inArray(value, this._items);
 
 	        if (newIndex > -1 && newIndex !== this._selectedIndex) {
 	            this._selectedIndex = newIndex;
@@ -2025,7 +2108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	});
 
-	util.CustomEvents.mixin(Selectbox);
+	snippet.CustomEvents.mixin(Selectbox);
 	module.exports = Selectbox;
 
 
@@ -2097,8 +2180,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	/**
-	 * Utils of calendar
-	 * @namespace timeUtil
+	 * Utils
+	 * @namespace util
 	 * @ignore
 	 */
 	var utils = {
@@ -2121,18 +2204,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Returns range arr
 	     * @param {number} start - Start value
 	     * @param {number} end - End value
+	     * @param {number} [step] - Step value
 	     * @returns {Array}
 	     */
-	    getRangeArr: function(start, end) {
+	    getRangeArr: function(start, end, step) {
 	        var arr = [];
 	        var i;
 
+	        step = step || 1;
+
 	        if (start > end) {
-	            for (i = end; i >= start; i -= 1) {
+	            for (i = end; i >= start; i -= step) {
 	                arr.push(i);
 	            }
 	        } else {
-	            for (i = start; i <= end; i += 1) {
+	            for (i = start; i <= end; i += step) {
 	                arr.push(i);
 	            }
 	        }
