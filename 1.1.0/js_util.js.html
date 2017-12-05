@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: js/timeUtil.js | TimePicker</title>
+    <title>Source: js/util.js | TimePicker</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -30,7 +30,7 @@
     <div class="title">
         <h1><a href="index.html" class="link">TimePicker</a></h1>
         
-            <span class="version">v1.0.0</span>
+            <span class="version">v1.1.0</span>
         
     </div>
     <div class="search-container" id="search-container">
@@ -47,7 +47,7 @@
             </li>
         </ol>
     
-    <div class="lnb-examples hidden"><h3>Examples</h3><ul><li><a href="tutorial-example01-basic.html">example01-basic</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example01-basic_sub"></div></li><li><a href="tutorial-example02-using-meridiem.html">example02-using-meridiem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example02-using-meridiem_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TimePicker.html">TimePicker</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TimePicker_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TimePicker.html#destroy">destroy</a></li><li><a href="TimePicker.html#getHour">getHour</a></li><li><a href="TimePicker.html#getMinute">getMinute</a></li><li><a href="TimePicker.html#hide">hide</a></li><li><a href="TimePicker.html#setHour">setHour</a></li><li><a href="TimePicker.html#setMinute">setMinute</a></li><li><a href="TimePicker.html#setTime">setTime</a></li><li><a href="TimePicker.html#show">show</a></li></ul><div class="member-type">Events</div><ul class="inner"><li><a href="TimePicker.html#event:change">change</a></li></ul></div></li></ul></div>
+    <div class="lnb-examples hidden"><h3>Examples</h3><ul><li><a href="tutorial-example01-basic.html">1. Basic</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example01-basic_sub"></div></li><li><a href="tutorial-example02-using-meridiem.html">2. Using meridiem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example02-using-meridiem_sub"></div></li><li><a href="tutorial-example03-using-step.html">3. Using step</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example03-using-step_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TimePicker.html">TimePicker</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TimePicker_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TimePicker.html#destroy">destroy</a></li><li><a href="TimePicker.html#getHour">getHour</a></li><li><a href="TimePicker.html#getHourStep">getHourStep</a></li><li><a href="TimePicker.html#getMinute">getMinute</a></li><li><a href="TimePicker.html#getMinuteStep">getMinuteStep</a></li><li><a href="TimePicker.html#hide">hide</a></li><li><a href="TimePicker.html#setHour">setHour</a></li><li><a href="TimePicker.html#setHourStep">setHourStep</a></li><li><a href="TimePicker.html#setMinute">setMinute</a></li><li><a href="TimePicker.html#setMinuteStep">setMinuteStep</a></li><li><a href="TimePicker.html#setTime">setTime</a></li><li><a href="TimePicker.html#show">show</a></li></ul><div class="member-type">Events</div><ul class="inner"><li><a href="TimePicker.html#event:change">change</a></li></ul></div></li></ul></div>
 </nav>
 <div id="resizer"></div>
 
@@ -68,8 +68,8 @@
 'use strict';
 
 /**
- * Utils of calendar
- * @namespace timeUtil
+ * Utils
+ * @namespace util
  * @ignore
  */
 var utils = {
@@ -92,18 +92,21 @@ var utils = {
      * Returns range arr
      * @param {number} start - Start value
      * @param {number} end - End value
+     * @param {number} [step] - Step value
      * @returns {Array}
      */
-    getRangeArr: function(start, end) {
+    getRangeArr: function(start, end, step) {
         var arr = [];
         var i;
 
+        step = step || 1;
+
         if (start > end) {
-            for (i = end; i >= start; i -= 1) {
+            for (i = end; i >= start; i -= step) {
                 arr.push(i);
             }
         } else {
-            for (i = start; i &lt;= end; i += 1) {
+            for (i = start; i &lt;= end; i += step) {
                 arr.push(i);
             }
         }

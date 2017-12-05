@@ -1,7 +1,7 @@
 <!DOCTYPE html>
     <head lang="en">
         <meta charset="UTF-8">
-        <title>1. Basic</title>
+        <title>3. Using step</title>
         <meta http-equiv="Pragma" content="no-cache">
         <meta http-equiv="Expires" content="-1">
         <link href="../dist/tui-time-picker.css" rel="stylesheet">
@@ -12,10 +12,16 @@
             <table>
                 <tbody>
                     <tr>
-                        <td><div id="timepicker-selectbox"></div></td>
+                        <td>
+                            <p>2 hours / 30 minutes / show meridiem</p>
+                            <div id="timepicker-selectbox-step"></div>
+                        </td>
                     </tr>
                     <tr>
-                        <td><div id="timepicker-spinbox"></div></td>
+                        <td>
+                            <p>2 hours / 10 minutes</p>
+                            <div id="timepicker-spinbox-step"></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -26,16 +32,21 @@
         <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
         <script type="text/javascript" class="code-js">
 
-            var tpSelectbox = new tui.TimePicker('#timepicker-selectbox', {
-                initialHour: 1,
-                initialMinute: 3,
-                inputType: 'selectbox'
+            var tpSelectboxWithStep = new tui.TimePicker('#timepicker-selectbox-step', {
+                initialHour: 19,
+                initialMinute: 30,
+                inputType: 'selectbox',
+                hourStep: 2,
+                minuteStep: 30
             });
 
-            var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
-                initialHour: 22,
-                initialMinute: 33,
-                inputType: 'spinbox'
+            var tpSpinboxWithStep = new tui.TimePicker('#timepicker-spinbox-step', {
+                initialHour: 14,
+                initialMinute: 20,
+                inputType: 'spinbox',
+                showMeridiem: false,
+                hourStep: 2,
+                minuteStep: 10
             });
 
         </script>
