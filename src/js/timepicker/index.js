@@ -309,6 +309,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {number} hour - Hour value
      * @param {number} minute - Minute value
      * @returns {boolean} State
+     * @private
      */
     _validItems: function(hour, minute) {
         if (this._showMeridiem) {
