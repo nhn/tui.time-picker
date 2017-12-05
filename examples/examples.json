@@ -1,6 +1,6 @@
 {
-    "example01-selectbox": {
-        "title": "1. Selectbox"
+    "example01-basic": {
+        "title": "1. Basic"
     },
     "example02-meridiem": {
         "title": "3. Using meridiem"
