@@ -1,15 +1,17 @@
 /**
- * webpack.config.js.js created on 2017. 07
+ * Configs file for bundling
  * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
  */
+
 'use strict';
+
 var pkg = require('./package.json');
 var webpack = require('webpack');
 
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var SafeUmdPlugin = require('safe-umd-webpack-plugin');
 
-var isProduction = process.argv.indexOf('-p') > -1;
+var isProduction = process.argv.indexOf('--production') >= 0;
 
 var FILENAME = pkg.name + (isProduction ? '.min.js' : '.js');
 var BANNER = [
@@ -19,7 +21,7 @@ var BANNER = [
     '@license ' + pkg.license
 ].join('\n');
 
-module.exports = {
+var config = {
     eslint: {
         failOnError: isProduction
     },
@@ -79,3 +81,13 @@ module.exports = {
         disableHostCheck: true
     }
 };
+
+if (isProduction) {
+    config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+        compress: {
+            warnings: false
+        }
+    }));
+}
+
+module.exports = config;

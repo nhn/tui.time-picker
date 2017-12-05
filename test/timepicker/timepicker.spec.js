@@ -4,8 +4,6 @@
  */
 'use strict';
 
-var $ = require('jquery');
-
 var TimePicker = require('../../src/js/timepicker');
 
 describe('TimePicker', function() {
@@ -61,6 +59,16 @@ describe('TimePicker', function() {
             timepickerNoMeridiem.setMinute(25);
             expect(timepickerNoMeridiem.getMinute()).toBe(25);
         });
+
+        it('setHourStep, getHourStep', function() {
+            timepickerNoMeridiem.setHourStep(3);
+            expect(timepickerNoMeridiem.getHourStep()).toBe(3);
+        });
+
+        it('setMinuteStep, getMinuteStep', function() {
+            timepickerNoMeridiem.setMinuteStep(30);
+            expect(timepickerNoMeridiem.getMinuteStep()).toBe(30);
+        });
     });
 
     describe('changed from', function() {
@@ -96,6 +104,22 @@ describe('TimePicker', function() {
 
             timepickerNoMeridiem.setMinute('!!!!!!!!');
             expect(timepickerNoMeridiem.getMinute()).toEqual(prev);
+        });
+    });
+
+    describe('should not change when step is invalid', function() {
+        it('hour', function() {
+            var prev = timepickerNoMeridiem.getHour();
+
+            timepickerNoMeridiem.setHourStep(2);
+            expect(timepickerNoMeridiem.getHour()).toBe(prev);
+        });
+
+        it('minute', function() {
+            var prev = timepickerNoMeridiem.getMinute();
+
+            timepickerNoMeridiem.setMinuteStep(30);
+            expect(timepickerNoMeridiem.getMinute()).toBe(prev);
         });
     });
 });

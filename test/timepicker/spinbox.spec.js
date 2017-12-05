@@ -15,6 +15,7 @@ var Spinbox = require('../../src/js/timepicker/spinbox');
 var CLASS_NAME_UP_BUTTON = 'tui-timepicker-btn-up';
 var CLASS_NAME_DOWN_BUTTON = 'tui-timepicker-btn-down';
 
+/* eslint-disable new-cap */
 describe('TimePicker - Spinbox', function() {
     var $container = $('<div></div>');
     var spinbox;
@@ -87,7 +88,7 @@ describe('TimePicker - Spinbox', function() {
         it('should increase value when the up-arrow key key-down', function() {
             var ev = $.Event('keydown');
 
-            ev.which = 38;  // up-arrow;
+            ev.which = 38; // up-arrow;
             spinbox._$inputElement.trigger(ev);
 
             expect(spinbox.getValue()).toEqual(5);
@@ -96,7 +97,7 @@ describe('TimePicker - Spinbox', function() {
         it('should decrease value when the down-arrow key-down', function() {
             var ev = $.Event('keydown');
 
-            ev.which = 40;  // down-arrow;
+            ev.which = 40; // down-arrow;
             spinbox._$inputElement.trigger(ev);
 
             expect(spinbox.getValue()).toEqual(3);
@@ -119,7 +120,7 @@ describe('TimePicker - Spinbox', function() {
             var spy = jasmine.createSpy();
             spinbox.on('change', spy);
 
-            ev.which = 40;  // down-arrow;
+            ev.which = 40; // down-arrow;
             spinbox._$inputElement.trigger(ev);
 
             expect(spy).toHaveBeenCalledWith({
@@ -131,6 +132,22 @@ describe('TimePicker - Spinbox', function() {
             expect(spy).toHaveBeenCalledWith({
                 value: 4
             });
+        });
+    });
+
+    describe('custom event - changeItems', function() {
+        fit('should change value of each select items', function() {
+            var items = [10, 20, 30];
+            spinbox.fire('changeItems', items);
+
+            spinbox.setValue(10);
+            expect(spinbox.getValue()).toBe(10);
+
+            spinbox.setValue(20);
+            expect(spinbox.getValue()).toBe(20);
+
+            spinbox.setValue(30);
+            expect(spinbox.getValue()).toBe(30);
         });
     });
 });

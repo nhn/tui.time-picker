@@ -12,14 +12,16 @@ Components that select a specific time
 [https://nhnent.github.io/tui.time-picker/latest/tutorial-example01-basic.html](https://nhnent.github.io/tui.time-picker/latest/tutorial-example01-basic.html)
 
 ## Dependency
-* jquery ~1.11.0
-* tui-code-snippet ~1.2.5
+* [jquery](https://jquery.com/) >=1.11.0
+* [tui-code-snippet](https://github.com/nhnent/tui.code-snippet) >=1.2.5
 
 ## Test Environment
 ### PC
 * IE8~11
+* Edge
 * Chrome
 * Firefox
+* Safari
 
 ## Usage
 ### Use `npm`
@@ -33,7 +35,7 @@ $ npm install tui-time-picker --save
 or want to install the each version:
 
 ```
-$ npm install tui-time-picker@<tag> --save
+$ npm install tui-time-picker@<version> --save
 ```
 
 To access as module format in your code:
