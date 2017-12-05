@@ -4,17 +4,17 @@
  */
 'use strict';
 
-var util = require('../src/js/timeUtil');
+var util = require('../src/js/util');
 
 describe('getMeridiemHour()', function() {
     it('When "hour" is midnight(00:00), meridiem hour is 12.', function() {
-        expect(util.getMeridiemHour(0)).toEqual(12);
+        expect(util.getMeridiemHour(0)).toBe(12);
     });
 
     it('When "hour" is over noon(12:00), meridiem hour is between 1~12.', function() {
-        expect(util.getMeridiemHour(12)).toEqual(12);
-        expect(util.getMeridiemHour(13)).toEqual(1);
-        expect(util.getMeridiemHour(23)).toEqual(11);
+        expect(util.getMeridiemHour(12)).toBe(12);
+        expect(util.getMeridiemHour(13)).toBe(1);
+        expect(util.getMeridiemHour(23)).toBe(11);
     });
 });
 

@@ -31,7 +31,7 @@ var utils = {
      * Returns range arr
      * @param {number} start - Start value
      * @param {number} end - End value
-     * @param {number} step - Step value
+     * @param {number} [step] - Step value
      * @returns {Array}
      */
     getRangeArr: function(start, end, step) {

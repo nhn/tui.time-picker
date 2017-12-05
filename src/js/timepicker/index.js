@@ -11,7 +11,7 @@ var snippet = require('tui-code-snippet');
 
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
-var util = require('./../timeUtil');
+var util = require('./../util');
 var tmpl = require('./../../template/timepicker/index.hbs');
 
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
