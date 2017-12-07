@@ -248,3 +248,9 @@
 .tui-time-input.tui-has-focus .tui-ico-time {
 	background-position:0 -44px
 }
+
+/* 하이브랩 처리 예정 */
+.tui-timepicker-checkbox.tui-timepicker-meridiem-left{
+	padding-left: 0px;
+	padding-right: 16px;
+}

@@ -12,7 +12,9 @@ var snippet = require('tui-code-snippet');
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
 var util = require('./../util');
+var localeTexts = require('./../localeTexts');
 var tmpl = require('./../../template/timepicker/index.hbs');
+var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
 
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
@@ -26,12 +28,14 @@ var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
  */
 var mergeDefaultOptions = function(options) {
     return snippet.extend({
+        language: 'en',
         initialHour: 0,
         initialMinute: 0,
         showMeridiem: true,
         inputType: 'selectbox',
         hourStep: 1,
-        minuteStep: 1
+        minuteStep: 1,
+        locateMeridiem: 'right'
     }, options);
 };
 
@@ -54,6 +58,26 @@ var mergeDefaultOptions = function(options) {
  });
  */
 var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
+    static: {
+        /**
+         * Locale text data
+         * @type {object}
+         * @memberof TimePicker
+         * @static
+         * @example
+         * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
+         *
+         * TimePicker.localeTexts['customKey'] = {
+         *     anteMeridiem: 'a.m.',
+         *     postMeridiem: 'p.m.'
+         * };
+         *
+         * var instance = new tui.TimePicker('#timepicker-container', {
+         *     language: 'customKey',
+         * });
+         */
+        localeTexts: localeTexts
+    },
     init: function(container, options) {
         options = mergeDefaultOptions(options);
 
@@ -94,6 +118,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._showMeridiem = options.showMeridiem;
 
         /**
+         * Meridiem postion
+         * @type {'left'|'right'}
+         * @private
+         */
+        this._locateMeridiem = options.locateMeridiem;
+
+        /**
          * @type {Spinbox}
          * @private
          */
@@ -109,25 +140,25 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * @type {number}
          * @private
          */
-        this._hour = options.initialHour || 0;
+        this._hour = options.initialHour;
 
         /**
          * @type {number}
          * @private
          */
-        this._minute = options.initialMinute || 0;
+        this._minute = options.initialMinute;
 
         /**
          * @type {number}
          * @private
          */
-        this._hourStep = options.hourStep || 1;
+        this._hourStep = options.hourStep;
 
         /**
          * @type {number}
          * @private
          */
-        this._minuteStep = options.minuteStep || 1;
+        this._minuteStep = options.minuteStep;
 
         /**
          * TimePicker inputType
@@ -135,6 +166,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * @private
          */
         this._inputType = options.inputType;
+
+        /**
+         * Locale text for meridiem
+         * @type {string}
+         * @private
+         */
+        this._localeText = localeTexts[options.language];
 
         this._render();
         this._setEvents();
@@ -164,8 +202,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     _render: function() {
         var context = {
             showMeridiem: this._showMeridiem,
+            locateMeridiem: this._locateMeridiem,
             inputType: this._inputType
         };
+
+        if (this._showMeridiem) {
+            snippet.extend(context, {
+                meridiemElement: this._makeMeridiemHTML()
+            });
+        }
 
         this._$element.remove();
         this._$element = $(tmpl(context));
@@ -179,6 +224,17 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             this._$pmEl = this._$meridiemElement.find('[value="PM"]');
             this._syncToMeridiemElements();
         }
+    },
+
+    _makeMeridiemHTML: function() {
+        var localeText = this._localeText;
+
+        return meridiemTemplate({
+            inputType: this._inputType,
+            locateMeridiem: this._locateMeridiem,
+            anteMeridiem: localeText.anteMeridiem,
+            postMeridiem: localeText.postMeridiem
+        });
     },
 
     /**
