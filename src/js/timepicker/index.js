@@ -226,6 +226,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         }
     },
 
+    /**
+     * Make html for meridiem element
+     * @returns {HTMLElement} Meridiem element
+     * @private
+     */
     _makeMeridiemHTML: function() {
         var localeText = this._localeText;
 
