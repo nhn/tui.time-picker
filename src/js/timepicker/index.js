@@ -45,17 +45,20 @@ var mergeDefaultOptions = function(options) {
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
- * @param {number} [options.hourStep=1] - Step value of hour
- * @param {number} [options.minuteStep=1] - Step value of minute
+ * @param {number} [options.hourStep = 1] - Step value of hour
+ * @param {number} [options.minuteStep = 1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
+ * @param {string} [options.locateMeridiem = 'right'] - Set location of the meridiem element.
+ *                 If this option set 'left', the meridiem element is created in front of the hour element.
+ * @param {string} [options.language = 'en'] Set locale texts
  * @example
- var timepicker = new tui.TimePicker('#timepicker-container', {
-     initialHour: 15,
-     initialMinute: 13,
-     inputType: 'selectbox',
-     showMeridiem: false
- });
+ * var timepicker = new tui.TimePicker('#timepicker-container', {
+ *     initialHour: 15,
+ *     initialMinute: 13,
+ *     inputType: 'selectbox',
+ *     showMeridiem: false
+ * });
  */
 var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     static: {
@@ -493,6 +496,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      */
     getMinute: function() {
         return this._minute;
+    },
+
+    /**
+     * Change locale text of meridiem by language code
+     * @param {string} language - Language code
+     */
+    changeLanguage: function(language) {
+        this._localeText = localeTexts[language];
+        this._render();
     },
 
     /**
