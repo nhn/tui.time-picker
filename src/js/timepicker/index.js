@@ -19,7 +19,7 @@ var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
 var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
-var LEFT_MERIDIEM_CLASSNAME = 'tui-has-left';
+var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 
 /**
  * Merge default options
@@ -232,7 +232,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      */
     _setMeridiemElement: function() {
         if (this._locateMeridiem === 'left') {
-            this._$element.addClass(LEFT_MERIDIEM_CLASSNAME);
+            this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
         }
         this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
         this._$amEl = this._$meridiemElement.find('[value="AM"]');
