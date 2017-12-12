@@ -1,11 +1,7 @@
 
 {{#if ([../helpers/equals] inputType 'spinbox')}}
-    {{#if ([../helpers/equals] locateMeridiem 'left')}}
-    <div class="tui-timepicker-column tui-timepicker-checkbox tui-timepicker-meridiem tui-timepicker-meridiem-left">
-    {{else}}
+    {{#with ([../helpers/uniqueId]) as |radioId|}}
     <div class="tui-timepicker-column tui-timepicker-checkbox tui-timepicker-meridiem">
-    {{/if}}
-        {{#with ([../helpers/uniqueId]) as |radioId|}}
         <div class="tui-timepicker-check-area">
             <ul class="tui-timepicker-check-lst">
                 <li class="tui-timepicker-check">
@@ -34,14 +30,10 @@
                 </li>
             </ul>
         </div>
-        {{/with}}
     </div>
+    {{/with}}
 {{else}}
-    {{#if ([../helpers/equals] locateMeridiem 'left')}}
-    <div class="tui-timepicker-column tui-timepicker-selectbox tui-is-add-picker tui-timepicker-meridiem tui-timepicker-meridiem-left">
-    {{else}}
     <div class="tui-timepicker-column tui-timepicker-selectbox tui-is-add-picker tui-timepicker-meridiem">
-    {{/if}}
         <select class="tui-timepicker-select" aria-label="AM/PM">
             <option value="AM">{{anteMeridiem}}</option>
             <option value="PM">{{postMeridiem}}</option>

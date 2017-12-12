@@ -19,6 +19,7 @@ var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
 var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
+var LEFT_MERIDIEM_CLASSNAME = 'tui-has-left';
 
 /**
  * Merge default options
@@ -205,7 +206,6 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     _render: function() {
         var context = {
             showMeridiem: this._showMeridiem,
-            locateMeridiem: this._locateMeridiem,
             inputType: this._inputType
         };
 
@@ -222,11 +222,22 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._renderTimeInputs();
 
         if (this._showMeridiem) {
-            this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
-            this._$amEl = this._$meridiemElement.find('[value="AM"]');
-            this._$pmEl = this._$meridiemElement.find('[value="PM"]');
-            this._syncToMeridiemElements();
+            this._setMeridiemElement();
         }
+    },
+
+    /**
+     * Set meridiem element on timepicker
+     * @private
+     */
+    _setMeridiemElement: function() {
+        if (this._locateMeridiem === 'left') {
+            this._$element.addClass(LEFT_MERIDIEM_CLASSNAME);
+        }
+        this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
+        this._$amEl = this._$meridiemElement.find('[value="AM"]');
+        this._$pmEl = this._$meridiemElement.find('[value="PM"]');
+        this._syncToMeridiemElements();
     },
 
     /**
@@ -239,7 +250,6 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
 
         return meridiemTemplate({
             inputType: this._inputType,
-            locateMeridiem: this._locateMeridiem,
             anteMeridiem: localeText.anteMeridiem,
             postMeridiem: localeText.postMeridiem
         });

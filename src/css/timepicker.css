@@ -5,7 +5,9 @@
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
-
+.tui-timepicker button{
+	border-radius: 0;
+}
 .tui-timepicker input,.tui-timepicker select{
 	font-weight:normal;
 }
@@ -227,7 +229,8 @@
 	padding:0 27px 0 10px;
 	font-size:12px;
 	border:0;
-	color:#333
+	color:#333;
+	box-sizing:border-box
 }
 
 .tui-time-input .tui-ico-time {
@@ -249,8 +252,24 @@
 	background-position:0 -44px
 }
 
-/* 하이브랩 처리 예정 */
-.tui-timepicker-checkbox.tui-timepicker-meridiem-left{
-	padding-left: 0px;
-	padding-right: 16px;
+.tui-has-left.tui-timepicker-body,
+.tui-has-left .tui-timepicker-row{
+	position:relative;
+}
+
+.tui-has-left .tui-timepicker-row:after{
+	display:block;
+	clear:both;
+	content:'';
+}
+
+.tui-has-left .tui-is-add-picker{
+	float:left;
+	padding:0 5px 0 0;
+}
+
+.tui-has-left .tui-timepicker-checkbox{
+	float:left;
+	margin-top:23px;
+	padding:0 16px 0 0;
 }
