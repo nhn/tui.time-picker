@@ -33,13 +33,13 @@
         <script type="text/javascript" class="code-js">
 
             tui.TimePicker.localeTexts.en = {
-                anteMeridiem: 'a.m.',
-                postMeridiem: 'p.m'
+                am: 'a.m.',
+                pm: 'p.m'
             };
 
             tui.TimePicker.localeTexts.ko = {
-                anteMeridiem: '오전',
-                postMeridiem: '오후'
+                am: '오전',
+                pm: '오후'
             };
 
             var tpWithEnglish = new tui.TimePicker('#timepicker-selectbox-en', {
@@ -48,7 +48,7 @@
 
             var tpWithKorean = new tui.TimePicker('#timepicker-spinbox-ko', {
                 language: 'ko',
-                locateMeridiem: 'left'
+                meridiemPosition: 'left'
             });
 
         </script>

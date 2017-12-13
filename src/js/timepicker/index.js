@@ -36,7 +36,7 @@ var mergeDefaultOptions = function(options) {
         inputType: 'selectbox',
         hourStep: 1,
         minuteStep: 1,
-        locateMeridiem: 'right'
+        meridiemPosition: 'right'
     }, options);
 };
 
@@ -50,7 +50,7 @@ var mergeDefaultOptions = function(options) {
  * @param {number} [options.minuteStep = 1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
- * @param {string} [options.locateMeridiem = 'right'] - Set location of the meridiem element.
+ * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
  *                 If this option set 'left', the meridiem element is created in front of the hour element.
  * @param {string} [options.language = 'en'] Set locale texts
  * @example
@@ -126,7 +126,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * @type {'left'|'right'}
          * @private
          */
-        this._locateMeridiem = options.locateMeridiem;
+        this._meridiemPosition = options.meridiemPosition;
 
         /**
          * @type {Spinbox}
@@ -231,7 +231,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _setMeridiemElement: function() {
-        if (this._locateMeridiem === 'left') {
+        if (this._meridiemPosition === 'left') {
             this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
         }
         this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
