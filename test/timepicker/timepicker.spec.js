@@ -138,7 +138,7 @@ describe('TimePicker', function() {
             expect(timepickerMeridiem._$pmEl.html()).toBe('오후');
         });
 
-        it('using "setLanguage" method.', function() {
+        it('using "changeLanguage" method.', function() {
             TimePicker.localeTexts.customKey = {
                 am: 'a.m.',
                 pm: 'p.m.'
