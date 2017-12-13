@@ -12,11 +12,14 @@ var snippet = require('tui-code-snippet');
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
 var util = require('./../util');
+var localeTexts = require('./../localeTexts');
 var tmpl = require('./../../template/timepicker/index.hbs');
+var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
 
 var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
 var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
+var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 
 /**
  * Merge default options
@@ -26,12 +29,14 @@ var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
  */
 var mergeDefaultOptions = function(options) {
     return snippet.extend({
+        language: 'en',
         initialHour: 0,
         initialMinute: 0,
         showMeridiem: true,
         inputType: 'selectbox',
         hourStep: 1,
-        minuteStep: 1
+        minuteStep: 1,
+        meridiemPosition: 'right'
     }, options);
 };
 
@@ -41,19 +46,42 @@ var mergeDefaultOptions = function(options) {
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
- * @param {number} [options.hourStep=1] - Step value of hour
- * @param {number} [options.minuteStep=1] - Step value of minute
+ * @param {number} [options.hourStep = 1] - Step value of hour
+ * @param {number} [options.minuteStep = 1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
+ * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
+ *                 If this option set 'left', the meridiem element is created in front of the hour element.
+ * @param {string} [options.language = 'en'] Set locale texts
  * @example
- var timepicker = new tui.TimePicker('#timepicker-container', {
-     initialHour: 15,
-     initialMinute: 13,
-     inputType: 'selectbox',
-     showMeridiem: false
- });
+ * var timepicker = new tui.TimePicker('#timepicker-container', {
+ *     initialHour: 15,
+ *     initialMinute: 13,
+ *     inputType: 'selectbox',
+ *     showMeridiem: false
+ * });
  */
 var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
+    static: {
+        /**
+         * Locale text data
+         * @type {object}
+         * @memberof TimePicker
+         * @static
+         * @example
+         * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
+         *
+         * TimePicker.localeTexts['customKey'] = {
+         *     am: 'a.m.',
+         *     pm: 'p.m.'
+         * };
+         *
+         * var instance = new tui.TimePicker('#timepicker-container', {
+         *     language: 'customKey',
+         * });
+         */
+        localeTexts: localeTexts
+    },
     init: function(container, options) {
         options = mergeDefaultOptions(options);
 
@@ -94,6 +122,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._showMeridiem = options.showMeridiem;
 
         /**
+         * Meridiem postion
+         * @type {'left'|'right'}
+         * @private
+         */
+        this._meridiemPosition = options.meridiemPosition;
+
+        /**
          * @type {Spinbox}
          * @private
          */
@@ -109,25 +144,25 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * @type {number}
          * @private
          */
-        this._hour = options.initialHour || 0;
+        this._hour = options.initialHour;
 
         /**
          * @type {number}
          * @private
          */
-        this._minute = options.initialMinute || 0;
+        this._minute = options.initialMinute;
 
         /**
          * @type {number}
          * @private
          */
-        this._hourStep = options.hourStep || 1;
+        this._hourStep = options.hourStep;
 
         /**
          * @type {number}
          * @private
          */
-        this._minuteStep = options.minuteStep || 1;
+        this._minuteStep = options.minuteStep;
 
         /**
          * TimePicker inputType
@@ -135,6 +170,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * @private
          */
         this._inputType = options.inputType;
+
+        /**
+         * Locale text for meridiem
+         * @type {string}
+         * @private
+         */
+        this._localeText = localeTexts[options.language];
 
         this._render();
         this._setEvents();
@@ -167,6 +209,12 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             inputType: this._inputType
         };
 
+        if (this._showMeridiem) {
+            snippet.extend(context, {
+                meridiemElement: this._makeMeridiemHTML()
+            });
+        }
+
         this._$element.remove();
         this._$element = $(tmpl(context));
         this._$element.appendTo(this._$container);
@@ -174,11 +222,37 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._renderTimeInputs();
 
         if (this._showMeridiem) {
-            this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
-            this._$amEl = this._$meridiemElement.find('[value="AM"]');
-            this._$pmEl = this._$meridiemElement.find('[value="PM"]');
-            this._syncToMeridiemElements();
+            this._setMeridiemElement();
         }
+    },
+
+    /**
+     * Set meridiem element on timepicker
+     * @private
+     */
+    _setMeridiemElement: function() {
+        if (this._meridiemPosition === 'left') {
+            this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
+        }
+        this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
+        this._$amEl = this._$meridiemElement.find('[value="AM"]');
+        this._$pmEl = this._$meridiemElement.find('[value="PM"]');
+        this._syncToMeridiemElements();
+    },
+
+    /**
+     * Make html for meridiem element
+     * @returns {HTMLElement} Meridiem element
+     * @private
+     */
+    _makeMeridiemHTML: function() {
+        var localeText = this._localeText;
+
+        return meridiemTemplate({
+            inputType: this._inputType,
+            am: localeText.am,
+            pm: localeText.pm
+        });
     },
 
     /**
@@ -432,6 +506,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      */
     getMinute: function() {
         return this._minute;
+    },
+
+    /**
+     * Change locale text of meridiem by language code
+     * @param {string} language - Language code
+     */
+    changeLanguage: function(language) {
+        this._localeText = localeTexts[language];
+        this._render();
     },
 
     /**
