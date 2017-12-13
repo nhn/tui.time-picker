@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.1.1
+ * @version 1.2.0
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -101,11 +101,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Spinbox = __webpack_require__(10);
 	var Selectbox = __webpack_require__(31);
 	var util = __webpack_require__(34);
-	var tmpl = __webpack_require__(35);
+	var localeTexts = __webpack_require__(35);
+	var tmpl = __webpack_require__(36);
+	var meridiemTemplate = __webpack_require__(37);
 
 	var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 	var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
 	var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
+	var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 
 	/**
 	 * Merge default options
@@ -115,12 +118,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var mergeDefaultOptions = function(options) {
 	    return snippet.extend({
+	        language: 'en',
 	        initialHour: 0,
 	        initialMinute: 0,
 	        showMeridiem: true,
 	        inputType: 'selectbox',
 	        hourStep: 1,
-	        minuteStep: 1
+	        minuteStep: 1,
+	        meridiemPosition: 'right'
 	    }, options);
 	};
 
@@ -130,19 +135,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} [options] - Options for initialization
 	 * @param {number} [options.initialHour = 0] - Initial setting value of hour
 	 * @param {number} [options.initialMinute = 0] - Initial setting value of minute
-	 * @param {number} [options.hourStep=1] - Step value of hour
-	 * @param {number} [options.minuteStep=1] - Step value of minute
+	 * @param {number} [options.hourStep = 1] - Step value of hour
+	 * @param {number} [options.minuteStep = 1] - Step value of minute
 	 * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
 	 * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
+	 * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
+	 *                 If this option set 'left', the meridiem element is created in front of the hour element.
+	 * @param {string} [options.language = 'en'] Set locale texts
 	 * @example
-	 var timepicker = new tui.TimePicker('#timepicker-container', {
-	     initialHour: 15,
-	     initialMinute: 13,
-	     inputType: 'selectbox',
-	     showMeridiem: false
-	 });
+	 * var timepicker = new tui.TimePicker('#timepicker-container', {
+	 *     initialHour: 15,
+	 *     initialMinute: 13,
+	 *     inputType: 'selectbox',
+	 *     showMeridiem: false
+	 * });
 	 */
 	var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
+	    static: {
+	        /**
+	         * Locale text data
+	         * @type {object}
+	         * @memberof TimePicker
+	         * @static
+	         * @example
+	         * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
+	         *
+	         * TimePicker.localeTexts['customKey'] = {
+	         *     am: 'a.m.',
+	         *     pm: 'p.m.'
+	         * };
+	         *
+	         * var instance = new tui.TimePicker('#timepicker-container', {
+	         *     language: 'customKey',
+	         * });
+	         */
+	        localeTexts: localeTexts
+	    },
 	    init: function(container, options) {
 	        options = mergeDefaultOptions(options);
 
@@ -183,6 +211,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._showMeridiem = options.showMeridiem;
 
 	        /**
+	         * Meridiem postion
+	         * @type {'left'|'right'}
+	         * @private
+	         */
+	        this._meridiemPosition = options.meridiemPosition;
+
+	        /**
 	         * @type {Spinbox}
 	         * @private
 	         */
@@ -198,25 +233,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @type {number}
 	         * @private
 	         */
-	        this._hour = options.initialHour || 0;
+	        this._hour = options.initialHour;
 
 	        /**
 	         * @type {number}
 	         * @private
 	         */
-	        this._minute = options.initialMinute || 0;
+	        this._minute = options.initialMinute;
 
 	        /**
 	         * @type {number}
 	         * @private
 	         */
-	        this._hourStep = options.hourStep || 1;
+	        this._hourStep = options.hourStep;
 
 	        /**
 	         * @type {number}
 	         * @private
 	         */
-	        this._minuteStep = options.minuteStep || 1;
+	        this._minuteStep = options.minuteStep;
 
 	        /**
 	         * TimePicker inputType
@@ -224,6 +259,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        this._inputType = options.inputType;
+
+	        /**
+	         * Locale text for meridiem
+	         * @type {string}
+	         * @private
+	         */
+	        this._localeText = localeTexts[options.language];
 
 	        this._render();
 	        this._setEvents();
@@ -256,6 +298,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            inputType: this._inputType
 	        };
 
+	        if (this._showMeridiem) {
+	            snippet.extend(context, {
+	                meridiemElement: this._makeMeridiemHTML()
+	            });
+	        }
+
 	        this._$element.remove();
 	        this._$element = $(tmpl(context));
 	        this._$element.appendTo(this._$container);
@@ -263,11 +311,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._renderTimeInputs();
 
 	        if (this._showMeridiem) {
-	            this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
-	            this._$amEl = this._$meridiemElement.find('[value="AM"]');
-	            this._$pmEl = this._$meridiemElement.find('[value="PM"]');
-	            this._syncToMeridiemElements();
+	            this._setMeridiemElement();
 	        }
+	    },
+
+	    /**
+	     * Set meridiem element on timepicker
+	     * @private
+	     */
+	    _setMeridiemElement: function() {
+	        if (this._meridiemPosition === 'left') {
+	            this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
+	        }
+	        this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
+	        this._$amEl = this._$meridiemElement.find('[value="AM"]');
+	        this._$pmEl = this._$meridiemElement.find('[value="PM"]');
+	        this._syncToMeridiemElements();
+	    },
+
+	    /**
+	     * Make html for meridiem element
+	     * @returns {HTMLElement} Meridiem element
+	     * @private
+	     */
+	    _makeMeridiemHTML: function() {
+	        var localeText = this._localeText;
+
+	        return meridiemTemplate({
+	            inputType: this._inputType,
+	            am: localeText.am,
+	            pm: localeText.pm
+	        });
 	    },
 
 	    /**
@@ -521,6 +595,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    getMinute: function() {
 	        return this._minute;
+	    },
+
+	    /**
+	     * Change locale text of meridiem by language code
+	     * @param {string} language - Language code
+	     */
+	    changeLanguage: function(language) {
+	        this._localeText = localeTexts[language];
+	        this._render();
 	    },
 
 	    /**
@@ -2249,55 +2332,104 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 35 */
+/***/ (function(module, exports) {
+
+	/**
+	 * @fileoverview Default locale texts
+	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 */
+
+	'use strict';
+
+	module.exports = {
+	    en: {
+	        am: 'AM',
+	        pm: 'PM'
+	    },
+	    ko: {
+	        am: '오전',
+	        pm: '오후'
+	    }
+	};
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(12);
+	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
+	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
+	    var stack1;
+
+	  return "                <div class=\"tui-timepicker-column tui-timepicker-spinbox tui-timepicker-hour\"></div>\n                <span class=\"tui-timepicker-column tui-timepicker-colon\"><span class=\"tui-ico-colon\">:</span></span>\n                <div class=\"tui-timepicker-column tui-timepicker-spinbox tui-timepicker-minute\"></div>\n"
+	    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.showMeridiem : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+	},"2":function(container,depth0,helpers,partials,data) {
+	    var stack1;
+
+	  return "                    "
+	    + ((stack1 = container.lambda((depth0 != null ? depth0.meridiemElement : depth0), depth0)) != null ? stack1 : "")
+	    + "\n";
+	},"4":function(container,depth0,helpers,partials,data) {
+	    var stack1;
+
+	  return "                <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-timepicker-hour\"></div>\n                <span class=\"tui-timepicker-column tui-timepicker-colon\"><span class=\"tui-ico-colon\">:</span></span>\n                <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-timepicker-minute\"></div>\n"
+	    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.showMeridiem : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    var stack1, alias1=depth0 != null ? depth0 : {};
+
+	  return "<div class=\"tui-timepicker\">\n    <div class=\"tui-timepicker-body\">\n        <div class=\"tui-timepicker-row\">\n"
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data}),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+	    + "        </div>\n    </div>\n</div>\n";
+	},"useData":true});
+
+/***/ }),
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(12);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data,blockParams) {
-	    var stack1;
-
-	  return "                <div class=\"tui-timepicker-column tui-timepicker-spinbox tui-timepicker-hour\"></div>\n                <span class=\"tui-timepicker-column tui-timepicker-colon\"><span class=\"tui-ico-colon\">:</span></span>\n                <div class=\"tui-timepicker-column tui-timepicker-spinbox tui-timepicker-minute\"></div>\n                "
-	    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.showMeridiem : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams})) != null ? stack1 : "")
-	    + "\n";
-	},"2":function(container,depth0,helpers,partials,data,blockParams) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
-	  return " "
-	    + ((stack1 = helpers["with"].call(alias1,__default(__webpack_require__(36)).call(alias1,{"name":"../helpers/uniqueId","hash":{},"data":data,"blockParams":blockParams}),{"name":"with","hash":{},"fn":container.program(3, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams})) != null ? stack1 : "")
-	    + " ";
-	},"3":function(container,depth0,helpers,partials,data,blockParams) {
+	  return ((stack1 = helpers["with"].call(alias1,__default(__webpack_require__(38)).call(alias1,{"name":"../helpers/uniqueId","hash":{},"data":data,"blockParams":blockParams}),{"name":"with","hash":{},"fn":container.program(2, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	},"2":function(container,depth0,helpers,partials,data,blockParams) {
+	    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
+
+	  return "    <div class=\"tui-timepicker-column tui-timepicker-checkbox tui-timepicker-meridiem\">\n        <div class=\"tui-timepicker-check-area\">\n            <ul class=\"tui-timepicker-check-lst\">\n                <li class=\"tui-timepicker-check\">\n                    <div class=\"tui-timepicker-radio\">\n                        <input type=\"radio\"\n                               name=\"optionsRadios-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\"\n                               value=\"AM\"\n                               class=\"tui-timepicker-radio-am\"\n                               id=\"tui-timepicker-radio-am-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\">\n                        <label for=\"tui-timepicker-radio-am-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\" class=\"tui-timepicker-radio-label\">\n                            <span class=\"tui-timepicker-input-radio\"></span>"
+	    + alias2(alias1(((stack1 = (data && data.root)) && stack1.am), depth0))
+	    + "\n                        </label>\n                    </div>\n                </li>\n                <li class=\"tui-timepicker-check\">\n                    <div class=\"tui-timepicker-radio\">\n                        <input type=\"radio\"\n                               name=\"optionsRadios-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\"\n                               value=\"PM\"\n                               class=\"tui-timepicker-radio-pm\"\n                               id=\"tui-timepicker-radio-pm-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\">\n                        <label for=\"tui-timepicker-radio-pm-"
+	    + alias2(alias1(blockParams[0][0], depth0))
+	    + "\" class=\"tui-timepicker-radio-label\">\n                            <span class=\"tui-timepicker-input-radio\"></span>"
+	    + alias2(alias1(((stack1 = (data && data.root)) && stack1.pm), depth0))
+	    + "\n                        </label>\n                    </div>\n                </li>\n            </ul>\n        </div>\n    </div>\n";
+	},"4":function(container,depth0,helpers,partials,data) {
 	    var alias1=container.lambda, alias2=container.escapeExpression;
 
-	  return "\n                    <div class=\"tui-timepicker-column tui-timepicker-checkbox tui-timepicker-meridiem\">\n                        <div class=\"tui-timepicker-check-area\">\n                            <ul class=\"tui-timepicker-check-lst\">\n                                <li class=\"tui-timepicker-check\">\n                                    <div class=\"tui-timepicker-radio\">\n                                        <input type=\"radio\"\n                                               name=\"optionsRadios-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\"\n                                               value=\"AM\"\n                                               class=\"tui-timepicker-radio-am\"\n                                               id=\"tui-timepicker-radio-am-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\">\n                                        <label for=\"tui-timepicker-radio-am-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\" class=\"tui-timepicker-radio-label\">\n                                            <span class=\"tui-timepicker-input-radio\"></span>AM\n                                        </label>\n                                    </div>\n                                </li>\n                                <li class=\"tui-timepicker-check\">\n                                    <div class=\"tui-timepicker-radio\">\n                                        <input type=\"radio\"\n                                               name=\"optionsRadios-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\"\n                                               value=\"PM\"\n                                               class=\"tui-timepicker-radio-pm\"\n                                               id=\"tui-timepicker-radio-pm-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\">\n                                        <label for=\"tui-timepicker-radio-pm-"
-	    + alias2(alias1(blockParams[0][0], depth0))
-	    + "\" class=\"tui-timepicker-radio-label\">\n                                            <span class=\"tui-timepicker-input-radio\"></span>PM\n                                        </label>\n                                    </div>\n                                </li>\n                            </ul>\n                        </div>\n                    </div>\n                ";
-	},"5":function(container,depth0,helpers,partials,data) {
-	    var stack1;
-
-	  return "                <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-timepicker-hour\"></div>\n                <span class=\"tui-timepicker-column tui-timepicker-colon\"><span class=\"tui-ico-colon\">:</span></span>\n                <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-timepicker-minute\"></div>\n"
-	    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.showMeridiem : depth0),{"name":"if","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-	},"6":function(container,depth0,helpers,partials,data) {
-	    return "                    <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-is-add-picker tui-timepicker-meridiem\">\n                        <select class=\"tui-timepicker-select\" aria-label=\"AM/PM\">\n                            <option value=\"AM\">AM</option>\n                            <option value=\"PM\">PM</option>\n                        </select>\n                    </div>\n";
+	  return "    <div class=\"tui-timepicker-column tui-timepicker-selectbox tui-is-add-picker tui-timepicker-meridiem\">\n        <select class=\"tui-timepicker-select\" aria-label=\"AM/PM\">\n            <option value=\"AM\">"
+	    + alias2(alias1((depth0 != null ? depth0.am : depth0), depth0))
+	    + "</option>\n            <option value=\"PM\">"
+	    + alias2(alias1((depth0 != null ? depth0.pm : depth0), depth0))
+	    + "</option>\n        </select>\n    </div>\n";
 	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data,blockParams) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
-	  return "<div class=\"tui-timepicker\">\n    <div class=\"tui-timepicker-body\">\n        <div class=\"tui-timepicker-row\">\n"
-	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(5, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "")
-	    + "        </div>\n    </div>\n</div>\n";
+	  return "\n"
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
 	},"useData":true,"useBlockParams":true});
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports) {
 
 	/**
