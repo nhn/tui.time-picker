@@ -7,11 +7,11 @@
 
 module.exports = {
     en: {
-        anteMeridiem: 'AM',
-        postMeridiem: 'PM'
+        am: 'AM',
+        pm: 'PM'
     },
     ko: {
-        anteMeridiem: '오전',
-        postMeridiem: '오후'
+        am: '오전',
+        pm: '오후'
     }
 };

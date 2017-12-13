@@ -12,7 +12,7 @@
                                class="tui-timepicker-radio-am"
                                id="tui-timepicker-radio-am-{{radioId}}">
                         <label for="tui-timepicker-radio-am-{{radioId}}" class="tui-timepicker-radio-label">
-                            <span class="tui-timepicker-input-radio"></span>{{@root.anteMeridiem}}
+                            <span class="tui-timepicker-input-radio"></span>{{@root.am}}
                         </label>
                     </div>
                 </li>
@@ -24,7 +24,7 @@
                                class="tui-timepicker-radio-pm"
                                id="tui-timepicker-radio-pm-{{radioId}}">
                         <label for="tui-timepicker-radio-pm-{{radioId}}" class="tui-timepicker-radio-label">
-                            <span class="tui-timepicker-input-radio"></span>{{@root.postMeridiem}}
+                            <span class="tui-timepicker-input-radio"></span>{{@root.pm}}
                         </label>
                     </div>
                 </li>
@@ -35,8 +35,8 @@
 {{else}}
     <div class="tui-timepicker-column tui-timepicker-selectbox tui-is-add-picker tui-timepicker-meridiem">
         <select class="tui-timepicker-select" aria-label="AM/PM">
-            <option value="AM">{{anteMeridiem}}</option>
-            <option value="PM">{{postMeridiem}}</option>
+            <option value="AM">{{am}}</option>
+            <option value="PM">{{pm}}</option>
         </select>
     </div>
 {{/if}}

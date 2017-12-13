@@ -124,10 +124,10 @@ describe('TimePicker', function() {
     });
 
     describe('Set locale texts for meridiem', function() {
-        it('using "language" option', function() {
+        it('using "language" option.', function() {
             TimePicker.localeTexts.ko = {
-                anteMeridiem: '오전',
-                postMeridiem: '오후'
+                am: '오전',
+                pm: '오후'
             };
 
             timepickerMeridiem = new TimePicker(container2, {
@@ -138,10 +138,10 @@ describe('TimePicker', function() {
             expect(timepickerMeridiem._$pmEl.html()).toBe('오후');
         });
 
-        it('using "setLanguage" method', function() {
+        it('using "setLanguage" method.', function() {
             TimePicker.localeTexts.customKey = {
-                anteMeridiem: 'a.m.',
-                postMeridiem: 'p.m.'
+                am: 'a.m.',
+                pm: 'p.m.'
             };
             timepickerMeridiem.changeLanguage('customKey');
 

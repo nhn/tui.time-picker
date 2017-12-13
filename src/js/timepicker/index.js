@@ -72,8 +72,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
          *
          * TimePicker.localeTexts['customKey'] = {
-         *     anteMeridiem: 'a.m.',
-         *     postMeridiem: 'p.m.'
+         *     am: 'a.m.',
+         *     pm: 'p.m.'
          * };
          *
          * var instance = new tui.TimePicker('#timepicker-container', {
@@ -250,8 +250,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
 
         return meridiemTemplate({
             inputType: this._inputType,
-            anteMeridiem: localeText.anteMeridiem,
-            postMeridiem: localeText.postMeridiem
+            am: localeText.am,
+            pm: localeText.pm
         });
     },
 
