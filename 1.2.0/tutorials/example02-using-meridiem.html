@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>3. Using meridiem</title>
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+        <link href="../dist/tui-time-picker.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="code-html">
+            <table>
+                <tbody>
+                <tr>
+                    <td><div id="timepicker-selectbox"></div></td>
+                    <td><div id="timepicker-selectbox-meridiem"></div></td>
+                </tr>
+                <tr>
+                    <td><div id="timepicker-spinbox"></div></td>
+                    <td><div id="timepicker-spinbox-meridiem"></div></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/nhnent/tui.code-snippet/v1.2.5/dist/tui-code-snippet.js"></script>
+        <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
+        <script type="text/javascript" class="code-js">
+
+            var tpSelectbox = new tui.TimePicker('#timepicker-selectbox', {
+                initialHour: 15,
+                initialMinute: 13,
+                inputType: 'selectbox',
+                showMeridiem: false
+            });
+
+            var tpSelectboxMeridiem = new tui.TimePicker('#timepicker-selectbox-meridiem', {
+                initialHour: 12,
+                initialMinute: 13,
+                inputType: 'selectbox',
+                showMeridiem: true
+            });
+
+            var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
+                initialHour: 22,
+                initialMinute: 33,
+                inputType: 'spinbox',
+                showMeridiem: false
+            });
+
+            var tpSpinboxMeridiem = new tui.TimePicker('#timepicker-spinbox-meridiem', {
+                initialHour: 16,
+                initialMinute: 25,
+                inputType: 'spinbox',
+                showMeridiem: true
+            });
+
+        </script>
+    </body>
+</html>

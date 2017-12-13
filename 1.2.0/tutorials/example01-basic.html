@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>1. Basic</title>
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+        <link href="../dist/tui-time-picker.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="code-html">
+            <table>
+                <tbody>
+                    <tr>
+                        <td><div id="timepicker-selectbox"></div></td>
+                    </tr>
+                    <tr>
+                        <td><div id="timepicker-spinbox"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/nhnent/tui.code-snippet/v1.2.5/dist/tui-code-snippet.js"></script>
+        <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
+        <script type="text/javascript" class="code-js">
+
+            var tpSelectbox = new tui.TimePicker('#timepicker-selectbox', {
+                initialHour: 1,
+                initialMinute: 3,
+                inputType: 'selectbox'
+            });
+
+            var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
+                initialHour: 22,
+                initialMinute: 33,
+                inputType: 'spinbox'
+            });
+
+        </script>
+    </body>
+</html>

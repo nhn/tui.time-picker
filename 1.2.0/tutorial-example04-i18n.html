@@ -1,10 +1,8 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: js/timepicker/selectbox.js | TimePicker</title>
+    <title>Tutorial: 4. Internationalization (i18n) | TimePicker</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -54,155 +52,124 @@
 <div class="main" id="main">
     
 
+<section>
+    <header>
+        
 
+        <h2>4. Internationalization (i18n)</h2>
+    </header>
 
     
-    <section>
+        
+
+        <ul id="example-nav" class="nav nav-tabs">
+            <li role="presentation" id="example-result-btn" class="active" onclick="showResult()">
+                <a href="#">Result</a>
+            </li>
+            <li role="presentation" id="example-js-btn" class="" onclick="showJs()">
+                <a href="#">JS</a>
+            </li>
+            <li role="presentation" id="example-html-btn" class="" onclick="showHtml()">
+                <a href="#">HTML</a>
+            </li>
+        </ul>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @fileoverview Selectbox (in TimePicker)
- * @author NHN Ent. FE Development Lab &lt;dl_javascript@nhnent.com>
- */
+            
+            <iframe id="example-result" width="100%" height="800" frameborder="0" src=tutorials/example04-i18n.html></iframe>
+            <div id="example-js" class="hidden"><pre class="prettyprint source">
 
-'use strict';
+            tui.TimePicker.localeTexts.en = {
+                am: 'a.m.',
+                pm: 'p.m'
+            };
 
-var $ = require('jquery');
-var snippet = require('tui-code-snippet');
+            var tpWithEnglish = new tui.TimePicker('#timepicker-selectbox-en', {
+                language: 'en'
+            });
 
-var tmpl = require('./../../template/timepicker/selectbox.hbs');
+            var tpWithKorean = new tui.TimePicker('#timepicker-spinbox-ko', {
+                language: 'ko',
+                meridiemPosition: 'left'
+            });
 
-/**
- * @class
- * @ignore
- * @param {jQuery|string|Element} container - Container element
- * @param {object} options - Options
- * @param {Array.&lt;number>} options.items - Items
- * @param {number} options.initialValue - Initial value
- */
-var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
-    init: function(container, options) {
-        options = snippet.extend({
-            items: []
-        }, options);
-
-        /**
-         * Container element
-         * @type {jQuery}
-         * @private
-         */
-        this._$container = $(container);
-
-        /**
-         * Selectbox items
-         * @type {Array.&lt;number>}
-         * @private
-         */
-        this._items = options.items || [];
-
-        /**
-         * Selected index
-         * @type {number}
-         * @private
-         */
-        this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
-
-        /**
-         * Element
-         * @type {jQuery}
-         * @private
-         */
-        this._$element = $();
-
-        this._render();
-        this._setEvents();
-    },
-
-    /**
-     * Render selectbox
-     * @private
-     */
-    _render: function() {
-        var context = {
-            items: this._items,
-            initialValue: this.getValue()
-        };
-
-        this._$element.remove();
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
-    },
-
-    /**
-     * Set events
-     * @private
-     */
-    _setEvents: function() {
-        this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
-        this.on('changeItems', function(items) {
-            this._items = items;
-            this._render();
-        }, this);
-    },
-
-    /**
-     * Change event handler
-     * @param {jQuery.Event} ev - Event object
-     * @private
-     */
-    _onChange: function(ev) {
-        var newValue = Number(ev.target.value);
-
-        this._selectedIndex = snippet.inArray(newValue, this._items);
-        this.fire('change', {
-            value: newValue
-        });
-    },
-
-    /**
-     * Returns current value
-     * @returns {number}
-     */
-    getValue: function() {
-        return this._items[this._selectedIndex];
-    },
-
-    /**
-     * Set value
-     * @param {number} value - New value
-     */
-    setValue: function(value) {
-        var newIndex = snippet.inArray(value, this._items);
-
-        if (newIndex > -1 &amp;&amp; newIndex !== this._selectedIndex) {
-            this._selectedIndex = newIndex;
-            this._$element.val(value).change();
-        }
-    },
-
-    /**
-     * Destory
-     */
-    destroy: function() {
-        this.off();
-        this._$container.off('.selectbox');
-        this._$element.remove();
-
-        this._$container
-            = this._items
-            = this._selectedIndex
-            = this._$element
-            = this._$element
-            = null;
-    }
-});
-
-snippet.CustomEvents.mixin(Selectbox);
-module.exports = Selectbox;
-</code></pre>
+        </pre></div>
+            <div id="example-html" class="hidden"><pre class="prettyprint source">
+            &lt;table>
+                &lt;tbody>
+                    &lt;tr>
+                        &lt;td>
+                            &lt;p>English&lt;/p>
+                            &lt;div id="timepicker-selectbox-en">&lt;/div>
+                        &lt;/td>
+                    &lt;/tr>
+                    &lt;tr>
+                        &lt;td>
+                            &lt;p>Korean&lt;/p>
+                            &lt;div id="timepicker-spinbox-ko">&lt;/div>
+                        &lt;/td>
+                    &lt;/tr>
+                &lt;/tbody>
+            &lt;/table>
+        </pre></div>
         </article>
-    </section>
+    
+</section>
 
 
+    <script>
+        var exampleResult = document.getElementById('example-result');
+        var exampleJs = document.getElementById('example-js');
+        var exampleHtml = document.getElementById('example-html');
+        var exampleResultBtn = document.getElementById('example-result-btn');
+        var exampleJsBtn = document.getElementById('example-js-btn');
+        var exampleHtmlBtn = document.getElementById('example-html-btn');
+
+        function setActive(el) {
+            el.className += ' active';
+        }
+
+        function setInactive(el) {
+            el.className = el.className.replace(/\s*active\s*/g, '');
+        }
+
+        function show(el) {
+            el.className = el.className.replace(/\s*hidden\s*/g, '');
+        }
+
+        function hide(el) {
+            el.className += ' hidden';
+        }
+
+        function showJs() {
+            hide(exampleHtml);
+            hide(exampleResult);
+            setInactive(exampleHtmlBtn);
+            setInactive(exampleResultBtn);
+
+            show(exampleJs);
+            setActive(exampleJsBtn);
+        }
+
+        function showHtml() {
+            hide(exampleJs);
+            hide(exampleResult);
+            setInactive(exampleJsBtn);
+            setInactive(exampleResultBtn);
+
+            show(exampleHtml);
+            setActive(exampleHtmlBtn);
+        }
+
+        function showResult() {
+            hide(exampleJs);
+            hide(exampleHtml);
+            setInactive(exampleJsBtn);
+            setInactive(exampleHtmlBtn);
+
+            show(exampleResult);
+            setActive(exampleResultBtn);
+        }
+    </script>
 
 
 </div>
@@ -217,13 +184,7 @@ module.exports = Selectbox;
 <script src="scripts/linenumber.js"></script>
 
     <script>
-        var id = '_sub'.replace(/"/g, '_');
-        var selectedApi = document.getElementById(id); // do not use jquery selector
-        var $selectedApi = $(selectedApi);
-
-        $selectedApi.removeClass('hidden');
-        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
-        showLnbApi();
+        showLnbExamples();
     </script>
 
 </body>
