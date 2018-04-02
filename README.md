@@ -81,6 +81,28 @@ $ bower install tui-time-picker#<tag> # Specific version
 * [Download bundle files](https://github.com/nhnent/tui.time-picker/tree/production/dist)
 * [Download all sources for each version](https://github.com/nhnent/tui.time-picker/releases)
 
+### Via Contents Delivery Network (CDN)
+TOAST UI Component: Time Picker is available over a CDN.
+
+
+- You can use cdn as below.
+
+```html
+<link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+<script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
+```
+
+- Within the download you'll find the following directories
+
+```
+tui.time-picker/
+├─ latest
+│  ├─ tui-time-picker.css
+│  ├─ tui-time-picker.js
+│  ├─ tui-time-picker.min.js
+```
+
+
 
 ## 🔨 Usage
 
