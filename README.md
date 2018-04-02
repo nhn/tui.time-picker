@@ -82,7 +82,7 @@ $ bower install tui-time-picker#<tag> # Specific version
 * [Download all sources for each version](https://github.com/nhnent/tui.time-picker/releases)
 
 ### Via Contents Delivery Network (CDN)
-TOAST UI Component: Time Picker is available over a CDN.
+The TOAST UI Component: Time Picker is available over a CDN.
 
 
 - You can use cdn as below.
