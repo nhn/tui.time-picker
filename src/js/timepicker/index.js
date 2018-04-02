@@ -36,7 +36,8 @@ var mergeDefaultOptions = function(options) {
         inputType: 'selectbox',
         hourStep: 1,
         minuteStep: 1,
-        meridiemPosition: 'right'
+        meridiemPosition: 'right',
+        usageStatistics: true
     }, options);
 };
 
@@ -53,6 +54,7 @@ var mergeDefaultOptions = function(options) {
  * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
  *                 If this option set 'left', the meridiem element is created in front of the hour element.
  * @param {string} [options.language = 'en'] Set locale texts
+ * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
  * @example
  * var timepicker = new tui.TimePicker('#timepicker-container', {
  *     initialHour: 15,
@@ -180,6 +182,10 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
 
         this._render();
         this._setEvents();
+
+        if (options.usageStatistics) {
+            util.sendHostName();
+        }
     },
 
     /**
