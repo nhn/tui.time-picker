@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.2.0
+ * @version 1.3.0
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -125,7 +125,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        inputType: 'selectbox',
 	        hourStep: 1,
 	        minuteStep: 1,
-	        meridiemPosition: 'right'
+	        meridiemPosition: 'right',
+	        usageStatistics: true
 	    }, options);
 	};
 
@@ -142,6 +143,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
 	 *                 If this option set 'left', the meridiem element is created in front of the hour element.
 	 * @param {string} [options.language = 'en'] Set locale texts
+	 * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
 	 * @example
 	 * var timepicker = new tui.TimePicker('#timepicker-container', {
 	 *     initialHour: 15,
@@ -269,6 +271,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._render();
 	        this._setEvents();
+
+	        if (options.usageStatistics) {
+	            util.sendHostName();
+	        }
 	    },
 
 	    /**
@@ -2269,15 +2275,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 34 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @fileoverview Utils for Datepicker component
 	 * @author NHN Ent. FE dev Lab. <dl_javascript@nhnent.com>
-	 * @dependency tui-code-snippet ^1.0.2
+	 * @dependency tui-code-snippet ^1.3.0
 	 */
 
 	'use strict';
+
+	var snippet = __webpack_require__(9);
 
 	/**
 	 * Utils
@@ -2324,6 +2332,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return arr;
+	    },
+
+	    /**
+	     * send host name
+	     * @ignore
+	     */
+	    sendHostName: function() {
+	        var hostname = location.hostname;
+	        snippet.imagePing('https://www.google-analytics.com/collect', {
+	            v: 1,
+	            t: 'event',
+	            tid: 'UA-115377265-9',
+	            cid: hostname,
+	            dp: hostname,
+	            dh: 'time-picker'
+	        });
 	    }
 	};
 
