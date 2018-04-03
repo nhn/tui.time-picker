@@ -4,6 +4,7 @@
  */
 'use strict';
 
+var snippet = require('tui-code-snippet');
 var TimePicker = require('../../src/js/timepicker');
 
 describe('TimePicker', function() {
@@ -147,6 +148,31 @@ describe('TimePicker', function() {
 
             expect(timepickerMeridiem._$amEl.html()).toBe('a.m.');
             expect(timepickerMeridiem._$pmEl.html()).toBe('p.m.');
+        });
+    });
+    describe('usageStatistics', function() {
+        var timePicker;
+        it('should send hostname by default', function() {
+            spyOn(snippet, 'imagePing');
+            timePicker = new TimePicker(container1, {
+                showMeridiem: false
+            });
+
+            expect(snippet.imagePing).toHaveBeenCalled();
+        });
+
+        it('should not send hostname on usageStatistics option false', function() {
+            spyOn(snippet, 'imagePing');
+            timePicker = new TimePicker(container1, {
+                showMeridiem: false,
+                usageStatistics: false
+            });
+
+            expect(snippet.imagePing).not.toHaveBeenCalled();
+        });
+
+        afterEach(function() {
+            timePicker.destroy();
         });
     });
 });
