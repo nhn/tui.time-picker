@@ -81,22 +81,25 @@ $ bower install tui-time-picker#<tag> # Specific version
 ### Via Contents Delivery Network (CDN)
 TOAST UI products are available over a CDN powered by [TOAST Cloud](https://www.toast.com).
 
-
-- You can use cdn as below.
+You can use CDN as below.
 
 ```html
 <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
 <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
 ```
 
-- Within the download you'll find the following directories
+If you want to use a specific version, use the tag name instead of `latest` in the url's path.
+
+The CDN directory has the following structure.
 
 ```
 tui.time-picker/
-├─ latest
+├─ latest/
 │  ├─ tui-time-picker.css
 │  ├─ tui-time-picker.js
 │  ├─ tui-time-picker.min.js
+├─ v1.2.0/
+│  ├─ ...
 ```
 
 ### Download Source Files
