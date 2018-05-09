@@ -37,6 +37,7 @@ var mergeDefaultOptions = function(options) {
         hourStep: 1,
         minuteStep: 1,
         meridiemPosition: 'right',
+        format: 'h:m',
         usageStatistics: true
     }, options);
 };
@@ -180,6 +181,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          */
         this._localeText = localeTexts[options.language];
 
+        /**
+         * Time format for output
+         * @type {string}
+         * @private
+         */
+        this._format = this._getValidTimeFormat(options.format);
+
         this._render();
         this._setEvents();
 
@@ -271,6 +279,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var $hourElement = this._$element.find(SELECTOR_HOUR_ELELEMENT);
         var $minuteElement = this._$element.find(SELECTOR_MINUTE_ELELEMENT);
         var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
+        var formatExplode = this._format.split(':');
 
         if (showMeridiem) {
             hour = util.getMeridiemHour(hour);
@@ -278,13 +287,29 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
 
         this._hourInput = new BoxComponent($hourElement, {
             initialValue: hour,
-            items: this._getHourItems()
+            items: this._getHourItems(),
+            format: formatExplode[0]
         });
 
         this._minuteInput = new BoxComponent($minuteElement, {
             initialValue: this._minute,
-            items: this._getMinuteItems()
+            items: this._getMinuteItems(),
+            format: formatExplode[1]
         });
+    },
+
+    /**
+     * Return formatted format.
+     * @param {string} format - format option
+     * @returns {string}
+     * @private
+     */
+    _getValidTimeFormat: function(format) {
+        if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
+            return 'h:m';
+        }
+
+        return format.toLowerCase();
     },
 
     /**
