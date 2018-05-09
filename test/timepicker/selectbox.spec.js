@@ -31,6 +31,30 @@ describe('TimePicker - Selectbox', function() {
         });
     });
 
+    describe('disabledItems', function() {
+        beforeEach(function() {
+            selectbox.destroy();
+            selectbox = new Selectbox($container, {
+                initialValue: 1,
+                items: [1, 2],
+                disabledItems: {
+                    1: 'disabled',
+                    2: ''
+                }
+            });
+        });
+
+        it('Should be applied when disabledItem is marked disabled', function() {
+            var expected = selectbox._$element.find('option[value="1"]').prop('disabled');
+            expect(expected).toBe(true);
+        });
+
+        it('Should not be reflected when disabledItem is not marked as disabled.', function() {
+            var expected = selectbox._$element.find('option[value="2"]').prop('disabled');
+            expect(expected).toBe(false);
+        });
+    });
+
     describe('api', function() {
         it('"getValue" should return value', function() {
             expect(selectbox.getValue()).toBe(4);

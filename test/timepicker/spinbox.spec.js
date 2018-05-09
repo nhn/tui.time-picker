@@ -58,6 +58,37 @@ describe('TimePicker - Spinbox', function() {
         });
     });
 
+    describe('disabledItems', function() {
+        beforeEach(function() {
+            spinbox.destroy();
+            spinbox = new Spinbox($container, {
+                initialValue: 1,
+                items: [1, 2, 3, 4],
+                disabledItems: {
+                    1: '',
+                    2: 'disabled',
+                    3: '',
+                    4: ''
+                }
+            });
+        });
+
+        it('Value of disabledItems should be reflected whenever the value changes.', function() {
+            spinbox.setValue(2);
+            expect(spinbox.getValue()).toBe(1);
+        });
+
+        it('Each time the up control occurs, the disabledItems value should be reflected.', function() {
+            spinbox._setNextValue(false);
+            expect(spinbox.getValue()).toBe(3);
+        });
+
+        it('Each time the down control occurs, the disabledItems value should be reflected.', function() {
+            spinbox._setNextValue(true);
+            expect(spinbox.getValue()).toBe(4);
+        });
+    });
+
     describe('user interaction', function() {
         it('should increase value when click the up-button', function() {
             $container.find('.' + CLASS_NAME_UP_BUTTON).click();

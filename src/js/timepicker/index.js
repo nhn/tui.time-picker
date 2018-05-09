@@ -223,7 +223,6 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             showMeridiem: this._showMeridiem,
             inputType: this._inputType
         };
-        console.log(this._showMeridiem, this._inputType);
 
         if (this._showMeridiem) {
             snippet.extend(context, {
@@ -427,7 +426,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var hourItems = this._getHourItems();
         var disabledItems = this._makeDisabledStatItems(hourItems);
 
-        this._hourInput._setdisabledItems(disabledItems);
+        this._hourInput.setDisabledItems(disabledItems);
     },
 
     /**

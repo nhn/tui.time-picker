@@ -55,6 +55,13 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         this._items = options.items;
 
         /**
+         * Selectbox disabled items info
+         * @type {Array.<number>}
+         * @private
+         */
+        this._disabledItems = options.disabledItems || {};
+
+        /**
          * @type {number}
          * @private
          */
@@ -69,7 +76,12 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _render: function() {
-        var context = {
+        var context;
+
+        if (this._disabledItems[this.getValue()] === 'disabled') {
+            this._selectedIndex = this._findEnabledIndex();
+        }
+        context = {
             maxLength: this._getMaxLength(),
             initialValue: this.getValue()
         };
@@ -77,6 +89,19 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         this._$element = $(tmpl(context));
         this._$element.appendTo(this._$container);
         this._$inputElement = this._$element.find('input');
+    },
+
+    /**
+     * Find the index of the enabled item
+     * @returns {number} - find selected index
+     * @private
+     */
+    _findEnabledIndex: function() {
+        var enabledCandidate = snippet.filter(this._disabledItems, function(item) {
+            return item !== 'disabled';
+        });
+
+        return this._items.indexOf(Number(snippet.keys(enabledCandidate)[0]));
     },
 
     /**
@@ -90,6 +115,16 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         });
 
         return Math.max.apply(null, lengths);
+    },
+
+    /**
+     * Set disabledItems
+     * @param {object} disabledItems - disabled status of items
+     * @private
+     */
+    setDisabledItems: function(disabledItems) {
+        this._disabledItems = disabledItems;
+        this._$inputElement.change();
     },
 
     /**
@@ -122,6 +157,12 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             index = (index < (this._items.length - 1)) ? index + 1 : 0;
         }
 
+        if (this._disabledItems[this._items[index]] === 'disabled') {
+            this._selectedIndex = index;
+            this._setNextValue(isDown);
+
+            return;
+        }
         this.setValue(this._items[index]);
     },
 
@@ -154,8 +195,10 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _onChangeInput: function() {
         var newValue = Number(this._$inputElement.val());
         var newIndex = snippet.inArray(newValue, this._items);
-
-        if (newIndex === this._selectedIndex) {
+        if (this._disabledItems[newValue] === 'disabled') {
+            newIndex = this._findEnabledIndex();
+            newValue = this._items[newIndex];
+        } else if (newIndex === this._selectedIndex) {
             return;
         }
 
