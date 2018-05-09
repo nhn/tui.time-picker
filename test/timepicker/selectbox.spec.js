@@ -15,8 +15,7 @@ describe('TimePicker - Selectbox', function() {
     beforeEach(function() {
         selectbox = new Selectbox($container, {
             initialValue: 4,
-            items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            format: 'hh'
+            items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         });
     });
 
@@ -29,34 +28,6 @@ describe('TimePicker - Selectbox', function() {
             var selectedIndex = selectbox._selectedIndex;
 
             expect(selectedIndex).toEqual(3);
-        });
-
-        it('should be output as zero padded double char when format is a "hh"', function() {
-            var expected;
-
-            selectbox.destroy();
-            selectbox = new Selectbox($container, {
-                initialValue: 4,
-                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                format: 'hh'
-            });
-
-            expected = selectbox._$element.find('option:eq(0)').html();
-            expect(expected).toEqual('01');
-        });
-
-        it('should be output as single char when format is a "h"', function() {
-            var expected;
-
-            selectbox.destroy();
-            selectbox = new Selectbox($container, {
-                initialValue: 4,
-                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                format: 'h'
-            });
-
-            expected = selectbox._$element.find('option:eq(0)').html();
-            expect(expected).toEqual('1');
         });
     });
 

@@ -38,34 +38,6 @@ describe('TimePicker - Spinbox', function() {
             expect($inputEl.attr('size')).toEqual('2');
             expect($inputEl.attr('maxlength')).toEqual('2');
         });
-
-        it('should be output as zero padded double char when format is a "hh"', function() {
-            var expected;
-
-            spinbox.destroy();
-            spinbox = new Spinbox($container, {
-                initialValue: 4,
-                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                format: 'hh'
-            });
-
-            expected = spinbox._$inputElement.val();
-            expect(expected).toEqual('04');
-        });
-
-        it('should be output as single char when format is a "h"', function() {
-            var expected;
-
-            spinbox.destroy();
-            spinbox = new Spinbox($container, {
-                initialValue: 4,
-                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                format: 'h'
-            });
-
-            expected = spinbox._$inputElement.val();
-            expect(expected).toEqual('4');
-        });
     });
 
     describe('api', function() {

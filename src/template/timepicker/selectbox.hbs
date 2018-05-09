@@ -1,9 +1,9 @@
 <select class="tui-timepicker-select" aria-label="Time">
     {{#each items as |item|}}
         {{#if ([../helpers/equals] ../initialValue item)}}
-            <option value="{{item}}" selected>{{[../helpers/timeFormat] item ../format}}</option>
+            <option value="{{item}}" selected>{{item}}</option>
         {{else}}
-            <option value="{{item}}">{{[../helpers/timeFormat] item ../format}}</option>
+            <option value="{{item}}">{{item}}</option>
         {{/if}}
     {{/each}}
 </select>

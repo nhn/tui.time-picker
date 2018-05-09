@@ -46,13 +46,6 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
 
         /**
-         * Time format for output
-         * @type {string}
-         * @private
-         */
-        this._format = options.format;
-
-        /**
          * Element
          * @type {jQuery}
          * @private
@@ -70,8 +63,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     _render: function() {
         var context = {
             items: this._items,
-            initialValue: this.getValue(),
-            format: this._format
+            initialValue: this.getValue()
         };
 
         this._$element.remove();

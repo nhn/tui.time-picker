@@ -10,7 +10,6 @@ var $ = require('jquery');
 var snippet = require('tui-code-snippet');
 
 var tmpl = require('./../../template/timepicker/spinbox.hbs');
-var timeFormat = require('./../../template/helpers/timeFormat');
 
 var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
@@ -61,13 +60,6 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
          */
         this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
 
-        /**
-         * Time format for output
-         * @type {string}
-         * @private
-         */
-        this._format = options.format;
-
         this._render();
         this._setEvents();
     },
@@ -79,8 +71,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _render: function() {
         var context = {
             maxLength: this._getMaxLength(),
-            initialValue: this.getValue(),
-            format: this._format
+            initialValue: this.getValue()
         };
 
         this._$element = $(tmpl(context));
@@ -183,7 +174,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @param {number} value - Value
      */
     setValue: function(value) {
-        this._$inputElement.val(timeFormat(value, this._format)).change();
+        this._$inputElement.val(value).change();
     },
 
     /**
