@@ -39,6 +39,13 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         this._items = options.items || [];
 
         /**
+         * Selectbox disabled items info
+         * @type {Array.<number>}
+         * @private
+         */
+        this._disabledItems = options.disabledItems || {};
+
+        /**
          * Selected index
          * @type {number}
          * @private
@@ -61,14 +68,33 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _render: function() {
-        var context = {
+        var context;
+
+        this._setEnabledIndex();
+        context = {
             items: this._items,
-            initialValue: this.getValue()
+            initialValue: this.getValue(),
+            disabledItems: this._disabledItems
         };
 
         this._$element.remove();
         this._$element = $(tmpl(context));
         this._$element.appendTo(this._$container);
+    },
+
+    _setEnabledIndex: function() {
+        var enabledCandidate;
+        if (this._disabledItems[this.getValue()] === 'disabled') {
+            enabledCandidate = snippet.filter(this._disabledItems, function(item) {
+                return item !== 'disabled';
+            });
+            this._selectedIndex = this._items.indexOf(Number(snippet.keys(enabledCandidate)[0]));
+        }
+    },
+
+    _setdisabledItems: function(disabledItems) {
+        this._disabledItems = disabledItems;
+        this._render();
     },
 
     /**
