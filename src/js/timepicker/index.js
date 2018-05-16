@@ -51,7 +51,8 @@ var mergeDefaultOptions = function(options) {
  * @param {number} [options.hourStep = 1] - Step value of hour
  * @param {number} [options.minuteStep = 1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
- * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
+ * @param {string} [options.format = 'h:m'] - hour, minute format for display
+ * @Param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
  *                 If this option set 'left', the meridiem element is created in front of the hour element.
  * @param {string} [options.language = 'en'] Set locale texts
