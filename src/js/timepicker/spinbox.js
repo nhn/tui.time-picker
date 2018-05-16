@@ -59,7 +59,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
          * @type {Array.<number>}
          * @private
          */
-        this._disabledItems = options.disabledItems || {};
+        this._disabledItems = options.disabledItems || [];
 
         /**
          * @type {number}
@@ -78,7 +78,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _render: function() {
         var context;
 
-        if (this._disabledItems[this.getValue()] === 'disabled') {
+        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
             this._selectedIndex = this._findEnabledIndex();
         }
         context = {
@@ -97,11 +97,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _findEnabledIndex: function() {
-        var enabledCandidate = snippet.filter(this._disabledItems, function(item) {
-            return item !== 'disabled';
-        });
-
-        return this._items.indexOf(Number(snippet.keys(enabledCandidate)[0]));
+        return snippet.inArray(false, this._disabledItems);
     },
 
     /**
@@ -120,7 +116,6 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     /**
      * Set disabledItems
      * @param {object} disabledItems - disabled status of items
-     * @private
      */
     setDisabledItems: function(disabledItems) {
         this._disabledItems = disabledItems;
@@ -157,7 +152,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             index = (index < (this._items.length - 1)) ? index + 1 : 0;
         }
 
-        if (this._disabledItems[this._items[index]] === 'disabled') {
+        if (this._disabledItems[index]) {
             this._selectedIndex = index;
             this._setNextValue(isDown);
 
@@ -195,7 +190,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _onChangeInput: function() {
         var newValue = Number(this._$inputElement.val());
         var newIndex = snippet.inArray(newValue, this._items);
-        if (this._disabledItems[newValue] === 'disabled') {
+        if (this._disabledItems[newIndex]) {
             newIndex = this._findEnabledIndex();
             newValue = this._items[newIndex];
         } else if (newIndex === this._selectedIndex) {

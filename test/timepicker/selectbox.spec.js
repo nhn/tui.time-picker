@@ -37,10 +37,7 @@ describe('TimePicker - Selectbox', function() {
             selectbox = new Selectbox($container, {
                 initialValue: 1,
                 items: [1, 2],
-                disabledItems: {
-                    1: 'disabled',
-                    2: ''
-                }
+                disabledItems: ['disabled', '']
             });
         });
 

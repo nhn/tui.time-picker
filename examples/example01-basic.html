@@ -27,14 +27,16 @@
         <script type="text/javascript" class="code-js">
 
             var tpSelectbox = new tui.TimePicker('#timepicker-selectbox', {
-                initialHour: 1,
+                initialHour: 3,
                 initialMinute: 3,
+                disabledHours: [1, 2, 14],
                 inputType: 'selectbox'
             });
 
             var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
-                initialHour: 22,
+                initialHour: 15,
                 initialMinute: 33,
+                disabledHours: [1, 2, 13, 14],
                 inputType: 'spinbox'
             });
 

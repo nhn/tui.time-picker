@@ -144,8 +144,6 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          */
         this._minuteInput = null;
 
-        this._disabledHours = options.disabledHours;
-
         /**
          * @type {number}
          * @private
@@ -300,27 +298,22 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     },
 
     _makeDisabledStatItems: function(hourItems) {
-        var result = {};
         var disabledHours = this._disabledHours.concat();
 
         if (this._showMeridiem) {
-            disabledHours = this._convertMeridiemableTime(disabledHours);
+            disabledHours = this._meridiemableTime(disabledHours);
         }
 
-        snippet.forEach(hourItems, function(hour) {
-            var disabled = '';
-
+        return snippet.map(hourItems, function(hour) {
             if (disabledHours.indexOf(hour) >= 0) {
-                disabled = 'disabled';
+                return true;
             }
 
-            result[hour] = disabled;
-        }, this);
-
-        return result;
+            return false;
+        });
     },
 
-    _convertMeridiemableTime: function(disabledHours) {
+    _meridiemableTime: function(disabledHours) {
         var diffHour = 0;
         var startHour = 0;
         var endHour = 11;

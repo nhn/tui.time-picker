@@ -64,12 +64,7 @@ describe('TimePicker - Spinbox', function() {
             spinbox = new Spinbox($container, {
                 initialValue: 1,
                 items: [1, 2, 3, 4],
-                disabledItems: {
-                    1: '',
-                    2: 'disabled',
-                    3: '',
-                    4: ''
-                }
+                disabledItems: ['', 'disabled', '', '']
             });
         });
 
