@@ -37,6 +37,7 @@ var mergeDefaultOptions = function(options) {
         hourStep: 1,
         minuteStep: 1,
         meridiemPosition: 'right',
+        format: 'h:m',
         disabledHours: [],
         usageStatistics: true
     }, options);
@@ -51,6 +52,7 @@ var mergeDefaultOptions = function(options) {
  * @param {number} [options.hourStep = 1] - Step value of hour
  * @param {number} [options.minuteStep = 1] - Step value of minute
  * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
+ * @param {string} [options.format = 'h:m'] - hour, minute format for display
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @param {Array} [options.disabledHours = []] - Registered Hours is disabled.
  * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
@@ -188,6 +190,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
          */
         this._localeText = localeTexts[options.language];
 
+        /**
+         * Time format for output
+         * @type {string}
+         * @private
+         */
+        this._format = this._getValidTimeFormat(options.format);
+
         this._render();
         this._setEvents();
 
@@ -279,6 +288,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var $hourElement = this._$element.find(SELECTOR_HOUR_ELELEMENT);
         var $minuteElement = this._$element.find(SELECTOR_MINUTE_ELELEMENT);
         var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
+        var formatExplode = this._format.split(':');
         var hourItems = this._getHourItems();
 
         if (showMeridiem) {
@@ -288,12 +298,14 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._hourInput = new BoxComponent($hourElement, {
             initialValue: hour,
             items: hourItems,
+            format: formatExplode[0],
             disabledItems: this._makeDisabledStatItems(hourItems)
         });
 
         this._minuteInput = new BoxComponent($minuteElement, {
             initialValue: this._minute,
-            items: this._getMinuteItems()
+            items: this._getMinuteItems(),
+            format: formatExplode[1]
         });
     },
 
@@ -336,6 +348,20 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         });
 
         return disabledHours;
+    },
+
+    /**
+     * Return formatted format.
+     * @param {string} format - format option
+     * @returns {string}
+     * @private
+     */
+    _getValidTimeFormat: function(format) {
+        if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
+            return 'h:m';
+        }
+
+        return format.toLowerCase();
     },
 
     /**

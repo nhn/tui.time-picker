@@ -53,6 +53,13 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
 
         /**
+         * Time format for output
+         * @type {string}
+         * @private
+         */
+        this._format = options.format;
+
+        /**
          * Element
          * @type {jQuery}
          * @private
@@ -74,6 +81,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         context = {
             items: this._items,
             initialValue: this.getValue(),
+            format: this._format,
             disabledItems: snippet.map(this._disabledItems, function(item) {
                 if (item) {
                     return 'disabled';
