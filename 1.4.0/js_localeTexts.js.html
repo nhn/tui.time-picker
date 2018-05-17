@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: js/constants.js | TimePicker</title>
+    <title>Source: js/localeTexts.js | TimePicker</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -30,7 +30,7 @@
     <div class="title">
         <h1><a href="index.html" class="link">TimePicker</a></h1>
         
-            <span class="version">v1.1.1</span>
+            <span class="version">v1.4.0</span>
         
     </div>
     <div class="search-container" id="search-container">
@@ -47,7 +47,7 @@
             </li>
         </ol>
     
-    <div class="lnb-examples hidden"><h3>Examples</h3><ul><li><a href="tutorial-example01-basic.html">1. Basic</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example01-basic_sub"></div></li><li><a href="tutorial-example02-using-meridiem.html">2. Using meridiem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example02-using-meridiem_sub"></div></li><li><a href="tutorial-example03-using-step.html">3. Using step</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example03-using-step_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TimePicker.html">TimePicker</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TimePicker_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TimePicker.html#destroy">destroy</a></li><li><a href="TimePicker.html#getHour">getHour</a></li><li><a href="TimePicker.html#getHourStep">getHourStep</a></li><li><a href="TimePicker.html#getMinute">getMinute</a></li><li><a href="TimePicker.html#getMinuteStep">getMinuteStep</a></li><li><a href="TimePicker.html#hide">hide</a></li><li><a href="TimePicker.html#setHour">setHour</a></li><li><a href="TimePicker.html#setHourStep">setHourStep</a></li><li><a href="TimePicker.html#setMinute">setMinute</a></li><li><a href="TimePicker.html#setMinuteStep">setMinuteStep</a></li><li><a href="TimePicker.html#setTime">setTime</a></li><li><a href="TimePicker.html#show">show</a></li></ul><div class="member-type">Events</div><ul class="inner"><li><a href="TimePicker.html#event:change">change</a></li></ul></div></li></ul></div>
+    <div class="lnb-examples hidden"><h3>Examples</h3><ul><li><a href="tutorial-example01-basic.html">1. Basic</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example01-basic_sub"></div></li><li><a href="tutorial-example02-using-meridiem.html">2. Using meridiem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example02-using-meridiem_sub"></div></li><li><a href="tutorial-example03-using-step.html">3. Using step</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example03-using-step_sub"></div></li><li><a href="tutorial-example04-i18n.html">4. Internationalization (i18n)</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="example04-i18n_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TimePicker.html">TimePicker</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TimePicker_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="TimePicker.html#.localeTexts">localeTexts</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="TimePicker.html#changeLanguage">changeLanguage</a></li><li><a href="TimePicker.html#destroy">destroy</a></li><li><a href="TimePicker.html#getHour">getHour</a></li><li><a href="TimePicker.html#getHourStep">getHourStep</a></li><li><a href="TimePicker.html#getMinute">getMinute</a></li><li><a href="TimePicker.html#getMinuteStep">getMinuteStep</a></li><li><a href="TimePicker.html#hide">hide</a></li><li><a href="TimePicker.html#setHour">setHour</a></li><li><a href="TimePicker.html#setHourStep">setHourStep</a></li><li><a href="TimePicker.html#setMinute">setMinute</a></li><li><a href="TimePicker.html#setMinuteStep">setMinuteStep</a></li><li><a href="TimePicker.html#setTime">setTime</a></li><li><a href="TimePicker.html#show">show</a></li></ul><div class="member-type">Events</div><ul class="inner"><li><a href="TimePicker.html#event:change">change</a></li></ul></div></li></ul></div>
 </nav>
 <div id="resizer"></div>
 
@@ -60,30 +60,21 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @fileoverview Constants of date-picker
+ * @fileoverview Default locale texts
  * @author NHN Ent. FE Development Lab &lt;dl_javascript@nhnent.com>
  */
 
 'use strict';
 
 module.exports = {
-    TYPE_DATE: 'date',
-    TYPE_MONTH: 'month',
-    TYPE_YEAR: 'year',
-    TYPE_HOUR: 'hour',
-    TYPE_MINUTE: 'minute',
-    TYPE_MERIDIEM: 'meridiem',
-    MIN_DATE: new Date(1900, 0, 1),
-    MAX_DATE: new Date(2999, 11, 31),
-
-    DEFAULT_LANGUAGE_TYPE: 'en',
-
-    CLASS_NAME_SELECTED: 'tui-is-selected',
-
-    CLASS_NAME_PREV_MONTH_BTN: 'tui-calendar-btn-prev-month',
-    CLASS_NAME_PREV_YEAR_BTN: 'tui-calendar-btn-prev-year',
-    CLASS_NAME_NEXT_YEAR_BTN: 'tui-calendar-btn-next-year',
-    CLASS_NAME_NEXT_MONTH_BTN: 'tui-calendar-btn-next-month'
+    en: {
+        am: 'AM',
+        pm: 'PM'
+    },
+    ko: {
+        am: '오전',
+        pm: '오후'
+    }
 };
 </code></pre>
         </article>
