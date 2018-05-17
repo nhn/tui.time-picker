@@ -38,6 +38,34 @@ describe('TimePicker - Spinbox', function() {
             expect($inputEl.attr('size')).toEqual('2');
             expect($inputEl.attr('maxlength')).toEqual('2');
         });
+
+        it('should be output as zero padded double char when format is a "hh"', function() {
+            var expected;
+
+            spinbox.destroy();
+            spinbox = new Spinbox($container, {
+                initialValue: 4,
+                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                format: 'hh'
+            });
+
+            expected = spinbox._$inputElement.val();
+            expect(expected).toEqual('04');
+        });
+
+        it('should be output as single char when format is a "h"', function() {
+            var expected;
+
+            spinbox.destroy();
+            spinbox = new Spinbox($container, {
+                initialValue: 4,
+                items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                format: 'h'
+            });
+
+            expected = spinbox._$inputElement.val();
+            expect(expected).toEqual('4');
+        });
     });
 
     describe('api', function() {
@@ -54,6 +82,32 @@ describe('TimePicker - Spinbox', function() {
         it('"setValue" should not change if the value is invalid', function() {
             spinbox.setValue(11111111);
             expect(spinbox._$inputElement.val()).toBe('4');
+            expect(spinbox.getValue()).toBe(4);
+        });
+    });
+
+    describe('disabledItems', function() {
+        beforeEach(function() {
+            spinbox.destroy();
+            spinbox = new Spinbox($container, {
+                initialValue: 1,
+                items: [1, 2, 3, 4],
+                disabledItems: ['', 'disabled', '', '']
+            });
+        });
+
+        it('Value of disabledItems should be reflected whenever the value changes.', function() {
+            spinbox.setValue(2);
+            expect(spinbox.getValue()).toBe(1);
+        });
+
+        it('Each time the up control occurs, the disabledItems value should be reflected.', function() {
+            spinbox._setNextValue(false);
+            expect(spinbox.getValue()).toBe(3);
+        });
+
+        it('Each time the down control occurs, the disabledItems value should be reflected.', function() {
+            spinbox._setNextValue(true);
             expect(spinbox.getValue()).toBe(4);
         });
     });
