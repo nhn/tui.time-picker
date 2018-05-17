@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.3.0
+ * @version 1.4.0
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -99,11 +99,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var snippet = __webpack_require__(9);
 
 	var Spinbox = __webpack_require__(10);
-	var Selectbox = __webpack_require__(31);
-	var util = __webpack_require__(34);
-	var localeTexts = __webpack_require__(35);
-	var tmpl = __webpack_require__(36);
-	var meridiemTemplate = __webpack_require__(37);
+	var Selectbox = __webpack_require__(32);
+	var util = __webpack_require__(35);
+	var localeTexts = __webpack_require__(36);
+	var tmpl = __webpack_require__(37);
+	var meridiemTemplate = __webpack_require__(38);
 
 	var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
 	var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
@@ -126,6 +126,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        hourStep: 1,
 	        minuteStep: 1,
 	        meridiemPosition: 'right',
+	        format: 'h:m',
+	        disabledHours: [],
 	        usageStatistics: true
 	    }, options);
 	};
@@ -139,7 +141,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} [options.hourStep = 1] - Step value of hour
 	 * @param {number} [options.minuteStep = 1] - Step value of minute
 	 * @param {string} [options.inputType = 'selectbox'] - 'selectbox' or 'spinbox'
+	 * @param {string} [options.format = 'h:m'] - hour, minute format for display
 	 * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
+	 * @param {Array} [options.disabledHours = []] - Registered Hours is disabled.
 	 * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
 	 *                 If this option set 'left', the meridiem element is created in front of the hour element.
 	 * @param {string} [options.language = 'en'] Set locale texts
@@ -256,6 +260,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._minuteStep = options.minuteStep;
 
 	        /**
+	         * @type {Array}
+	         * @private
+	         */
+	        this._disabledHours = options.disabledHours;
+
+	        /**
 	         * TimePicker inputType
 	         * @type {'spinbox'|'selectbox'}
 	         * @private
@@ -268,6 +278,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        this._localeText = localeTexts[options.language];
+
+	        /**
+	         * Time format for output
+	         * @type {string}
+	         * @private
+	         */
+	        this._format = this._getValidTimeFormat(options.format);
 
 	        this._render();
 	        this._setEvents();
@@ -360,6 +377,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var $hourElement = this._$element.find(SELECTOR_HOUR_ELELEMENT);
 	        var $minuteElement = this._$element.find(SELECTOR_MINUTE_ELELEMENT);
 	        var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
+	        var formatExplode = this._format.split(':');
+	        var hourItems = this._getHourItems();
 
 	        if (showMeridiem) {
 	            hour = util.getMeridiemHour(hour);
@@ -367,13 +386,71 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._hourInput = new BoxComponent($hourElement, {
 	            initialValue: hour,
-	            items: this._getHourItems()
+	            items: hourItems,
+	            format: formatExplode[0],
+	            disabledItems: this._makeDisabledStatItems(hourItems)
 	        });
 
 	        this._minuteInput = new BoxComponent($minuteElement, {
 	            initialValue: this._minute,
-	            items: this._getMinuteItems()
+	            items: this._getMinuteItems(),
+	            format: formatExplode[1]
 	        });
+	    },
+
+	    _makeDisabledStatItems: function(hourItems) {
+	        var disabledHours = this._disabledHours.concat();
+
+	        if (this._showMeridiem) {
+	            disabledHours = this._meridiemableTime(disabledHours);
+	        }
+
+	        return snippet.map(hourItems, function(hour) {
+	            if (disabledHours.indexOf(hour) >= 0) {
+	                return true;
+	            }
+
+	            return false;
+	        });
+	    },
+
+	    _meridiemableTime: function(disabledHours) {
+	        var diffHour = 0;
+	        var startHour = 0;
+	        var endHour = 11;
+
+	        if (this._hour >= 12) {
+	            diffHour = 12;
+	            startHour = 12;
+	            endHour = 23;
+	        }
+
+	        disabledHours = snippet.map(disabledHours, function(hour) {
+	            if (hour >= startHour && hour <= endHour) {
+	                return (hour - diffHour === 0) ? 12 : hour - diffHour;
+	            }
+
+	            return false;
+	        });
+	        disabledHours = snippet.filter(disabledHours, function(hour) {
+	            return hour;
+	        });
+
+	        return disabledHours;
+	    },
+
+	    /**
+	     * Return formatted format.
+	     * @param {string} format - format option
+	     * @returns {string}
+	     * @private
+	     */
+	    _getValidTimeFormat: function(format) {
+	        if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
+	            return 'h:m';
+	        }
+
+	        return format.toLowerCase();
 	    },
 
 	    /**
@@ -420,6 +497,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        hour = this._to24Hour(isPM, hour);
 	        this.setTime(hour, this._minute);
+	        this._setDisabledHours();
 	    },
 
 	    /**
@@ -451,6 +529,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return hour;
+	    },
+
+	    _setDisabledHours: function() {
+	        var hourItems = this._getHourItems();
+	        var disabledItems = this._makeDisabledStatItems(hourItems);
+
+	        this._hourInput.setDisabledItems(disabledItems);
 	    },
 
 	    /**
@@ -669,6 +754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var snippet = __webpack_require__(9);
 
 	var tmpl = __webpack_require__(11);
+	var timeFormat = __webpack_require__(31);
 
 	var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 	var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
@@ -714,10 +800,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._items = options.items;
 
 	        /**
+	         * Selectbox disabled items info
+	         * @type {Array.<number>}
+	         * @private
+	         */
+	        this._disabledItems = options.disabledItems || [];
+
+	        /**
 	         * @type {number}
 	         * @private
 	         */
 	        this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
+
+	        /**
+	         * Time format for output
+	         * @type {string}
+	         * @private
+	         */
+	        this._format = options.format;
 
 	        this._render();
 	        this._setEvents();
@@ -728,14 +828,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _render: function() {
-	        var context = {
+	        var context;
+
+	        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+	            this._selectedIndex = this._findEnabledIndex();
+	        }
+	        context = {
 	            maxLength: this._getMaxLength(),
-	            initialValue: this.getValue()
+	            initialValue: this.getValue(),
+	            format: this._format
 	        };
 
 	        this._$element = $(tmpl(context));
 	        this._$element.appendTo(this._$container);
 	        this._$inputElement = this._$element.find('input');
+	    },
+
+	    /**
+	     * Find the index of the enabled item
+	     * @returns {number} - find selected index
+	     * @private
+	     */
+	    _findEnabledIndex: function() {
+	        return snippet.inArray(false, this._disabledItems);
 	    },
 
 	    /**
@@ -749,6 +864,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        return Math.max.apply(null, lengths);
+	    },
+
+	    /**
+	     * Set disabledItems
+	     * @param {object} disabledItems - disabled status of items
+	     */
+	    setDisabledItems: function(disabledItems) {
+	        this._disabledItems = disabledItems;
+	        this._$inputElement.change();
 	    },
 
 	    /**
@@ -781,6 +905,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            index = (index < (this._items.length - 1)) ? index + 1 : 0;
 	        }
 
+	        if (this._disabledItems[index]) {
+	            this._selectedIndex = index;
+	            this._setNextValue(isDown);
+
+	            return;
+	        }
 	        this.setValue(this._items[index]);
 	    },
 
@@ -813,8 +943,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _onChangeInput: function() {
 	        var newValue = Number(this._$inputElement.val());
 	        var newIndex = snippet.inArray(newValue, this._items);
-
-	        if (newIndex === this._selectedIndex) {
+	        if (this._disabledItems[newIndex]) {
+	            newIndex = this._findEnabledIndex();
+	            newValue = this._items[newIndex];
+	        } else if (newIndex === this._selectedIndex) {
 	            return;
 	        }
 
@@ -833,7 +965,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {number} value - Value
 	     */
 	    setValue: function(value) {
-	        this._$inputElement.val(value).change();
+	        this._$inputElement.val(timeFormat(value, this._format)).change();
 	    },
 
 	    /**
@@ -871,14 +1003,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Handlebars = __webpack_require__(12);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+	    var alias1=container.lambda, alias2=container.escapeExpression;
 
 	  return "<div class=\"tui-timepicker-btn-area\">\n    <input type=\"text\" class=\"tui-timepicker-spinbox-input\"\n           maxlength=\""
-	    + alias4(((helper = (helper = helpers.maxLength || (depth0 != null ? depth0.maxLength : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxLength","hash":{},"data":data}) : helper)))
+	    + alias2(alias1((depth0 != null ? depth0.maxLength : depth0), depth0))
 	    + "\"\n           size=\""
-	    + alias4(((helper = (helper = helpers.maxLength || (depth0 != null ? depth0.maxLength : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxLength","hash":{},"data":data}) : helper)))
+	    + alias2(alias1((depth0 != null ? depth0.maxLength : depth0), depth0))
 	    + "\"\n           value=\""
-	    + alias4(((helper = (helper = helpers.initialValue || (depth0 != null ? depth0.initialValue : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"initialValue","hash":{},"data":data}) : helper)))
+	    + alias2(__default(__webpack_require__(31)).call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.initialValue : depth0),(depth0 != null ? depth0.format : depth0),{"name":"../helpers/timeFormat","hash":{},"data":data}))
 	    + "\"\n           aria-label=\"TimePicker spinbox value\">\n    <button type=\"button\" class=\"tui-timepicker-btn tui-timepicker-btn-up\">\n        <span class=\"tui-ico-t-btn\">Increase</span>\n    </button>\n    <button type=\"button\" class=\"tui-timepicker-btn tui-timepicker-btn-down\">\n        <span class=\"tui-ico-t-btn\">Decrease</span>\n    </button>\n</div>\n";
 	},"useData":true});
 
@@ -2075,6 +2207,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 31 */
+/***/ (function(module, exports) {
+
+	/**
+	 * @fileoverview Handlebars helper - Equals
+	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 */
+
+	'use strict';
+
+	var PADDING_ZERO_TYPES = ['hh', 'mm'];
+
+	/**
+	 * @param {number} value time or minute
+	 * @param {string} format - timeFormat
+	 * @returns {boolean}
+	 */
+	module.exports = function(value, format) {
+	    value = String(value);
+
+	    return (PADDING_ZERO_TYPES.indexOf(format) >= 0 && value.length === 1) ? '0' + value : value;
+	};
+
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -2087,7 +2244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $ = __webpack_require__(8);
 	var snippet = __webpack_require__(9);
 
-	var tmpl = __webpack_require__(32);
+	var tmpl = __webpack_require__(33);
 
 	/**
 	 * @class
@@ -2118,11 +2275,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._items = options.items || [];
 
 	        /**
+	         * Selectbox disabled items info
+	         * @type {Array.<number>}
+	         * @private
+	         */
+	        this._disabledItems = options.disabledItems || [];
+
+	        /**
 	         * Selected index
 	         * @type {number}
 	         * @private
 	         */
 	        this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
+
+	        /**
+	         * Time format for output
+	         * @type {string}
+	         * @private
+	         */
+	        this._format = options.format;
 
 	        /**
 	         * Element
@@ -2140,14 +2311,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _render: function() {
-	        var context = {
+	        var context;
+
+	        this._changeEnabledIndex();
+	        context = {
 	            items: this._items,
-	            initialValue: this.getValue()
+	            initialValue: this.getValue(),
+	            format: this._format,
+	            disabledItems: snippet.map(this._disabledItems, function(item) {
+	                if (item) {
+	                    return 'disabled';
+	                }
+
+	                return '';
+	            })
 	        };
 
 	        this._$element.remove();
 	        this._$element = $(tmpl(context));
 	        this._$element.appendTo(this._$container);
+	    },
+
+	    /**
+	     * Change the index of the enabled item
+	     * @private
+	     */
+	    _changeEnabledIndex: function() {
+	        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+	            this._selectedIndex = snippet.inArray(false, this._disabledItems);
+	        }
+	    },
+
+	    /**
+	     * Set disabledItems
+	     * @param {object} disabledItems - disabled status of items
+	     * @private
+	     */
+	    setDisabledItems: function(disabledItems) {
+	        this._disabledItems = disabledItems;
+	        this._render();
 	    },
 
 	    /**
@@ -2219,7 +2421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(12);
@@ -2227,22 +2429,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
-	  return ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depths[1] != null ? depths[1].initialValue : depths[1]),blockParams[0][0],{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
-	},"2":function(container,depth0,helpers,partials,data,blockParams) {
-	    var alias1=container.lambda, alias2=container.escapeExpression;
+	  return ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depths[1] != null ? depths[1].initialValue : depths[1]),blockParams[0][0],{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	},"2":function(container,depth0,helpers,partials,data,blockParams,depths) {
+	    var alias1=container.escapeExpression, alias2=depth0 != null ? depth0 : {};
 
 	  return "            <option value=\""
-	    + alias2(alias1(blockParams[1][0], depth0))
-	    + "\" selected>"
-	    + alias2(alias1(blockParams[1][0], depth0))
+	    + alias1(container.lambda(blockParams[1][0], depth0))
+	    + "\" selected "
+	    + alias1(helpers.lookup.call(alias2,(depths[1] != null ? depths[1].disabledItems : depths[1]),(data && data.index),{"name":"lookup","hash":{},"data":data,"blockParams":blockParams}))
+	    + ">"
+	    + alias1(__default(__webpack_require__(31)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
 	    + "</option>\n";
-	},"4":function(container,depth0,helpers,partials,data,blockParams) {
-	    var alias1=container.lambda, alias2=container.escapeExpression;
+	},"4":function(container,depth0,helpers,partials,data,blockParams,depths) {
+	    var alias1=container.escapeExpression, alias2=depth0 != null ? depth0 : {};
 
 	  return "            <option value=\""
-	    + alias2(alias1(blockParams[1][0], depth0))
-	    + "\">"
-	    + alias2(alias1(blockParams[1][0], depth0))
+	    + alias1(container.lambda(blockParams[1][0], depth0))
+	    + "\" "
+	    + alias1(helpers.lookup.call(alias2,(depths[1] != null ? depths[1].disabledItems : depths[1]),(data && data.index),{"name":"lookup","hash":{},"data":data,"blockParams":blockParams}))
+	    + ">"
+	    + alias1(__default(__webpack_require__(31)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
 	    + "</option>\n";
 	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var stack1;
@@ -2253,7 +2459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	},"useData":true,"useDepths":true,"useBlockParams":true});
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2274,7 +2480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -2355,7 +2561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2378,7 +2584,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(12);
@@ -2403,12 +2609,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
 	  return "<div class=\"tui-timepicker\">\n    <div class=\"tui-timepicker-body\">\n        <div class=\"tui-timepicker-row\">\n"
-	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data}),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data}),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
 	    + "        </div>\n    </div>\n</div>\n";
 	},"useData":true});
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(12);
@@ -2416,7 +2622,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data,blockParams) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
-	  return ((stack1 = helpers["with"].call(alias1,__default(__webpack_require__(38)).call(alias1,{"name":"../helpers/uniqueId","hash":{},"data":data,"blockParams":blockParams}),{"name":"with","hash":{},"fn":container.program(2, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	  return ((stack1 = helpers["with"].call(alias1,__default(__webpack_require__(39)).call(alias1,{"name":"../helpers/uniqueId","hash":{},"data":data,"blockParams":blockParams}),{"name":"with","hash":{},"fn":container.program(2, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams})) != null ? stack1 : "");
 	},"2":function(container,depth0,helpers,partials,data,blockParams) {
 	    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
 
@@ -2449,11 +2655,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
 	  return "\n"
-	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(33)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
 	},"useData":true,"useBlockParams":true});
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 	/**
