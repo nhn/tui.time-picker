@@ -5,15 +5,16 @@
 'use strict';
 
 var snippet = require('tui-code-snippet');
-var TimePicker = require('../../src/js/timepicker');
+var TimePicker = require('../../src/js/timepicker/index');
+var $ = require('jquery');
 
 describe('TimePicker', function() {
-    var container1 = document.createElement('div');
-    var container2 = document.createElement('div');
-    var timepickerNoMeridiem;
-    var timepickerMeridiem;
+    var container1, container2;
+    var timepickerNoMeridiem, timepickerMeridiem;
 
     beforeEach(function() {
+        container1 = document.createElement('DIV');
+        container2 = document.createElement('DIV');
         timepickerNoMeridiem = new TimePicker(container1, {
             showMeridiem: false
         });
@@ -26,6 +27,8 @@ describe('TimePicker', function() {
     afterEach(function() {
         timepickerNoMeridiem.destroy();
         timepickerMeridiem.destroy();
+        container1 = null;
+        container2 = null;
     });
 
     describe('constructor', function() {
@@ -45,8 +48,8 @@ describe('TimePicker', function() {
         });
 
         it('should set meridiem if "showMeridiem" is ture', function() {
-            expect(timepickerNoMeridiem._$meridiemElement.length).toBe(0);
-            expect(timepickerMeridiem._$meridiemElement.length).toBe(1);
+            expect(timepickerNoMeridiem._meridiemElement).toBeNull();
+            expect(timepickerMeridiem._meridiemElement).not.toBeNull();
         });
     });
 
@@ -135,8 +138,8 @@ describe('TimePicker', function() {
                 language: 'ko'
             });
 
-            expect(timepickerMeridiem._$amEl.html()).toBe('오전');
-            expect(timepickerMeridiem._$pmEl.html()).toBe('오후');
+            expect(timepickerMeridiem._amEl.innerText.trim()).toBe('오전');
+            expect(timepickerMeridiem._pmEl.innerText.trim()).toBe('오후');
         });
 
         it('using "changeLanguage" method.', function() {
@@ -146,15 +149,24 @@ describe('TimePicker', function() {
             };
             timepickerMeridiem.changeLanguage('customKey');
 
-            expect(timepickerMeridiem._$amEl.html()).toBe('a.m.');
-            expect(timepickerMeridiem._$pmEl.html()).toBe('p.m.');
+            expect(timepickerMeridiem._amEl.innerText.trim()).toBe('a.m.');
+            expect(timepickerMeridiem._pmEl.innerText.trim()).toBe('p.m.');
         });
     });
     describe('usageStatistics', function() {
-        var timePicker;
+        var timePicker, container;
+
+        beforeEach(function() {
+            container = document.createElement('DIV');
+        });
+
+        afterEach(function() {
+            timePicker.destroy();
+        });
+
         it('should send hostname by default', function() {
             spyOn(snippet, 'imagePing');
-            timePicker = new TimePicker(container1, {
+            timePicker = new TimePicker(container, {
                 showMeridiem: false
             });
 
@@ -163,16 +175,48 @@ describe('TimePicker', function() {
 
         it('should not send hostname on usageStatistics option false', function() {
             spyOn(snippet, 'imagePing');
-            timePicker = new TimePicker(container1, {
+            timePicker = new TimePicker(container, {
                 showMeridiem: false,
                 usageStatistics: false
             });
 
             expect(snippet.imagePing).not.toHaveBeenCalled();
         });
+    });
+
+    describe('_getContainer()', function() {
+        var htmlElement = typeof HTMLElement !== 'undefined' ? HTMLElement : Element;
+        var body, element;
+
+        beforeEach(function() {
+            body = document.querySelectorAll('body')[0];
+            element = document.createElement('DIV');
+            element.innerHTML = '<div id="calendar"></div>';
+            body.appendChild(element);
+        });
 
         afterEach(function() {
-            timePicker.destroy();
+            body.removeChild(element);
+        });
+
+        it('should return HTMLElement when it is jQuery', function() {
+            var container = TimePicker.prototype._getContainer($('#calendar'));
+            expect(container instanceof htmlElement).toBe(true);
+        });
+
+        it('should return HTMLElement when it is selector string', function() {
+            var container = TimePicker.prototype._getContainer('#calendar');
+            expect(container instanceof htmlElement).toBe(true);
+        });
+
+        it('should return HTMLElement if it is typeof HTMLElement', function() {
+            var container = TimePicker.prototype._getContainer(element.childNodes[0]);
+            expect(container instanceof htmlElement).toBe(true);
+        });
+
+        it('should throw error if return value is null', function() {
+            var container = TimePicker.prototype._getContainer();
+            expect(container).toBeNull();
         });
     });
 });

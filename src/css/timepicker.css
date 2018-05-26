@@ -5,6 +5,10 @@
     box-sizing: border-box;
 }
 
+.tui-timepicker.hide {
+    display: none;
+}
+
 .tui-timepicker button {
     border-radius: 0;
 }

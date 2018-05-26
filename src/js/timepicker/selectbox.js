@@ -5,45 +5,49 @@
 
 'use strict';
 
-var $ = require('jquery');
 var snippet = require('tui-code-snippet');
+var domUtil = require('tui-dom');
+
+var eventUtil = require('../../js/util/eventUtil');
 
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
-
 /**
  * @class
  * @ignore
- * @param {jQuery|string|Element} container - Container element
- * @param {object} options - Options
- * @param {Array.<number>} options.items - Items
- * @param {number} options.initialValue - Initial value
+ * @param {HTMLElement} container - Container element
+ * @param {Object} [options] - Options for initialization
+ * @param {number} [options.initialValue] - initial setting value
+ * @param {Array.<number>} [options.items] - numbers that spinbox can display, if a number is disabled the number will not displayed
+ * @param {Array.<boolean>} [options.disabledItems] - true if it is disabled, false if it is enabled
+ * @param {string} [options.format] - format to display numbers of spinbox
  */
 var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     init: function(container, options) {
         options = snippet.extend({
-            items: []
+            items: [],
+            disabledItems: []
         }, options);
 
         /**
          * Container element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$container = $(container);
+        this._container = container;
 
         /**
          * Selectbox items
          * @type {Array.<number>}
          * @private
          */
-        this._items = options.items || [];
+        this._items = options.items;
 
         /**
          * Selectbox disabled items info
-         * @type {Array.<number>}
+         * @type {Array.<boolean>}
          * @private
          */
-        this._disabledItems = options.disabledItems || [];
+        this._disabledItems = options.disabledItems;
 
         /**
          * Selected index
@@ -61,10 +65,10 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
         /**
          * Element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$element = $();
+        this._element = null;
 
         this._render();
         this._setEvents();
@@ -82,18 +86,11 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
             items: this._items,
             initialValue: this.getValue(),
             format: this._format,
-            disabledItems: snippet.map(this._disabledItems, function(item) {
-                if (item) {
-                    return 'disabled';
-                }
-
-                return '';
-            })
+            disabledItems: this._disabledItems
         };
 
-        this._$element.remove();
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
+        this._container.innerHTML = tmpl(context);
+        this._element = this._container.getElementsByTagName('SELECT')[0];
     },
 
     /**
@@ -101,7 +98,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _changeEnabledIndex: function() {
-        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+        if (this._disabledItems[snippet.inArray(this.getValue(), this._items)]) {
             this._selectedIndex = snippet.inArray(false, this._disabledItems);
         }
     },
@@ -114,6 +111,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     setDisabledItems: function(disabledItems) {
         this._disabledItems = disabledItems;
         this._render();
+        this._setEvents();
     },
 
     /**
@@ -121,7 +119,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
+        domUtil.on(this._element, 'change', this._onChange, this);
         this.on('changeItems', function(items) {
             this._items = items;
             this._render();
@@ -134,7 +132,8 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _onChange: function(ev) {
-        var newValue = Number(ev.target.value);
+        var target = ev.target || ev.srcElement;
+        var newValue = parseInt(target.value, 10);
 
         this._selectedIndex = snippet.inArray(newValue, this._items);
         this.fire('change', {
@@ -159,7 +158,8 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
         if (newIndex > -1 && newIndex !== this._selectedIndex) {
             this._selectedIndex = newIndex;
-            this._$element.val(value).change();
+            this._element.value = value;
+            eventUtil.dispatchEvent(this._element, eventUtil.createEvent('change'));
         }
     },
 
@@ -168,14 +168,13 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      */
     destroy: function() {
         this.off();
-        this._$container.off('.selectbox');
-        this._$element.remove();
+        domUtil.off(this._element, 'change', this._onChange);
+        this._container.removeChild(this._element);
 
-        this._$container
+        this._container
             = this._items
             = this._selectedIndex
-            = this._$element
-            = this._$element
+            = this._element
             = null;
     }
 });

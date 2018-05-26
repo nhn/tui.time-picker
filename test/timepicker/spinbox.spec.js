@@ -4,24 +4,21 @@
  */
 'use strict';
 
-var $ = require('jquery');
-
 var Spinbox = require('../../src/js/timepicker/spinbox');
+var eventUtil = require('../../src/js/util/eventUtil');
 
 /**
  * Class names
  * @see Spinbox
  */
-var CLASS_NAME_UP_BUTTON = 'tui-timepicker-btn-up';
-var CLASS_NAME_DOWN_BUTTON = 'tui-timepicker-btn-down';
 
 /* eslint-disable new-cap */
 describe('TimePicker - Spinbox', function() {
-    var $container = $('<div></div>');
+    var container = document.createElement('DIV');
     var spinbox;
 
     beforeEach(function() {
-        spinbox = new Spinbox($container, {
+        spinbox = new Spinbox(container, {
             initialValue: 4,
             items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         });
@@ -33,38 +30,32 @@ describe('TimePicker - Spinbox', function() {
 
     describe('initialization', function() {
         it('should set input attr - size, maxlength', function() {
-            var $inputEl = spinbox._$inputElement;
+            var inputElement = spinbox._inputElement;
 
-            expect($inputEl.attr('size')).toEqual('2');
-            expect($inputEl.attr('maxlength')).toEqual('2');
+            expect(inputElement.getAttribute('size')).toEqual('2');
+            expect(inputElement.getAttribute('maxlength')).toEqual('2');
         });
 
         it('should be output as zero padded double char when format is a "hh"', function() {
-            var expected;
-
             spinbox.destroy();
-            spinbox = new Spinbox($container, {
+            spinbox = new Spinbox(container, {
                 initialValue: 4,
                 items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 format: 'hh'
             });
 
-            expected = spinbox._$inputElement.val();
-            expect(expected).toEqual('04');
+            expect(spinbox._inputElement.value).toEqual('04');
         });
 
         it('should be output as single char when format is a "h"', function() {
-            var expected;
-
             spinbox.destroy();
-            spinbox = new Spinbox($container, {
+            spinbox = new Spinbox(container, {
                 initialValue: 4,
                 items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 format: 'h'
             });
 
-            expected = spinbox._$inputElement.val();
-            expect(expected).toEqual('4');
+            expect(spinbox._inputElement.value).toEqual('4');
         });
     });
 
@@ -75,13 +66,13 @@ describe('TimePicker - Spinbox', function() {
 
         it('"setValue" should set value to input', function() {
             spinbox.setValue(8);
-            expect(spinbox._$inputElement.val()).toBe('8');
+            expect(spinbox._inputElement.value).toBe('8');
             expect(spinbox.getValue()).toBe(8);
         });
 
         it('"setValue" should not change if the value is invalid', function() {
             spinbox.setValue(11111111);
-            expect(spinbox._$inputElement.val()).toBe('4');
+            expect(spinbox._inputElement.value).toBe('4');
             expect(spinbox.getValue()).toBe(4);
         });
     });
@@ -89,10 +80,10 @@ describe('TimePicker - Spinbox', function() {
     describe('disabledItems', function() {
         beforeEach(function() {
             spinbox.destroy();
-            spinbox = new Spinbox($container, {
+            spinbox = new Spinbox(container, {
                 initialValue: 1,
                 items: [1, 2, 3, 4],
-                disabledItems: ['', 'disabled', '', '']
+                disabledItems: [false, true, false, false]
             });
         });
 
@@ -114,45 +105,45 @@ describe('TimePicker - Spinbox', function() {
 
     describe('user interaction', function() {
         it('should increase value when click the up-button', function() {
-            $container.find('.' + CLASS_NAME_UP_BUTTON).click();
+            eventUtil.dispatchEvent(spinbox._upButton, eventUtil.createEvent('click'));
 
             expect(spinbox.getValue()).toEqual(5);
         });
 
         it('should decrease value when click the down-button', function() {
-            $container.find('.' + CLASS_NAME_DOWN_BUTTON).click();
+            eventUtil.dispatchEvent(spinbox._downButton, eventUtil.createEvent('click'));
 
             expect(spinbox.getValue()).toEqual(3);
         });
 
         it('should set max if next value is lower than min', function() {
             spinbox.setValue(1);
-            $container.find('.' + CLASS_NAME_DOWN_BUTTON).click();
+            eventUtil.dispatchEvent(spinbox._downButton, eventUtil.createEvent('click'));
 
             expect(spinbox.getValue()).toEqual(10);
         });
 
         it('should set min if next value is upper than max', function() {
             spinbox.setValue(10);
-            $container.find('.' + CLASS_NAME_UP_BUTTON).click();
+            eventUtil.dispatchEvent(spinbox._upButton, eventUtil.createEvent('click'));
 
             expect(spinbox.getValue()).toEqual(1);
         });
 
         it('should increase value when the up-arrow key key-down', function() {
-            var ev = $.Event('keydown');
+            var ev = eventUtil.createEvent('keydown');
 
             ev.which = 38; // up-arrow;
-            spinbox._$inputElement.trigger(ev);
+            eventUtil.dispatchEvent(spinbox._inputElement, ev);
 
             expect(spinbox.getValue()).toEqual(5);
         });
 
         it('should decrease value when the down-arrow key-down', function() {
-            var ev = $.Event('keydown');
+            var ev = eventUtil.createEvent('keydown');
 
             ev.which = 40; // down-arrow;
-            spinbox._$inputElement.trigger(ev);
+            eventUtil.dispatchEvent(spinbox._inputElement, ev);
 
             expect(spinbox.getValue()).toEqual(3);
         });
@@ -170,19 +161,19 @@ describe('TimePicker - Spinbox', function() {
         });
 
         it('should fire change event from key-down', function() {
-            var ev = $.Event('keydown');
+            var ev = eventUtil.createEvent('keydown');
             var spy = jasmine.createSpy();
             spinbox.on('change', spy);
 
             ev.which = 40; // down-arrow;
-            spinbox._$inputElement.trigger(ev);
+            eventUtil.dispatchEvent(spinbox._inputElement, ev);
 
             expect(spy).toHaveBeenCalledWith({
                 value: 3
             });
 
             ev.which = 38; // up-arrow;
-            spinbox._$inputElement.trigger(ev);
+            eventUtil.dispatchEvent(spinbox._inputElement, ev);
             expect(spy).toHaveBeenCalledWith({
                 value: 4
             });
