@@ -1,6 +1,6 @@
 /*!
  * tui-time-picker.js
- * @version 1.4.0
+ * @version 1.5.0
  * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
  * @license MIT
  */
@@ -2545,15 +2545,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @ignore
 	     */
 	    sendHostName: function() {
-	        var hostname = location.hostname;
-	        snippet.imagePing('https://www.google-analytics.com/collect', {
-	            v: 1,
-	            t: 'event',
-	            tid: 'UA-115377265-9',
-	            cid: hostname,
-	            dp: hostname,
-	            dh: 'time-picker'
-	        });
+	        snippet.sendHostname('time-picker', 'UA-129987462-1');
 	    }
 	};
 
