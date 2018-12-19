@@ -152,23 +152,25 @@ describe('TimePicker', function() {
     });
     describe('usageStatistics', function() {
         var timePicker;
+        beforeEach(function() {
+            spyOn(snippet, 'sendHostname');
+        });
+
         it('should send hostname by default', function() {
-            spyOn(snippet, 'imagePing');
             timePicker = new TimePicker(container1, {
                 showMeridiem: false
             });
 
-            expect(snippet.imagePing).toHaveBeenCalled();
+            expect(snippet.sendHostname).toHaveBeenCalled();
         });
 
         it('should not send hostname on usageStatistics option false', function() {
-            spyOn(snippet, 'imagePing');
             timePicker = new TimePicker(container1, {
                 showMeridiem: false,
                 usageStatistics: false
             });
 
-            expect(snippet.imagePing).not.toHaveBeenCalled();
+            expect(snippet.sendHostname).not.toHaveBeenCalled();
         });
 
         afterEach(function() {
