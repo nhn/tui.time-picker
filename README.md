@@ -68,9 +68,9 @@ tui.usageStatistics = false;
 
 
 ## 🐾 Examples
-* [Basic](https://nhnent.github.io/tui.date-picker/latest/tutorial-example01-basic.html) : Example of using default options.
-* [Using meridiem](https://nhnent.github.io/tui.time-picker/latest/tutorial-example01-basic.html) : An example of selecting AM/PM(Meridiem).
-* [Using step](https://nhnent.github.io/tui.time-picker/latest/tutorial-example04-i18n.html) : Example of selecting the time for a specific interval.
+* [Basic](https://nhnent.github.io/tui.date-picker/latest/tutorial-example01-basic) : Example of using default options.
+* [Using meridiem](https://nhnent.github.io/tui.time-picker/latest/tutorial-example01-basic) : An example of selecting AM/PM(Meridiem).
+* [Using step](https://nhnent.github.io/tui.time-picker/latest/tutorial-example04-i18n) : Example of selecting the time for a specific interval.
 
 More examples can be found on the left sidebar of each example page, and have fun with it.
 
@@ -155,10 +155,10 @@ var TimePicker = require('tui-time-picker'); /* CommonJS */
 ```
 
 ``` javascript
-import {TimePicker} from 'tui-time-picker'; /* ES6 */
+import TimePicker from 'tui-time-picker'; /* ES6 */
 ```
 
-You can create an instance with [options](https://nhnent.github.io/tui.time-picker/latest/TimePicker.html) and call various APIs after creating an instance.
+You can create an instance with [options](https://nhnent.github.io/tui.time-picker/latest/TimePicker) and call various APIs after creating an instance.
 
 ``` javascript
 var container = document.getElementById('tui-time-picker-container');
@@ -167,7 +167,7 @@ var instance = new TimePicker(container, { ... });
 instance.getHour();
 ```
 
-For more information about the API, please see [here](https://nhnent.github.io/tui.time-picker/latest/TimePicker.html).
+For more information about the API, please see [here](https://nhnent.github.io/tui.time-picker/latest/TimePicker).
 
 
 ## 🔧 Pull Request Steps
