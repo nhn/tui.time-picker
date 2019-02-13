@@ -1,15 +1,18 @@
 {
   "name": "tui-time-picker",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "dist/tui-time-picker",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "karma start --no-single-run",
     "test:ne": "KARMA_SERVER=ne karma start",
     "bundle": "webpack & webpack --production",
     "serve": "webpack-dev-server --inline --hot -d",
     "serve:ie8": "webpack-dev-server -d",
-    "cpy-dist2doc": "mkdir -p doc/dist && cp -f -r dist doc",
-    "doc": "jsdoc -c jsdoc.conf.json && npm run cpy-dist2doc"
+    "doc:dev": "tuidoc --dev",
+    "doc": "tuidoc"
   },
   "description": "TOAST UI Components: TimePicker",
   "repository": {
@@ -37,7 +40,6 @@
     "handlebars-loader": "^1.4.0",
     "istanbul-instrumenter-loader": "^1.0.0",
     "jasmine-core": "^2.4.1",
-    "jsdoc": "^3.5.4",
     "karma": "1.3.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
@@ -50,7 +52,6 @@
     "karma-webpack": "^1.8.0",
     "safe-umd-webpack-plugin": "^0.0.1",
     "style-loader": "^0.13.1",
-    "tui-jsdoc-template": "^1.1.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.11.0"
