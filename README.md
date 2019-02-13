@@ -155,7 +155,7 @@ var TimePicker = require('tui-time-picker'); /* CommonJS */
 ```
 
 ``` javascript
-import {TimePicker} from 'tui-time-picker'; /* ES6 */
+import TimePicker from 'tui-time-picker'; /* ES6 */
 ```
 
 You can create an instance with [options](https://nhnent.github.io/tui.time-picker/latest/TimePicker) and call various APIs after creating an instance.
