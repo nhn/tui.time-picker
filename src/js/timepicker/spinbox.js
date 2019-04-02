@@ -1,6 +1,6 @@
 /**
  * @fileoverview Spinbox (in TimePicker)
- * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+ * @author NHN. FE Development Lab <dl_javascript@nhn.com>
  * @dependency jquery-1.8.3, code-snippet-1.0.2
  */
 
