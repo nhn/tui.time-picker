@@ -1,6 +1,6 @@
 /**
  * @fileoverview TimePicker component
- * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+ * @author NHN. FE Development Lab <dl_javascript@nhn.com>
  * @dependency jquery-1.11.0, code-snippet-1.2.5, spinbox.js
  */
 
