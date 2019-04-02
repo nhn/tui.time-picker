@@ -1,7 +1,7 @@
 /*!
  * tui-time-picker.js
- * @version 1.5.1
- * @author NHNEnt FE Development Lab <dl_javascript@nhnent.com>
+ * @version 1.5.2
+ * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -62,7 +62,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview The entry file of TimePicker components
-	 * @author NHN Ent. FE Development Team
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
@@ -89,7 +89,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview TimePicker component
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 * @dependency jquery-1.11.0, code-snippet-1.2.5, spinbox.js
 	 */
 
@@ -744,7 +744,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Spinbox (in TimePicker)
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 * @dependency jquery-1.8.3, code-snippet-1.0.2
 	 */
 
@@ -2211,7 +2211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Handlebars helper - Equals
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
@@ -2236,7 +2236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Selectbox (in TimePicker)
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
@@ -2464,7 +2464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Handlebars helper - Equals
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
@@ -2485,7 +2485,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Utils for Datepicker component
-	 * @author NHN Ent. FE dev Lab. <dl_javascript@nhnent.com>
+	 * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
 	 * @dependency tui-code-snippet ^1.3.0
 	 */
 
@@ -2558,7 +2558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Default locale texts
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
@@ -2656,7 +2656,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @fileoverview Handlebars helper - unique id
-	 * @author NHN Ent. FE Development Lab <dl_javascript@nhnent.com>
+	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
 	 */
 
 	'use strict';
