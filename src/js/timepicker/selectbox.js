@@ -14,7 +14,7 @@ var tmpl = require('./../../template/timepicker/selectbox.hbs');
 /**
  * @class
  * @ignore
- * @param {string|Element} container - Container element
+ * @param {string|HTMLElement} container - Container element or selector
  * @param {object} options - Options
  * @param {Array.<number>} options.items - Items
  * @param {number} options.initialValue - Initial value

@@ -1,5 +1,5 @@
 ### 1. Load dependency files
-* Script - [tui-code-snippet](https://github.com/nhn/tui.code-snippet) 1.2.5 or later
+* Script - [tui-code-snippet](https://github.com/nhn/tui.code-snippet) 1.5.0 or later
 
 ```html
 <html>

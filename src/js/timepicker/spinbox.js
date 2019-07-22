@@ -1,7 +1,6 @@
 /**
  * @fileoverview Spinbox (in TimePicker)
  * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- * @dependency code-snippet-1.0.2
  */
 
 'use strict';
@@ -19,7 +18,7 @@ var CLASS_NAME_DOWN_BUTTON = 'tui-timepicker-btn-down';
 /**
  * @class
  * @ignore
- * @param {String|HTMLElement} container - Container of spinbox
+ * @param {String|HTMLElement} container - Container of spinbox or selector
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialValue] - initial setting value
  * @param {Array.<number>} items - Items
@@ -168,11 +167,18 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _isDownButton: function(event) {
         var target = domevent.getTarget(event);
         var result;
+        var i;
 
-        if (domutil.hasClass(target, CLASS_NAME_DOWN_BUTTON)) {
-            result = true;
-        } else if (domutil.hasClass(target, CLASS_NAME_UP_BUTTON)) {
-            result = false;
+        for (i = 2; i; i -= 1) {
+            if (domutil.hasClass(target, CLASS_NAME_DOWN_BUTTON)) {
+                result = true;
+                break;
+            } else if (domutil.hasClass(target, CLASS_NAME_UP_BUTTON)) {
+                result = false;
+                break;
+            } else {
+                target = target.parentElement;
+            }
         }
 
         return result;

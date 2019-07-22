@@ -1,7 +1,6 @@
 /**
  * @fileoverview Utils for Datepicker component
  * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
- * @dependency tui-code-snippet ^1.3.0
  */
 
 'use strict';

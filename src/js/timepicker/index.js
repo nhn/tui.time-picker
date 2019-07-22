@@ -1,7 +1,6 @@
 /**
  * @fileoverview TimePicker component
  * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- * @dependency code-snippet-1.2.5, spinbox.js
  */
 
 'use strict';
@@ -47,7 +46,7 @@ var mergeDefaultOptions = function(options) {
 
 /**
  * @class
- * @param {string|HTMLElement} container - Container element
+ * @param {string|HTMLElement} container - Container element or selector
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
@@ -492,9 +491,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _validItems: function(hour, minute) {
-        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
-
-        if (!isNumber) {
+        if (!snippet.isNumber(hour) && snippet.isNumber(minute)) {
             return false;
         }
 
