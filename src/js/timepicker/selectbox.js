@@ -6,9 +6,9 @@
 'use strict';
 
 var snippet = require('tui-code-snippet');
+var domutil = require('tui-dom');
 
-var domutil = require('./../../utils/domutil');
-var domevent = require('./../../utils/domevent');
+var domevent = require('./../domevent');
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
 
 /**
@@ -122,15 +122,10 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
     /**
      * Set events
-     * @private
+     * @privatep
      */
     _setEvents: function() {
-        this._onChangeHandler = domevent.delegateHandler(
-            this._container,
-            'select',
-            snippet.bind(this._onChange, this)
-        );
-        domevent.on(this._container, 'change', this._onChangeHandler);
+        domutil.on(this._container, 'change', this._onChange, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -145,15 +140,21 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     _removeEvents: function() {
         this.off();
 
-        domevent.off(this._container, 'change.selectbox', this._onChangeHandler);
+        domutil.off(this._container, 'change', this._onChange, this);
     },
 
     /**
      * Change event handler
+     * @param {Event} event Change event on a select element.
+     * @param {boolean} isChanged Invoke after setting new value?
      * @private
      */
-    _onChange: function() {
+    _onChange: function(event, isChanged) {
         var newValue = Number(this._element.value);
+
+        if ((event && domevent.getTarget(event).tagName !== 'SELECT') || !isChanged) {
+            return;
+        }
 
         this._selectedIndex = snippet.inArray(newValue, this._items);
         this.fire('change', {
@@ -179,7 +180,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         if (newIndex > -1 && newIndex !== this._selectedIndex) {
             this._selectedIndex = newIndex;
             this._element.value = value;
-            this._onChange();
+            this._onChange(null, true);
         }
     },
 

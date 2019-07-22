@@ -7,14 +7,14 @@
 'use strict';
 
 var snippet = require('tui-code-snippet');
+var domutil = require('tui-dom');
 
-var domutil = require('./../../utils/domutil');
-var domevent = require('./../../utils/domevent');
+var domevent = require('./../domevent');
 var tmpl = require('./../../template/timepicker/spinbox.hbs');
 var timeFormat = require('./../../template/helpers/timeFormat');
 
-var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
-var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
+var CLASS_NAME_UP_BUTTON = 'tui-timepicker-btn-up';
+var CLASS_NAME_DOWN_BUTTON = 'tui-timepicker-btn-down';
 
 /**
  * @class
@@ -130,31 +130,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      */
     setDisabledItems: function(disabledItems) {
         this._disabledItems = disabledItems;
-        this._onChangeInput();
-    },
-
-    _makeDelegatedHandlers: function() {
-        this._handlers = {};
-        this._handlers.onClickUpbutton = domevent.delegateHandler(
-            this._container,
-            SELECTOR_UP_BUTTON,
-            snippet.bind(this._setNextValue, this, false)
-        );
-        this._handlers.onClickDownbutton = domevent.delegateHandler(
-            this._container,
-            SELECTOR_DOWN_BUTTON,
-            snippet.bind(this._setNextValue, this, true)
-        );
-        this._handlers.onKeydown = domevent.delegateHandler(
-            this._container,
-            'input',
-            snippet.bind(this._onKeyDownInputElement, this)
-        );
-        this._handlers.onChange = domevent.delegateHandler(
-            this._container,
-            'input',
-            snippet.bind(this._onChangeInput, this)
-        );
+        this._onChangeInput(null, true);
     },
 
     /**
@@ -162,11 +138,9 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._makeDelegatedHandlers();
-        domevent.on(this._container, 'click', this._handlers.onClickUpbutton);
-        domevent.on(this._container, 'click', this._handlers.onClickDownbutton);
-        domevent.on(this._container, 'keydown', this._handlers.onKeydown);
-        domevent.on(this._container, 'change', this._handlers.onChange);
+        domutil.on(this._container, 'click', this._setNextValue, this);
+        domutil.on(this._container, 'keydown', this._onKeyDownInputElement, this);
+        domutil.on(this._container, 'change', this._onChangeInput, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -181,18 +155,35 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     _removeEvents: function() {
         this.off();
 
-        domevent.off(this._container, 'click.spinbox.upbutton', this._handlers.onClickUpbutton);
-        domevent.off(this._container, 'click.spinbox.downbutton', this._handlers.onClickDownbutton);
-        domevent.off(this._container, 'keydown.spinbox', this._handlers.onKeydown);
-        domevent.off(this._container, 'change.spinbox', this._handlers.onChange);
+        domutil.off(this._container, 'click', this._setNextValue, this);
+        domutil.off(this._container, 'keydown', this._onKeyDownInputElement, this);
+        domutil.off(this._container, 'change', this._onChangeInput, this);
     },
 
     /**
-     * Set input value when user click a button.
-     * @param {boolean} isDown - From down-action?
-     * @private
+     * Check which button is clicked.
+     * @param {Event} event Change event on up/down buttons.
+     * @returns {boolean}
      */
-    _setNextValue: function(isDown) {
+    _isDownButton: function(event) {
+        var target = domevent.getTarget(event);
+        var result;
+
+        if (domutil.hasClass(target, CLASS_NAME_DOWN_BUTTON)) {
+            result = true;
+        } else if (domutil.hasClass(target, CLASS_NAME_UP_BUTTON)) {
+            result = false;
+        }
+
+        return result;
+    },
+
+    /**
+     * Calculate the next index.
+     * @param {boolean} isDown From down-action?
+     * @returns {number}
+     */
+    _getNextIndex: function(isDown) {
         var index = this._selectedIndex;
 
         if (isDown) {
@@ -201,9 +192,30 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             index = (index < (this._items.length - 1)) ? index + 1 : 0;
         }
 
+        return index;
+    },
+
+    /**
+     * Set input value when user click a button.
+     * @param {Event} event - Change event on up/down buttons.
+     * @param {boolean} isDown - From down-action?
+     * @private
+     */
+    _setNextValue: function(event, isDown) {
+        var index;
+
+        if (event) {
+            isDown = this._isDownButton(event);
+            if (snippet.isUndefined(isDown)) {
+                return;
+            }
+        }
+
+        index = this._getNextIndex(isDown);
+
         if (this._disabledItems[index]) {
             this._selectedIndex = index;
-            this._setNextValue(isDown);
+            this._setNextValue(null, isDown);
 
             return;
         }
@@ -216,8 +228,13 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _onKeyDownInputElement: function(event) {
+        var target = domevent.getTarget(event);
         var keyCode = event.which || event.keyCode;
         var isDown;
+
+        if (target.tagName !== 'INPUT') {
+            return;
+        }
 
         switch (keyCode) {
             case 38:
@@ -229,16 +246,30 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             default: return;
         }
 
-        this._setNextValue(isDown);
+        this._setNextValue(null, isDown);
     },
 
     /**
      * DOM(Input element) Change Event handler
+     * @param {Event} event Change event on an input element.
+     * @param {boolean} isChanged Invoke after setting new value?
      * @private
      */
-    _onChangeInput: function() {
+    _onChangeInput: function(event, isChanged) {
+        if ((event && domevent.getTarget(event).tagName !== 'INPUT') || !isChanged) {
+            return;
+        }
+        this._changeToInputValue();
+    },
+
+    /**
+     * Change value to input-box if it is valid.
+     * @private
+     */
+    _changeToInputValue: function() {
         var newValue = Number(this._inputElement.value);
         var newIndex = snippet.inArray(newValue, this._items);
+
         if (this._disabledItems[newIndex]) {
             newIndex = this._findEnabledIndex();
             newValue = this._items[newIndex];
@@ -262,7 +293,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      */
     setValue: function(value) {
         this._inputElement.value = timeFormat(value, this._format);
-        this._onChangeInput();
+        this._onChangeInput(null, true);
     },
 
     /**

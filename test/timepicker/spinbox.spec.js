@@ -102,12 +102,12 @@ describe('TimePicker - Spinbox', function() {
         });
 
         it('Each time the up control occurs, the disabledItems value should be reflected.', function() {
-            spinbox._setNextValue(false);
+            spinbox._setNextValue(null, false);
             expect(spinbox.getValue()).toBe(3);
         });
 
         it('Each time the down control occurs, the disabledItems value should be reflected.', function() {
-            spinbox._setNextValue(true);
+            spinbox._setNextValue(null, true);
             expect(spinbox.getValue()).toBe(4);
         });
     });
