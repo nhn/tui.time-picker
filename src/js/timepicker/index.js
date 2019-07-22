@@ -1,25 +1,27 @@
 /**
  * @fileoverview TimePicker component
  * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- * @dependency jquery-1.11.0, code-snippet-1.2.5, spinbox.js
+ * @dependency code-snippet-1.2.5, spinbox.js
  */
 
 'use strict';
 
-var $ = require('jquery');
 var snippet = require('tui-code-snippet');
 
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
-var util = require('./../util');
+var domutil = require('./../../utils/domutil');
+var domevent = require('./../../utils/domevent');
+var util = require('./../../utils/util');
 var localeTexts = require('./../localeTexts');
 var tmpl = require('./../../template/timepicker/index.hbs');
 var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
 
-var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
-var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
-var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
+var SELECTOR_MERIDIEM_ELELMENT = '.tui-timepicker-meridiem';
+var SELECTOR_HOUR_ELELMENT = '.tui-timepicker-hour';
+var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
 var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
+var CLASS_NAME_HIDDEN = 'tui-hidden';
 
 /**
  * Merge default options
@@ -45,7 +47,7 @@ var mergeDefaultOptions = function(options) {
 
 /**
  * @class
- * @param {string|jQuery|HTMLElement} container - Container element
+ * @param {string|HTMLElement} container - Container element
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialHour = 0] - Initial setting value of hour
  * @param {number} [options.initialMinute = 0] - Initial setting value of minute
@@ -92,34 +94,34 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         options = mergeDefaultOptions(options);
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$container = $(container);
+        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$element = $();
+        this._element = null;
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$meridiemElement = $();
+        this._meridiemElement = null;
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$amEl = $();
+        this._amEl = null;
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$pmEl = $();
+        this._pmEl = null;
 
         /**
          * @type {boolean}
@@ -214,11 +216,27 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._minuteInput.on('change', this._onChangeTimeInput, this);
 
         if (this._showMeridiem) {
-            this._$container.on(
-                'change.timepicker',
-                SELECTOR_MERIDIEM_ELELEMENT,
-                $.proxy(this._onChangeMeridiem, this)
+            this._onChangeHandler = domevent.delegateHandler(
+                this._container,
+                SELECTOR_MERIDIEM_ELELMENT,
+                snippet.bind(this._onChangeMeridiem, this)
             );
+            domevent.on(this._container, 'change', this._onChangeHandler);
+        }
+    },
+
+    /**
+     * Remove events
+     * @private
+     */
+    _removeEvents: function() {
+        this.off();
+
+        this._hourInput.destroy();
+        this._minuteInput.destroy();
+
+        if (this._showMeridiem) {
+            domevent.off(this._container, 'change.timepicker', this._onChangeHandler);
         }
     },
 
@@ -238,9 +256,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             });
         }
 
-        this._$element.remove();
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
+        if (this._element) {
+            domutil.removeElement(this._element);
+        }
+        this._container.innerHTML = tmpl(context);
+        this._element = this._container.firstChild;
 
         this._renderTimeInputs();
 
@@ -255,11 +275,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      */
     _setMeridiemElement: function() {
         if (this._meridiemPosition === 'left') {
-            this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
+            domutil.addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
         }
-        this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
-        this._$amEl = this._$meridiemElement.find('[value="AM"]');
-        this._$pmEl = this._$meridiemElement.find('[value="PM"]');
+        this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELELMENT);
+        this._amEl = this._meridiemElement.querySelector('[value="AM"]');
+        this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
         this._syncToMeridiemElements();
     },
 
@@ -285,8 +305,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     _renderTimeInputs: function() {
         var hour = this._hour;
         var showMeridiem = this._showMeridiem;
-        var $hourElement = this._$element.find(SELECTOR_HOUR_ELELEMENT);
-        var $minuteElement = this._$element.find(SELECTOR_MINUTE_ELELEMENT);
+        var hourElement = this._element.querySelector(SELECTOR_HOUR_ELELMENT);
+        var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELELMENT);
         var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
         var formatExplode = this._format.split(':');
         var hourItems = this._getHourItems();
@@ -295,14 +315,14 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
             hour = util.getMeridiemHour(hour);
         }
 
-        this._hourInput = new BoxComponent($hourElement, {
+        this._hourInput = new BoxComponent(hourElement, {
             initialValue: hour,
             items: hourItems,
             format: formatExplode[0],
             disabledItems: this._makeDisabledStatItems(hourItems)
         });
 
-        this._minuteInput = new BoxComponent($minuteElement, {
+        this._minuteInput = new BoxComponent(minuteElement, {
             initialValue: this._minute,
             items: this._getMinuteItems(),
             format: formatExplode[1]
@@ -317,7 +337,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         }
 
         return snippet.map(hourItems, function(hour) {
-            if (disabledHours.indexOf(hour) >= 0) {
+            if (snippet.inArray(hour, disabledHours) >= 0) {
                 return true;
             }
 
@@ -371,14 +391,10 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
     _syncToMeridiemElements: function() {
         var isPM = this._hour >= 12;
 
-        this._$amEl.attr({
-            selected: !isPM,
-            checked: !isPM
-        });
-        this._$pmEl.attr({
-            selected: isPM,
-            checked: isPM
-        });
+        this._amEl.setAttribute('selected', !isPM);
+        this._amEl.setAttribute('checked', !isPM);
+        this._pmEl.setAttribute('selected', isPM);
+        this._pmEl.setAttribute('checked', isPM);
     },
 
     /**
@@ -477,6 +493,12 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _validItems: function(hour, minute) {
+        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
+
+        if (!isNumber) {
+            return false;
+        }
+
         if (this._showMeridiem) {
             hour = util.getMeridiemHour(hour);
         }
@@ -523,14 +545,14 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * Show time picker element
      */
     show: function() {
-        this._$element.show();
+        domutil.removeClass(this._element, CLASS_NAME_HIDDEN);
     },
 
     /**
      * Hide time picker element
      */
     hide: function() {
-        this._$element.hide();
+        domutil.addClass(this._element, CLASS_NAME_HIDDEN);
     },
 
     /**
@@ -557,12 +579,6 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {number} minute for time picker
      */
     setTime: function(hour, minute) {
-        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
-
-        if (!isNumber || (hour > 23) || (minute > 59)) {
-            return;
-        }
-
         if (!this._validItems(hour, minute)) {
             return;
         }
@@ -571,7 +587,9 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._minute = minute;
 
         this._syncToInputs();
-        this._syncToMeridiemElements();
+        if (this._showMeridiem) {
+            this._syncToMeridiemElements();
+        }
 
         /**
          * Change event - TimePicker
@@ -612,23 +630,20 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * Destroy
      */
     destroy: function() {
-        this.off();
-        this._hourInput.destroy();
-        this._minuteInput.destroy();
-        this._$container.off('.timepicker');
-        this._$element.remove();
+        this._removeEvents();
+        domutil.removeElement(this._element);
 
-        this._$container
+        this._container
             = this._showMeridiem
             = this._hourInput
             = this._minuteInput
             = this._hour
             = this._minute
             = this._inputType
-            = this._$element
-            = this._$meridiemElement
-            = this._$amEl
-            = this._$pmEl
+            = this._element
+            = this._meridiemElement
+            = this._amEl
+            = this._pmEl
             = null;
     }
 });

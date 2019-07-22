@@ -1,14 +1,15 @@
 /**
  * @fileoverview Spinbox (in TimePicker)
  * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- * @dependency jquery-1.8.3, code-snippet-1.0.2
+ * @dependency code-snippet-1.0.2
  */
 
 'use strict';
 
-var $ = require('jquery');
 var snippet = require('tui-code-snippet');
 
+var domutil = require('./../../utils/domutil');
+var domevent = require('./../../utils/domevent');
 var tmpl = require('./../../template/timepicker/spinbox.hbs');
 var timeFormat = require('./../../template/helpers/timeFormat');
 
@@ -18,7 +19,7 @@ var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
 /**
  * @class
  * @ignore
- * @param {jQuery|String|HTMLElement} container - Container of spinbox
+ * @param {String|HTMLElement} container - Container of spinbox
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialValue] - initial setting value
  * @param {Array.<number>} items - Items
@@ -30,23 +31,23 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         }, options);
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$container = $(container);
+        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
         /**
          * Spinbox element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$element = null;
+        this._element = null;
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$inputElement = null;
+        this._inputElement = null;
 
         /**
          * Spinbox value items
@@ -84,9 +85,10 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _render: function() {
+        var index = snippet.inArray(this.getValue(), this._items);
         var context;
 
-        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+        if (this._disabledItems[index]) {
             this._selectedIndex = this._findEnabledIndex();
         }
         context = {
@@ -95,9 +97,9 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             format: this._format
         };
 
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
-        this._$inputElement = this._$element.find('input');
+        this._container.innerHTML = tmpl(context);
+        this._element = this._container.firstChild;
+        this._inputElement = this._element.querySelector('input');
     },
 
     /**
@@ -128,7 +130,31 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      */
     setDisabledItems: function(disabledItems) {
         this._disabledItems = disabledItems;
-        this._$inputElement.change();
+        this._onChangeInput();
+    },
+
+    _makeDelegatedHandlers: function() {
+        this._handlers = {};
+        this._handlers.onClickUpbutton = domevent.delegateHandler(
+            this._container,
+            SELECTOR_UP_BUTTON,
+            snippet.bind(this._setNextValue, this, false)
+        );
+        this._handlers.onClickDownbutton = domevent.delegateHandler(
+            this._container,
+            SELECTOR_DOWN_BUTTON,
+            snippet.bind(this._setNextValue, this, true)
+        );
+        this._handlers.onKeydown = domevent.delegateHandler(
+            this._container,
+            'input',
+            snippet.bind(this._onKeyDownInputElement, this)
+        );
+        this._handlers.onChange = domevent.delegateHandler(
+            this._container,
+            'input',
+            snippet.bind(this._onChangeInput, this)
+        );
     },
 
     /**
@@ -136,15 +162,29 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._$container.on('click.spinbox', SELECTOR_UP_BUTTON, $.proxy(this._setNextValue, this, false))
-            .on('click.spinbox', SELECTOR_DOWN_BUTTON, $.proxy(this._setNextValue, this, true))
-            .on('keydown.spinbox', 'input', $.proxy(this._onKeyDownInputElement, this))
-            .on('change.spinbox', 'input', $.proxy(this._onChangeInput, this));
+        this._makeDelegatedHandlers();
+        domevent.on(this._container, 'click', this._handlers.onClickUpbutton);
+        domevent.on(this._container, 'click', this._handlers.onClickDownbutton);
+        domevent.on(this._container, 'keydown', this._handlers.onKeydown);
+        domevent.on(this._container, 'change', this._handlers.onChange);
 
         this.on('changeItems', function(items) {
             this._items = items;
             this._render();
         }, this);
+    },
+
+    /**
+     * Remove events to up/down button
+     * @private
+     */
+    _removeEvents: function() {
+        this.off();
+
+        domevent.off(this._container, 'click.spinbox.upbutton', this._handlers.onClickUpbutton);
+        domevent.off(this._container, 'click.spinbox.downbutton', this._handlers.onClickDownbutton);
+        domevent.off(this._container, 'keydown.spinbox', this._handlers.onKeydown);
+        domevent.off(this._container, 'change.spinbox', this._handlers.onChange);
     },
 
     /**
@@ -197,7 +237,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _onChangeInput: function() {
-        var newValue = Number(this._$inputElement.val());
+        var newValue = Number(this._inputElement.value);
         var newIndex = snippet.inArray(newValue, this._items);
         if (this._disabledItems[newIndex]) {
             newIndex = this._findEnabledIndex();
@@ -221,7 +261,8 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @param {number} value - Value
      */
     setValue: function(value) {
-        this._$inputElement.val(timeFormat(value, this._format)).change();
+        this._inputElement.value = timeFormat(value, this._format);
+        this._onChangeInput();
     },
 
     /**
@@ -236,12 +277,11 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * Destory
      */
     destroy: function() {
-        this.off();
-        this._$container.off('.spinbox');
-        this._$element.remove();
-        this._$container
-            = this._$element
-            = this._$inputElement
+        this._removeEvents();
+        domutil.removeElement(this._element);
+        this._container
+            = this._element
+            = this._inputElement
             = this._items
             = this._selectedIndex
             = null;

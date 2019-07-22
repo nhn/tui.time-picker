@@ -34,12 +34,6 @@ var config = {
         filename: FILENAME
     },
     externals: {
-        'jquery': {
-            'commonjs': 'jquery',
-            'commonjs2': 'jquery',
-            'amd': 'jquery',
-            'root': '$'
-        },
         'tui-code-snippet': {
             'commonjs': 'tui-code-snippet',
             'commonjs2': 'tui-code-snippet',

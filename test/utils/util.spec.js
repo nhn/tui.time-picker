@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var util = require('../src/js/util');
+var util = require('../../src/utils/util');
 
 describe('getMeridiemHour()', function() {
     it('When "hour" is midnight(00:00), meridiem hour is 12.', function() {

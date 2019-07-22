@@ -5,15 +5,16 @@
 
 'use strict';
 
-var $ = require('jquery');
 var snippet = require('tui-code-snippet');
 
+var domutil = require('./../../utils/domutil');
+var domevent = require('./../../utils/domevent');
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
 
 /**
  * @class
  * @ignore
- * @param {jQuery|string|Element} container - Container element
+ * @param {string|Element} container - Container element
  * @param {object} options - Options
  * @param {Array.<number>} options.items - Items
  * @param {number} options.initialValue - Initial value
@@ -26,10 +27,10 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
         /**
          * Container element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$container = $(container);
+        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
         /**
          * Selectbox items
@@ -61,10 +62,10 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
         /**
          * Element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$element = $();
+        this._element = null;
 
         this._render();
         this._setEvents();
@@ -91,9 +92,11 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
             })
         };
 
-        this._$element.remove();
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
+        if (this._element) {
+            domutil.removeElement(this._element);
+        }
+        this._container.innerHTML = tmpl(context);
+        this._element = this._container.firstChild;
     },
 
     /**
@@ -101,7 +104,8 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _changeEnabledIndex: function() {
-        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+        var index = snippet.inArray(this.getValue(), this._items);
+        if (this._disabledItems[index]) {
             this._selectedIndex = snippet.inArray(false, this._disabledItems);
         }
     },
@@ -121,7 +125,13 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
+        this._onChangeHandler = domevent.delegateHandler(
+            this._container,
+            'select',
+            snippet.bind(this._onChange, this)
+        );
+        domevent.on(this._container, 'change', this._onChangeHandler);
+
         this.on('changeItems', function(items) {
             this._items = items;
             this._render();
@@ -129,12 +139,21 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     },
 
     /**
-     * Change event handler
-     * @param {jQuery.Event} ev - Event object
+     * Remove events
      * @private
      */
-    _onChange: function(ev) {
-        var newValue = Number(ev.target.value);
+    _removeEvents: function() {
+        this.off();
+
+        domevent.off(this._container, 'change.selectbox', this._onChangeHandler);
+    },
+
+    /**
+     * Change event handler
+     * @private
+     */
+    _onChange: function() {
+        var newValue = Number(this._element.value);
 
         this._selectedIndex = snippet.inArray(newValue, this._items);
         this.fire('change', {
@@ -159,7 +178,8 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
         if (newIndex > -1 && newIndex !== this._selectedIndex) {
             this._selectedIndex = newIndex;
-            this._$element.val(value).change();
+            this._element.value = value;
+            this._onChange();
         }
     },
 
@@ -167,15 +187,12 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * Destory
      */
     destroy: function() {
-        this.off();
-        this._$container.off('.selectbox');
-        this._$element.remove();
-
-        this._$container
+        this._removeEvents();
+        domutil.removeElement(this._element);
+        this._container
             = this._items
             = this._selectedIndex
-            = this._$element
-            = this._$element
+            = this._element
             = null;
     }
 });
