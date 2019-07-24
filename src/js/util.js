@@ -55,6 +55,15 @@ var utils = {
     },
 
     /**
+     * Get a target element
+     * @param {Event} ev Event object
+     * @returns {HTMLElement} An event target element
+     */
+    getTarget: function(ev) {
+        return ev.target || ev.srcElement;
+    },
+
+    /**
      * send host name
      * @ignore
      */

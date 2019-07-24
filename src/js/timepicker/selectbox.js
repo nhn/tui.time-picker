@@ -8,7 +8,7 @@
 var snippet = require('tui-code-snippet');
 var domUtil = require('tui-dom');
 
-var domEvent = require('./../domEvent');
+var util = require('../util');
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
 
 /**
@@ -149,7 +149,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _onChangeHandler: function(ev) {
-        if (domEvent.propagate(ev, 'select', this._container)) {
+        if (domUtil.closest(util.getTarget(ev), 'select')) {
             this._setNewValue();
         }
     },

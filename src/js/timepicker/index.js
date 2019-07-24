@@ -10,7 +10,6 @@ var domUtil = require('tui-dom');
 
 var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
-var domEvent = require('./../domEvent');
 var util = require('../util');
 var localeTexts = require('./../localeTexts');
 var tmpl = require('./../../template/timepicker/index.hbs');
@@ -415,9 +414,10 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      */
     _onChangeMeridiem: function(ev) {
         var hour = this._hour;
+        var target = util.getTarget(ev);
 
-        if (domEvent.propagate(ev, SELECTOR_MERIDIEM_ELELMENT, this._container)) {
-            hour = this._to24Hour(domEvent.getTarget(ev).value === 'PM', hour);
+        if (domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
+            hour = this._to24Hour(target.value === 'PM', hour);
             this.setTime(hour, this._minute);
             this._setDisabledHours();
         }
@@ -489,7 +489,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _validItems: function(hour, minute) {
-        if (!snippet.isNumber(hour) && snippet.isNumber(minute)) {
+        if (!snippet.isNumber(hour) || !snippet.isNumber(minute)) {
             return false;
         }
 

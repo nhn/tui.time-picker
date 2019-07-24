@@ -8,7 +8,7 @@
 var snippet = require('tui-code-snippet');
 var domUtil = require('tui-dom');
 
-var domEvent = require('./../domEvent');
+var util = require('../util');
 var tmpl = require('./../../template/timepicker/spinbox.hbs');
 var timeFormat = require('./../../template/helpers/timeFormat');
 
@@ -164,9 +164,11 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @param {Event} ev - Change event on up/down buttons.
      */
     _onClickHandler: function(ev) {
-        if (domEvent.propagate(ev, SELECTOR_DOWN_BUTTON, this._container)) {
+        var target = util.getTarget(ev);
+
+        if (domUtil.closest(target, SELECTOR_DOWN_BUTTON)) {
             this._setNextValue(true);
-        } else if (domEvent.propagate(ev, SELECTOR_UP_BUTTON, this._container)) {
+        } else if (domUtil.closest(target, SELECTOR_UP_BUTTON)) {
             this._setNextValue(false);
         }
     },
@@ -202,7 +204,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         var keyCode = ev.which || ev.keyCode;
         var isDown;
 
-        if (domEvent.propagate(ev, 'input', this._container)) {
+        if (domUtil.closest(util.getTarget(ev), 'input')) {
             switch (keyCode) {
                 case 38:
                     isDown = false;
@@ -223,7 +225,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _onChangeHandler: function(ev) {
-        if (domEvent.propagate(ev, 'input', this._container)) {
+        if (domUtil.closest(util.getTarget(ev), 'input')) {
             this._changeToInputValue();
         }
     },
