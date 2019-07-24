@@ -39,6 +39,12 @@ var config = {
             'commonjs2': 'tui-code-snippet',
             'amd': 'tui-code-snippet',
             'root': ['tui', 'util']
+        },
+        'tui-dom': {
+            'commonjs': 'tui-dom',
+            'commonjs2': 'tui-dom',
+            'amd': 'tui-dom',
+            'root': ['tui', 'dom']
         }
     },
     module: {

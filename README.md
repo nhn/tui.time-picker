@@ -232,6 +232,7 @@ You can also see the older versions of API page on the [releases page](https://g
 
 ## 🔩 Dependency
 * [tui-code-snippet](https://github.com/nhn/tui.code-snippet) >=1.5.0
+* [tui-dom](https://github.com/nhn/tui.dom) >=3.0.0
 
 
 ## 📜 License

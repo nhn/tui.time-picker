@@ -6,9 +6,9 @@
 'use strict';
 
 var snippet = require('tui-code-snippet');
-var domutil = require('tui-dom');
+var domUtil = require('tui-dom');
 
-var domevent = require('./../domevent');
+var domEvent = require('./../domEvent');
 var tmpl = require('./../../template/timepicker/selectbox.hbs');
 
 /**
@@ -93,7 +93,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         };
 
         if (this._element) {
-            domutil.removeElement(this._element);
+            domUtil.removeElement(this._element);
         }
         this._container.innerHTML = tmpl(context);
         this._element = this._container.firstChild;
@@ -122,10 +122,10 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
 
     /**
      * Set events
-     * @privatep
+     * @private
      */
     _setEvents: function() {
-        domutil.on(this._container, 'change', this._onChange, this);
+        domUtil.on(this._container, 'change', this._onChangeHandler, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -140,22 +140,26 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     _removeEvents: function() {
         this.off();
 
-        domutil.off(this._container, 'change', this._onChange, this);
+        domUtil.off(this._container, 'change', this._onChangeHandler, this);
     },
 
     /**
      * Change event handler
-     * @param {Event} event Change event on a select element.
-     * @param {boolean} isChanged Invoke after setting new value?
+     * @param {Event} ev Change event on a select element.
      * @private
      */
-    _onChange: function(event, isChanged) {
-        var newValue = Number(this._element.value);
-
-        if ((event && domevent.getTarget(event).tagName !== 'SELECT') || !isChanged) {
-            return;
+    _onChangeHandler: function(ev) {
+        if (domEvent.propagate(ev, 'select', this._container)) {
+            this._setNewValue();
         }
+    },
 
+    /**
+     * Set new value
+     * @private
+     */
+    _setNewValue: function() {
+        var newValue = Number(this._element.value);
         this._selectedIndex = snippet.inArray(newValue, this._items);
         this.fire('change', {
             value: newValue
@@ -180,7 +184,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         if (newIndex > -1 && newIndex !== this._selectedIndex) {
             this._selectedIndex = newIndex;
             this._element.value = value;
-            this._onChange(null, true);
+            this._setNewValue();
         }
     },
 
@@ -189,7 +193,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      */
     destroy: function() {
         this._removeEvents();
-        domutil.removeElement(this._element);
+        domUtil.removeElement(this._element);
         this._container
             = this._items
             = this._selectedIndex

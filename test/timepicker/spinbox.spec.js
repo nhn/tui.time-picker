@@ -4,8 +4,6 @@
  */
 'use strict';
 
-var testutil = require('./../testutil');
-
 var Spinbox = require('../../src/js/timepicker/spinbox');
 
 /**
@@ -102,12 +100,12 @@ describe('TimePicker - Spinbox', function() {
         });
 
         it('Each time the up control occurs, the disabledItems value should be reflected.', function() {
-            spinbox._setNextValue(null, false);
+            spinbox._setNextValue(false);
             expect(spinbox.getValue()).toBe(3);
         });
 
         it('Each time the down control occurs, the disabledItems value should be reflected.', function() {
-            spinbox._setNextValue(null, true);
+            spinbox._setNextValue(true);
             expect(spinbox.getValue()).toBe(4);
         });
     });
@@ -140,19 +138,19 @@ describe('TimePicker - Spinbox', function() {
         });
 
         it('should increase value when the up-arrow key key-down', function() {
-            var ev = testutil.createEvent('keydown');
-
-            ev.which = 38; // up-arrow;
-            testutil.trigger(spinbox._inputElement, ev);
+            spinbox._onKeydownInputElement({
+                which: 38, // up-arrow,
+                target: spinbox._inputElement
+            });
 
             expect(spinbox.getValue()).toEqual(5);
         });
 
         it('should decrease value when the down-arrow key-down', function() {
-            var ev = testutil.createEvent('keydown');
-
-            ev.which = 40; // down-arrow;
-            testutil.trigger(spinbox._inputElement, ev);
+            spinbox._onKeydownInputElement({
+                which: 40, // down-arrow,
+                target: spinbox._inputElement
+            });
 
             expect(spinbox.getValue()).toEqual(3);
         });
@@ -170,19 +168,23 @@ describe('TimePicker - Spinbox', function() {
         });
 
         it('should fire change event from key-down', function() {
-            var ev = testutil.createEvent('keydown');
             var spy = jasmine.createSpy();
             spinbox.on('change', spy);
 
-            ev.which = 40; // down-arrow;
-            testutil.trigger(spinbox._inputElement, ev);
+            spinbox._onKeydownInputElement({
+                which: 40, // down-arrow,
+                target: spinbox._inputElement
+            });
 
             expect(spy).toHaveBeenCalledWith({
                 value: 3
             });
 
-            ev.which = 38; // up-arrow;
-            testutil.trigger(spinbox._inputElement, ev);
+            spinbox._onKeydownInputElement({
+                which: 38, // up-arrow,
+                target: spinbox._inputElement
+            });
+
             expect(spy).toHaveBeenCalledWith({
                 value: 4
             });
