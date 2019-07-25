@@ -1,5 +1,5 @@
 /**
- * @fileoverview Utils for Datepicker component
+ * @fileoverview Utils for Timepicker component
  * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
  */
 
