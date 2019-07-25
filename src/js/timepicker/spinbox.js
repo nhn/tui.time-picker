@@ -1,14 +1,14 @@
 /**
  * @fileoverview Spinbox (in TimePicker)
  * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- * @dependency jquery-1.8.3, code-snippet-1.0.2
  */
 
 'use strict';
 
-var $ = require('jquery');
 var snippet = require('tui-code-snippet');
+var domUtil = require('tui-dom');
 
+var util = require('../util');
 var tmpl = require('./../../template/timepicker/spinbox.hbs');
 var timeFormat = require('./../../template/helpers/timeFormat');
 
@@ -18,7 +18,7 @@ var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
 /**
  * @class
  * @ignore
- * @param {jQuery|String|HTMLElement} container - Container of spinbox
+ * @param {String|HTMLElement} container - Container of spinbox or selector
  * @param {Object} [options] - Options for initialization
  * @param {number} [options.initialValue] - initial setting value
  * @param {Array.<number>} items - Items
@@ -30,23 +30,23 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         }, options);
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$container = $(container);
+        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
         /**
          * Spinbox element
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$element = null;
+        this._element = null;
 
         /**
-         * @type {jQuery}
+         * @type {HTMLElement}
          * @private
          */
-        this._$inputElement = null;
+        this._inputElement = null;
 
         /**
          * Spinbox value items
@@ -84,9 +84,10 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _render: function() {
+        var index = snippet.inArray(this.getValue(), this._items);
         var context;
 
-        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+        if (this._disabledItems[index]) {
             this._selectedIndex = this._findEnabledIndex();
         }
         context = {
@@ -95,9 +96,9 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             format: this._format
         };
 
-        this._$element = $(tmpl(context));
-        this._$element.appendTo(this._$container);
-        this._$inputElement = this._$element.find('input');
+        this._container.innerHTML = tmpl(context);
+        this._element = this._container.firstChild;
+        this._inputElement = this._element.querySelector('input');
     },
 
     /**
@@ -128,7 +129,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      */
     setDisabledItems: function(disabledItems) {
         this._disabledItems = disabledItems;
-        this._$inputElement.change();
+        this._changeToInputValue();
     },
 
     /**
@@ -136,10 +137,9 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._$container.on('click.spinbox', SELECTOR_UP_BUTTON, $.proxy(this._setNextValue, this, false))
-            .on('click.spinbox', SELECTOR_DOWN_BUTTON, $.proxy(this._setNextValue, this, true))
-            .on('keydown.spinbox', 'input', $.proxy(this._onKeyDownInputElement, this))
-            .on('change.spinbox', 'input', $.proxy(this._onChangeInput, this));
+        domUtil.on(this._container, 'click', this._onClickHandler, this);
+        domUtil.on(this._container, 'keydown', this._onKeydownInputElement, this);
+        domUtil.on(this._container, 'change', this._onChangeHandler, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -148,7 +148,33 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
     },
 
     /**
-     * Set input value when user click a button.
+     * Remove events to up/down button
+     * @private
+     */
+    _removeEvents: function() {
+        this.off();
+
+        domUtil.off(this._container, 'click', this._onClickHandler, this);
+        domUtil.off(this._container, 'keydown', this._onKeydownInputElement, this);
+        domUtil.off(this._container, 'change', this._onChangeHandler, this);
+    },
+
+    /**
+     * Click event handler
+     * @param {Event} ev - Change event on up/down buttons.
+     */
+    _onClickHandler: function(ev) {
+        var target = util.getTarget(ev);
+
+        if (domUtil.closest(target, SELECTOR_DOWN_BUTTON)) {
+            this._setNextValue(true);
+        } else if (domUtil.closest(target, SELECTOR_UP_BUTTON)) {
+            this._setNextValue(false);
+        }
+    },
+
+    /**
+     * Set input value
      * @param {boolean} isDown - From down-action?
      * @private
      */
@@ -164,41 +190,54 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
         if (this._disabledItems[index]) {
             this._selectedIndex = index;
             this._setNextValue(isDown);
-
-            return;
+        } else {
+            this.setValue(this._items[index]);
         }
-        this.setValue(this._items[index]);
     },
 
     /**
      * DOM(Input element) Keydown Event handler
-     * @param {Event} event event-object
+     * @param {Event} ev event-object
      * @private
      */
-    _onKeyDownInputElement: function(event) {
-        var keyCode = event.which || event.keyCode;
+    _onKeydownInputElement: function(ev) {
+        var keyCode = ev.which || ev.keyCode;
         var isDown;
 
-        switch (keyCode) {
-            case 38:
-                isDown = false;
-                break;
-            case 40:
-                isDown = true;
-                break;
-            default: return;
-        }
+        if (domUtil.closest(util.getTarget(ev), 'input')) {
+            switch (keyCode) {
+                case 38:
+                    isDown = false;
+                    break;
+                case 40:
+                    isDown = true;
+                    break;
+                default: return;
+            }
 
-        this._setNextValue(isDown);
+            this._setNextValue(isDown);
+        }
     },
 
     /**
      * DOM(Input element) Change Event handler
+     * @param {Event} ev Change event on an input element.
      * @private
      */
-    _onChangeInput: function() {
-        var newValue = Number(this._$inputElement.val());
+    _onChangeHandler: function(ev) {
+        if (domUtil.closest(util.getTarget(ev), 'input')) {
+            this._changeToInputValue();
+        }
+    },
+
+    /**
+     * Change value to input-box if it is valid.
+     * @private
+     */
+    _changeToInputValue: function() {
+        var newValue = Number(this._inputElement.value);
         var newIndex = snippet.inArray(newValue, this._items);
+
         if (this._disabledItems[newIndex]) {
             newIndex = this._findEnabledIndex();
             newValue = this._items[newIndex];
@@ -221,7 +260,8 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @param {number} value - Value
      */
     setValue: function(value) {
-        this._$inputElement.val(timeFormat(value, this._format)).change();
+        this._inputElement.value = timeFormat(value, this._format);
+        this._changeToInputValue();
     },
 
     /**
@@ -236,12 +276,11 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * Destory
      */
     destroy: function() {
-        this.off();
-        this._$container.off('.spinbox');
-        this._$element.remove();
-        this._$container
-            = this._$element
-            = this._$inputElement
+        this._removeEvents();
+        domUtil.removeElement(this._element);
+        this._container
+            = this._element
+            = this._inputElement
             = this._items
             = this._selectedIndex
             = null;

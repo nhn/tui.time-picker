@@ -1,7 +1,6 @@
 /**
- * @fileoverview Utils for Datepicker component
+ * @fileoverview Utils for Timepicker component
  * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
- * @dependency tui-code-snippet ^1.3.0
  */
 
 'use strict';
@@ -53,6 +52,15 @@ var utils = {
         }
 
         return arr;
+    },
+
+    /**
+     * Get a target element
+     * @param {Event} ev Event object
+     * @returns {HTMLElement} An event target element
+     */
+    getTarget: function(ev) {
+        return ev.target || ev.srcElement;
     },
 
     /**

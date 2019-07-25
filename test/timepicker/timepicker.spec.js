@@ -44,9 +44,9 @@ describe('TimePicker', function() {
             expect(timepickerMeridiem._minuteInput.getValue()).toBe(45);
         });
 
-        it('should set meridiem if "showMeridiem" is ture', function() {
-            expect(timepickerNoMeridiem._$meridiemElement.length).toBe(0);
-            expect(timepickerMeridiem._$meridiemElement.length).toBe(1);
+        it('should set meridiem if "showMeridiem" is true', function() {
+            expect(timepickerNoMeridiem._meridiemElement).toBe(null);
+            expect(timepickerMeridiem._meridiemElement).not.toBe(null);
         });
     });
 
@@ -135,8 +135,8 @@ describe('TimePicker', function() {
                 language: 'ko'
             });
 
-            expect(timepickerMeridiem._$amEl.html()).toBe('오전');
-            expect(timepickerMeridiem._$pmEl.html()).toBe('오후');
+            expect(timepickerMeridiem._amEl.innerText).toBe('오전');
+            expect(timepickerMeridiem._pmEl.innerText).toBe('오후');
         });
 
         it('using "changeLanguage" method.', function() {
@@ -146,8 +146,8 @@ describe('TimePicker', function() {
             };
             timepickerMeridiem.changeLanguage('customKey');
 
-            expect(timepickerMeridiem._$amEl.html()).toBe('a.m.');
-            expect(timepickerMeridiem._$pmEl.html()).toBe('p.m.');
+            expect(timepickerMeridiem._amEl.innerText).toBe('a.m.');
+            expect(timepickerMeridiem._pmEl.innerText).toBe('p.m.');
         });
     });
     describe('usageStatistics', function() {

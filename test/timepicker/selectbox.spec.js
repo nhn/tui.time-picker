@@ -4,16 +4,14 @@
  */
 'use strict';
 
-var $ = require('jquery');
-
 var Selectbox = require('../../src/js/timepicker/selectbox');
 
 describe('TimePicker - Selectbox', function() {
-    var $container = $('<div></div>');
+    var container = document.createElement('div');
     var selectbox;
 
     beforeEach(function() {
-        selectbox = new Selectbox($container, {
+        selectbox = new Selectbox(container, {
             initialValue: 4,
             items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             format: 'hh'
@@ -28,20 +26,20 @@ describe('TimePicker - Selectbox', function() {
         it('should set index of initial value', function() {
             var selectedIndex = selectbox._selectedIndex;
 
-            expect(selectedIndex).toEqual(3);
+            expect(selectedIndex).toBe(3);
         });
 
         it('should be output as zero padded double char when format is a "hh"', function() {
             var expected;
 
             selectbox.destroy();
-            selectbox = new Selectbox($container, {
+            selectbox = new Selectbox(container, {
                 initialValue: 4,
                 items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 format: 'hh'
             });
 
-            expected = selectbox._$element.find('option:eq(0)').html();
+            expected = selectbox._element.querySelector('option:first-child').innerText;
             expect(expected).toEqual('01');
         });
 
@@ -49,13 +47,13 @@ describe('TimePicker - Selectbox', function() {
             var expected;
 
             selectbox.destroy();
-            selectbox = new Selectbox($container, {
+            selectbox = new Selectbox(container, {
                 initialValue: 4,
                 items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 format: 'h'
             });
 
-            expected = selectbox._$element.find('option:eq(0)').html();
+            expected = selectbox._element.querySelector('option:first-child').innerText;
             expect(expected).toEqual('1');
         });
     });
@@ -63,7 +61,7 @@ describe('TimePicker - Selectbox', function() {
     describe('disabledItems', function() {
         beforeEach(function() {
             selectbox.destroy();
-            selectbox = new Selectbox($container, {
+            selectbox = new Selectbox(container, {
                 initialValue: 1,
                 items: [1, 2],
                 disabledItems: ['disabled', '']
@@ -71,12 +69,12 @@ describe('TimePicker - Selectbox', function() {
         });
 
         it('Should be applied when disabledItem is marked disabled', function() {
-            var expected = selectbox._$element.find('option[value="1"]').prop('disabled');
+            var expected = selectbox._element.querySelector('option[value="1"]').hasAttribute('disabled');
             expect(expected).toBe(true);
         });
 
         it('Should not be reflected when disabledItem is not marked as disabled.', function() {
-            var expected = selectbox._$element.find('option[value="2"]').prop('disabled');
+            var expected = selectbox._element.querySelector('option[value="2"]').hasAttribute('disabled');
             expect(expected).toBe(false);
         });
     });
@@ -88,13 +86,13 @@ describe('TimePicker - Selectbox', function() {
 
         it('"setValue" should set value to input', function() {
             selectbox.setValue(8);
-            expect(selectbox._$element.val()).toBe('8');
+            expect(selectbox._element.value).toBe('8');
             expect(selectbox.getValue()).toBe(8);
         });
 
         it('"setValue" should not change if the value is invalid', function() {
             selectbox.setValue(11111111);
-            expect(selectbox._$element.val()).toBe('4');
+            expect(selectbox._element.value).toBe('4');
             expect(selectbox.getValue()).toBe(4);
         });
     });
