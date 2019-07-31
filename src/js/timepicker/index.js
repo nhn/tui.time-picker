@@ -210,11 +210,16 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _setEvents: function() {
+        var type = 'change';
+        if (snippet.browser.msie && snippet.browser.version === 8) {
+            type = 'click';
+        }
+
         this._hourInput.on('change', this._onChangeTimeInput, this);
         this._minuteInput.on('change', this._onChangeTimeInput, this);
 
         if (this._showMeridiem) {
-            domUtil.on(this._container, 'change', this._onChangeMeridiem, this);
+            domUtil.on(this._container, type, this._onChangeMeridiem, this);
         }
     },
 
@@ -229,7 +234,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._minuteInput.destroy();
 
         if (this._showMeridiem) {
-            domUtil.off(this._container, 'change', this._onChangeMeridiem, this);
+            domUtil.off(this._container, 'change click', this._onChangeMeridiem, this);
         }
     },
 

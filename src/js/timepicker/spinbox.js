@@ -137,9 +137,14 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
      * @private
      */
     _setEvents: function() {
+        var type = 'change';
+        if (snippet.browser.msie && snippet.browser.version === 8) {
+            type = 'keyup';
+        }
+
         domUtil.on(this._container, 'click', this._onClickHandler, this);
         domUtil.on(this._container, 'keydown', this._onKeydownInputElement, this);
-        domUtil.on(this._container, 'change', this._onChangeHandler, this);
+        domUtil.on(this._container, type, this._onChangeHandler, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -156,7 +161,7 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
 
         domUtil.off(this._container, 'click', this._onClickHandler, this);
         domUtil.off(this._container, 'keydown', this._onKeydownInputElement, this);
-        domUtil.off(this._container, 'change', this._onChangeHandler, this);
+        domUtil.off(this._container, 'change keyup', this._onChangeHandler, this);
     },
 
     /**

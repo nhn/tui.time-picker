@@ -125,7 +125,12 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
      * @private
      */
     _setEvents: function() {
-        domUtil.on(this._container, 'change', this._onChangeHandler, this);
+        var type = 'change';
+        if (snippet.browser.msie && snippet.browser.version === 8) {
+            type = 'click';
+        }
+
+        domUtil.on(this._container, type, this._onChangeHandler, this);
 
         this.on('changeItems', function(items) {
             this._items = items;
@@ -140,7 +145,7 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
     _removeEvents: function() {
         this.off();
 
-        domUtil.off(this._container, 'change', this._onChangeHandler, this);
+        domUtil.off(this._container, 'change click', this._onChangeHandler, this);
     },
 
     /**
