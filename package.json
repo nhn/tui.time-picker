@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "main": "dist/tui-time-picker",
   "files": [
     "dist"
@@ -17,16 +17,16 @@
   "description": "TOAST UI Components: TimePicker",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nhnent/tui.time-picker"
+    "url": "https://github.com/nhn/tui.time-picker"
   },
   "keywords": [
-    "nhnent",
+    "nhn",
     "tui",
     "component",
     "time-picker",
     "tui-time-picker"
   ],
-  "author": "NHNEnt FE Development Lab <dl_javascript@nhnent.com>",
+  "author": "NHN FE Development Lab <dl_javascript@nhn.com>",
   "license": "MIT",
   "devDependencies": {
     "css-loader": "^0.26.1",
@@ -48,7 +48,7 @@
     "karma-jquery": "^0.2.2",
     "karma-junit-reporter": "^1.2.0",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webdriver-launcher": "git+https://github.com/nhnent/karma-webdriver-launcher.git#v1.1.0",
+    "karma-webdriver-launcher": "git+https://github.com/nhn/karma-webdriver-launcher.git#v1.1.0",
     "karma-webpack": "^1.8.0",
     "safe-umd-webpack-plugin": "^0.0.1",
     "style-loader": "^0.13.1",
@@ -57,7 +57,7 @@
     "webpack-dev-server": "^1.11.0"
   },
   "dependencies": {
-    "jquery": "^1.11.0",
-    "tui-code-snippet": "^1.5.0"
+    "tui-code-snippet": "^1.5.0",
+    "tui-dom": "^3.0.0"
   }
 }

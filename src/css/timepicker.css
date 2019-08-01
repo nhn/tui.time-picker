@@ -125,7 +125,7 @@
     width: 22px;
 }
 
-.tui-datepicker-body .tui-timepicker-colon, .tui-datepicker-footer .tui-timepicker-colon {
+.tui-timepicker-body .tui-timepicker-colon, .tui-timepicker-footer .tui-timepicker-colon {
     width: 18px;
 }
 
@@ -272,4 +272,8 @@
     float: left;
     margin-top: 23px;
     padding: 0 16px 0 0;
+}
+
+.tui-hidden {
+    display: none;
 }
