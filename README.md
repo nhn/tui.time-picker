@@ -8,6 +8,33 @@
 [![code with hearth by NHN](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN-ff1414.svg)](https://github.com/nhn)
 
 
+## v2.0.0 Migration Guide
+In v2.0.0, jQuery is removed. It might cause other components to fail if they pass a jQuery object as a container.
+
+Previously, you can use a `jQuery` object to create an instance.
+```javascript
+// v1
+var instance = new tui.TimePicker($('#timepicker-wrapper'), {
+   // options
+});
+```
+
+Now, you have to use `selector` or `HTMLElement` as a container.
+```javascript
+// v2
+var instance = new tui.TimePicker('#timepicker-wrapper', {
+   // options
+});
+
+// or
+
+var container = document.getElementById('timepicker-wrapper');
+var instance = new tui.TimePicker(container, {
+    // options
+});
+```
+
+
 ## 🚩 Table of Contents
 
 * [Collect statistics on the use of open source](#Collect-statistics-on-the-use-of-open-source)
