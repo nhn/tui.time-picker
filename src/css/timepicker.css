@@ -198,7 +198,7 @@
     background-position: -31px 0;
 }
 
-.tui-timepicker-radio input:checked+.tui-timepicker-radio-label .tui-timepicker-input-radio {
+.tui-timepicker-radio .tui-timepicker-meridiem-checked+.tui-timepicker-radio-label .tui-timepicker-input-radio {
     background-position: -31px -18px;
 }
 

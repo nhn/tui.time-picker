@@ -20,6 +20,7 @@ var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
 var SELECTOR_MERIDIEM_ELELMENT = '.tui-timepicker-meridiem';
 var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 var CLASS_NAME_HIDDEN = 'tui-hidden';
+var CLASS_NAME_CHECKED = 'tui-timepicker-meridiem-checked';
 var INPUT_TYPE_SPINBOX = 'spinbox';
 var INPUT_TYPE_SELECTBOX = 'selectbox';
 
@@ -397,8 +398,10 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
 
         selectedEl.setAttribute('selected', true);
         selectedEl.setAttribute('checked', true);
+        domUtil.addClass(selectedEl, CLASS_NAME_CHECKED);
         notSelectedEl.removeAttribute('selected');
         notSelectedEl.removeAttribute('checked');
+        domUtil.removeClass(notSelectedEl, CLASS_NAME_CHECKED);
     },
 
     /**
