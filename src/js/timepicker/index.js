@@ -20,6 +20,8 @@ var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
 var SELECTOR_MERIDIEM_ELELMENT = '.tui-timepicker-meridiem';
 var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 var CLASS_NAME_HIDDEN = 'tui-hidden';
+var INPUT_TYPE_SPINBOX = 'spinbox';
+var INPUT_TYPE_SELECTBOX = 'selectbox';
 
 /**
  * Merge default options
@@ -135,13 +137,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._meridiemPosition = options.meridiemPosition;
 
         /**
-         * @type {Spinbox}
+         * @type {Spinbox|Selectbox}
          * @private
          */
         this._hourInput = null;
 
         /**
-         * @type {Spinbox}
+         * @type {Spinbox|Selectbox}
          * @private
          */
         this._minuteInput = null;
@@ -210,16 +212,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _setEvents: function() {
-        var type = 'change';
-        if (snippet.browser.msie && snippet.browser.version === 8) {
-            type = 'click';
-        }
-
         this._hourInput.on('change', this._onChangeTimeInput, this);
         this._minuteInput.on('change', this._onChangeTimeInput, this);
 
         if (this._showMeridiem) {
-            domUtil.on(this._container, type, this._onChangeMeridiem, this);
+            if (this._inputType === INPUT_TYPE_SELECTBOX) {
+                domUtil.on(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
+            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+                domUtil.on(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+            }
         }
     },
 
@@ -234,7 +235,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         this._minuteInput.destroy();
 
         if (this._showMeridiem) {
-            domUtil.off(this._container, 'change click', this._onChangeMeridiem, this);
+            if (this._inputType === INPUT_TYPE_SELECTBOX) {
+                domUtil.off(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
+            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+                domUtil.off(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+            }
         }
     },
 
@@ -421,7 +426,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
         var hour = this._hour;
         var target = util.getTarget(ev);
 
-        if (domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
+        if (target.value && domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
             hour = this._to24Hour(target.value === 'PM', hour);
             this.setTime(hour, this._minute);
             this._setDisabledHours();
