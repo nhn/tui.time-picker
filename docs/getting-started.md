@@ -24,7 +24,7 @@ var instance = new tui.TimePicker(container, {
 });
 ```
 
-### 1. Load dependency files
+## Load dependency files
 * Script - [tui-code-snippet](https://github.com/nhn/tui.code-snippet) 1.5.0 or later
 * Script - [tui-dom](https://github.com/nhn/tui.dom) 3.0.0 or later
     > If your project should support IE8, please use `tui-dom.js`, not `tui-dom.min.js`.
@@ -45,13 +45,13 @@ var instance = new tui.TimePicker(container, {
 </html>
 ```
 
-### 2. Write a wrapper element
+## Write a wrapper element
 
 ```html
 <div id="timepicker-wrapper"></div>
 ```
 
-### 3. Create instance
+## Create instance
 
 ```js
 var instance = new tui.TimePicker('#timepicker-wrapper', {
