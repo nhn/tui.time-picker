@@ -96,8 +96,8 @@ var Spinbox = snippet.defineClass(/** @lends Spinbox.prototype */ {
             format: this._format
         };
 
-        this._container.innerHTML = tmpl(context);
-        this._element = this._container.firstChild;
+        this._element = util.convertToElement(tmpl(context));
+        this._container.appendChild(this._element);
         this._inputElement = this._element.querySelector('input');
     },
 

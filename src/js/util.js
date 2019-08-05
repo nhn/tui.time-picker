@@ -64,6 +64,18 @@ var utils = {
     },
 
     /**
+     * Make a HTML element by a html string
+     * @param {string} htmlString A HTML string
+     * @returns {HTMLElement}
+     */
+    convertToElement: function(htmlString) {
+        var temp = document.createElement('div');
+        temp.innerHTML = htmlString;
+
+        return temp.firstChild;
+    },
+
+    /**
      * send host name
      * @ignore
      */

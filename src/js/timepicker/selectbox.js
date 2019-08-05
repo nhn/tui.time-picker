@@ -95,8 +95,8 @@ var Selectbox = snippet.defineClass(/** @lends Selectbox.prototype */ {
         if (this._element) {
             domUtil.removeElement(this._element);
         }
-        this._container.innerHTML = tmpl(context);
-        this._element = this._container.firstChild;
+        this._element = util.convertToElement(tmpl(context));
+        this._container.appendChild(this._element);
     },
 
     /**
