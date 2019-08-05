@@ -11,8 +11,7 @@
     "bundle": "webpack & webpack --production",
     "serve": "webpack-dev-server --inline --hot -d",
     "serve:ie8": "webpack-dev-server -d",
-    "doc:dev": "tuidoc --dev",
-    "doc": "tuidoc"
+    "doc": "tuidoc && tuidoc --serv"
   },
   "description": "TOAST UI Components: TimePicker",
   "repository": {
@@ -30,7 +29,7 @@
   "license": "MIT",
   "devDependencies": {
     "css-loader": "^0.26.1",
-    "es5-shim": "^4.5.9",
+    "es5-shim": "^4.5.13",
     "eslint": "^4.5.0",
     "eslint-config-tui": "^1.0.1",
     "eslint-loader": "^1.6.1",
@@ -45,7 +44,6 @@
     "karma-coverage": "^1.1.1",
     "karma-es5-shim": "^0.0.4",
     "karma-jasmine": "^1.0.2",
-    "karma-jquery": "^0.2.2",
     "karma-junit-reporter": "^1.2.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webdriver-launcher": "git+https://github.com/nhn/karma-webdriver-launcher.git#v1.1.0",
@@ -57,7 +55,7 @@
     "webpack-dev-server": "^1.11.0"
   },
   "dependencies": {
-    "tui-code-snippet": "^1.5.0",
+    "tui-code-snippet": "^1.5.2",
     "tui-dom": "^3.0.0"
   }
 }
