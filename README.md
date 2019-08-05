@@ -219,6 +219,7 @@ For more information on PR's step, please see links of Contributing section.
 * [Getting Started](https://github.com/nhn/tui.time-picker/blob/production/docs/getting-started.md)
 * [Tutorials](https://github.com/nhn/tui.time-picker/tree/production/docs)
 * [APIs](https://nhn.github.io/tui.time-picker/latest)
+* [v2.0.0 Migration Guide](https://github.com/nhn/tui.time-picker/blob/master/docs/getting-started.md#v200-migration-guide)
 
 You can also see the older versions of API page on the [releases page](https://github.com/nhn/tui.time-picker/releases).
 
