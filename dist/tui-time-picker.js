@@ -1,18 +1,18 @@
 /*!
  * tui-time-picker.js
- * @version 1.5.2
+ * @version 2.0.0
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("jquery"), require("tui-code-snippet"));
+		module.exports = factory(require("tui-code-snippet"), require("tui-dom"));
 	else if(typeof define === 'function' && define.amd)
-		define(["jquery", "tui-code-snippet"], factory);
+		define(["tui-code-snippet", "tui-dom"], factory);
 	else if(typeof exports === 'object')
-		exports["TimePicker"] = factory(require("jquery"), require("tui-code-snippet"));
+		exports["TimePicker"] = factory(require("tui-code-snippet"), require("tui-dom"));
 	else
-		root["tui"] = root["tui"] || {}, root["tui"]["TimePicker"] = factory(root["$"], (root["tui"] && root["tui"]["util"]));
+		root["tui"] = root["tui"] || {}, root["tui"]["TimePicker"] = factory((root["tui"] && root["tui"]["util"]), (root["tui"] && root["tui"]["dom"]));
 })(this, function(__WEBPACK_EXTERNAL_MODULE_8__, __WEBPACK_EXTERNAL_MODULE_9__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -90,25 +90,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @fileoverview TimePicker component
 	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
-	 * @dependency jquery-1.11.0, code-snippet-1.2.5, spinbox.js
 	 */
 
 	'use strict';
 
-	var $ = __webpack_require__(8);
-	var snippet = __webpack_require__(9);
+	var snippet = __webpack_require__(8);
+	var domUtil = __webpack_require__(9);
 
 	var Spinbox = __webpack_require__(10);
-	var Selectbox = __webpack_require__(32);
-	var util = __webpack_require__(35);
+	var Selectbox = __webpack_require__(33);
+	var util = __webpack_require__(11);
 	var localeTexts = __webpack_require__(36);
 	var tmpl = __webpack_require__(37);
 	var meridiemTemplate = __webpack_require__(38);
 
-	var SELECTOR_MERIDIEM_ELELEMENT = '.tui-timepicker-meridiem';
-	var SELECTOR_HOUR_ELELEMENT = '.tui-timepicker-hour';
-	var SELECTOR_MINUTE_ELELEMENT = '.tui-timepicker-minute';
+	var SELECTOR_HOUR_ELELMENT = '.tui-timepicker-hour';
+	var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
+	var SELECTOR_MERIDIEM_ELELMENT = '.tui-timepicker-meridiem';
 	var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
+	var CLASS_NAME_HIDDEN = 'tui-hidden';
+	var CLASS_NAME_CHECKED = 'tui-timepicker-meridiem-checked';
+	var INPUT_TYPE_SPINBOX = 'spinbox';
+	var INPUT_TYPE_SELECTBOX = 'selectbox';
 
 	/**
 	 * Merge default options
@@ -134,7 +137,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * @class
-	 * @param {string|jQuery|HTMLElement} container - Container element
+	 * @param {string|HTMLElement} container - Container element or selector
 	 * @param {Object} [options] - Options for initialization
 	 * @param {number} [options.initialHour = 0] - Initial setting value of hour
 	 * @param {number} [options.initialMinute = 0] - Initial setting value of minute
@@ -181,34 +184,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options = mergeDefaultOptions(options);
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$container = $(container);
+	        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$element = $();
+	        this._element = null;
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$meridiemElement = $();
+	        this._meridiemElement = null;
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$amEl = $();
+	        this._amEl = null;
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$pmEl = $();
+	        this._pmEl = null;
 
 	        /**
 	         * @type {boolean}
@@ -224,13 +227,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._meridiemPosition = options.meridiemPosition;
 
 	        /**
-	         * @type {Spinbox}
+	         * @type {Spinbox|Selectbox}
 	         * @private
 	         */
 	        this._hourInput = null;
 
 	        /**
-	         * @type {Spinbox}
+	         * @type {Spinbox|Selectbox}
 	         * @private
 	         */
 	        this._minuteInput = null;
@@ -303,11 +306,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._minuteInput.on('change', this._onChangeTimeInput, this);
 
 	        if (this._showMeridiem) {
-	            this._$container.on(
-	                'change.timepicker',
-	                SELECTOR_MERIDIEM_ELELEMENT,
-	                $.proxy(this._onChangeMeridiem, this)
-	            );
+	            if (this._inputType === INPUT_TYPE_SELECTBOX) {
+	                domUtil.on(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
+	            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+	                domUtil.on(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+	            }
+	        }
+	    },
+
+	    /**
+	     * Remove events
+	     * @private
+	     */
+	    _removeEvents: function() {
+	        this.off();
+
+	        this._hourInput.destroy();
+	        this._minuteInput.destroy();
+
+	        if (this._showMeridiem) {
+	            if (this._inputType === INPUT_TYPE_SELECTBOX) {
+	                domUtil.off(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
+	            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+	                domUtil.off(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+	            }
 	        }
 	    },
 
@@ -327,9 +349,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        }
 
-	        this._$element.remove();
-	        this._$element = $(tmpl(context));
-	        this._$element.appendTo(this._$container);
+	        if (this._element) {
+	            domUtil.removeElement(this._element);
+	        }
+	        this._container.innerHTML = tmpl(context);
+	        this._element = this._container.firstChild;
 
 	        this._renderTimeInputs();
 
@@ -344,11 +368,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    _setMeridiemElement: function() {
 	        if (this._meridiemPosition === 'left') {
-	            this._$element.addClass(CLASS_NAME_LEFT_MERIDIEM);
+	            domUtil.addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
 	        }
-	        this._$meridiemElement = this._$element.find(SELECTOR_MERIDIEM_ELELEMENT);
-	        this._$amEl = this._$meridiemElement.find('[value="AM"]');
-	        this._$pmEl = this._$meridiemElement.find('[value="PM"]');
+	        this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELELMENT);
+	        this._amEl = this._meridiemElement.querySelector('[value="AM"]');
+	        this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
 	        this._syncToMeridiemElements();
 	    },
 
@@ -374,8 +398,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _renderTimeInputs: function() {
 	        var hour = this._hour;
 	        var showMeridiem = this._showMeridiem;
-	        var $hourElement = this._$element.find(SELECTOR_HOUR_ELELEMENT);
-	        var $minuteElement = this._$element.find(SELECTOR_MINUTE_ELELEMENT);
+	        var hourElement = this._element.querySelector(SELECTOR_HOUR_ELELMENT);
+	        var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELELMENT);
 	        var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
 	        var formatExplode = this._format.split(':');
 	        var hourItems = this._getHourItems();
@@ -384,14 +408,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            hour = util.getMeridiemHour(hour);
 	        }
 
-	        this._hourInput = new BoxComponent($hourElement, {
+	        this._hourInput = new BoxComponent(hourElement, {
 	            initialValue: hour,
 	            items: hourItems,
 	            format: formatExplode[0],
 	            disabledItems: this._makeDisabledStatItems(hourItems)
 	        });
 
-	        this._minuteInput = new BoxComponent($minuteElement, {
+	        this._minuteInput = new BoxComponent(minuteElement, {
 	            initialValue: this._minute,
 	            items: this._getMinuteItems(),
 	            format: formatExplode[1]
@@ -406,7 +430,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return snippet.map(hourItems, function(hour) {
-	            if (disabledHours.indexOf(hour) >= 0) {
+	            if (snippet.inArray(hour, disabledHours) >= 0) {
 	                return true;
 	            }
 
@@ -458,16 +482,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _syncToMeridiemElements: function() {
-	        var isPM = this._hour >= 12;
+	        var selectedEl = this._hour >= 12 ? this._pmEl : this._amEl;
+	        var notSelectedEl = selectedEl === this._pmEl ? this._amEl : this._pmEl;
 
-	        this._$amEl.attr({
-	            selected: !isPM,
-	            checked: !isPM
-	        });
-	        this._$pmEl.attr({
-	            selected: isPM,
-	            checked: isPM
-	        });
+	        selectedEl.setAttribute('selected', true);
+	        selectedEl.setAttribute('checked', true);
+	        domUtil.addClass(selectedEl, CLASS_NAME_CHECKED);
+	        notSelectedEl.removeAttribute('selected');
+	        notSelectedEl.removeAttribute('checked');
+	        domUtil.removeClass(notSelectedEl, CLASS_NAME_CHECKED);
 	    },
 
 	    /**
@@ -488,16 +511,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * DOM event handler
-	     * @param {Event} event - Change event on meridiem element
+	     * @param {Event} ev - Change event on meridiem element
 	     * @private
 	     */
-	    _onChangeMeridiem: function(event) {
+	    _onChangeMeridiem: function(ev) {
 	        var hour = this._hour;
-	        var isPM = (event.target.value === 'PM');
+	        var target = util.getTarget(ev);
 
-	        hour = this._to24Hour(isPM, hour);
-	        this.setTime(hour, this._minute);
-	        this._setDisabledHours();
+	        if (target.value && domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
+	            hour = this._to24Hour(target.value === 'PM', hour);
+	            this.setTime(hour, this._minute);
+	            this._setDisabledHours();
+	        }
 	    },
 
 	    /**
@@ -566,6 +591,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _validItems: function(hour, minute) {
+	        if (!snippet.isNumber(hour) || !snippet.isNumber(minute)) {
+	            return false;
+	        }
+
 	        if (this._showMeridiem) {
 	            hour = util.getMeridiemHour(hour);
 	        }
@@ -612,14 +641,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Show time picker element
 	     */
 	    show: function() {
-	        this._$element.show();
+	        domUtil.removeClass(this._element, CLASS_NAME_HIDDEN);
 	    },
 
 	    /**
 	     * Hide time picker element
 	     */
 	    hide: function() {
-	        this._$element.hide();
+	        domUtil.addClass(this._element, CLASS_NAME_HIDDEN);
 	    },
 
 	    /**
@@ -646,12 +675,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {number} minute for time picker
 	     */
 	    setTime: function(hour, minute) {
-	        var isNumber = snippet.isNumber(hour) && snippet.isNumber(minute);
-
-	        if (!isNumber || (hour > 23) || (minute > 59)) {
-	            return;
-	        }
-
 	        if (!this._validItems(hour, minute)) {
 	            return;
 	        }
@@ -660,7 +683,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._minute = minute;
 
 	        this._syncToInputs();
-	        this._syncToMeridiemElements();
+	        if (this._showMeridiem) {
+	            this._syncToMeridiemElements();
+	        }
 
 	        /**
 	         * Change event - TimePicker
@@ -701,23 +726,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Destroy
 	     */
 	    destroy: function() {
-	        this.off();
-	        this._hourInput.destroy();
-	        this._minuteInput.destroy();
-	        this._$container.off('.timepicker');
-	        this._$element.remove();
+	        this._removeEvents();
+	        domUtil.removeElement(this._element);
 
-	        this._$container
+	        this._container
 	            = this._showMeridiem
 	            = this._hourInput
 	            = this._minuteInput
 	            = this._hour
 	            = this._minute
 	            = this._inputType
-	            = this._$element
-	            = this._$meridiemElement
-	            = this._$amEl
-	            = this._$pmEl
+	            = this._element
+	            = this._meridiemElement
+	            = this._amEl
+	            = this._pmEl
 	            = null;
 	    }
 	});
@@ -745,16 +767,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @fileoverview Spinbox (in TimePicker)
 	 * @author NHN. FE Development Lab <dl_javascript@nhn.com>
-	 * @dependency jquery-1.8.3, code-snippet-1.0.2
 	 */
 
 	'use strict';
 
-	var $ = __webpack_require__(8);
-	var snippet = __webpack_require__(9);
+	var snippet = __webpack_require__(8);
+	var domUtil = __webpack_require__(9);
 
-	var tmpl = __webpack_require__(11);
-	var timeFormat = __webpack_require__(31);
+	var util = __webpack_require__(11);
+	var tmpl = __webpack_require__(12);
+	var timeFormat = __webpack_require__(32);
 
 	var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 	var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
@@ -762,7 +784,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @class
 	 * @ignore
-	 * @param {jQuery|String|HTMLElement} container - Container of spinbox
+	 * @param {String|HTMLElement} container - Container of spinbox or selector
 	 * @param {Object} [options] - Options for initialization
 	 * @param {number} [options.initialValue] - initial setting value
 	 * @param {Array.<number>} items - Items
@@ -774,23 +796,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, options);
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$container = $(container);
+	        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
 	        /**
 	         * Spinbox element
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$element = null;
+	        this._element = null;
 
 	        /**
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$inputElement = null;
+	        this._inputElement = null;
 
 	        /**
 	         * Spinbox value items
@@ -828,9 +850,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _render: function() {
+	        var index = snippet.inArray(this.getValue(), this._items);
 	        var context;
 
-	        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+	        if (this._disabledItems[index]) {
 	            this._selectedIndex = this._findEnabledIndex();
 	        }
 	        context = {
@@ -839,9 +862,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            format: this._format
 	        };
 
-	        this._$element = $(tmpl(context));
-	        this._$element.appendTo(this._$container);
-	        this._$inputElement = this._$element.find('input');
+	        this._container.innerHTML = tmpl(context);
+	        this._element = this._container.firstChild;
+	        this._inputElement = this._element.querySelector('input');
 	    },
 
 	    /**
@@ -872,7 +895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    setDisabledItems: function(disabledItems) {
 	        this._disabledItems = disabledItems;
-	        this._$inputElement.change();
+	        this._changeToInputValue();
 	    },
 
 	    /**
@@ -880,10 +903,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _setEvents: function() {
-	        this._$container.on('click.spinbox', SELECTOR_UP_BUTTON, $.proxy(this._setNextValue, this, false))
-	            .on('click.spinbox', SELECTOR_DOWN_BUTTON, $.proxy(this._setNextValue, this, true))
-	            .on('keydown.spinbox', 'input', $.proxy(this._onKeyDownInputElement, this))
-	            .on('change.spinbox', 'input', $.proxy(this._onChangeInput, this));
+	        domUtil.on(this._container, 'click', this._onClickHandler, this);
+	        domUtil.on(this._inputElement, 'keydown', this._onKeydownInputElement, this);
+	        domUtil.on(this._inputElement, 'change', this._onChangeHandler, this);
 
 	        this.on('changeItems', function(items) {
 	            this._items = items;
@@ -892,7 +914,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    /**
-	     * Set input value when user click a button.
+	     * Remove events to up/down button
+	     * @private
+	     */
+	    _removeEvents: function() {
+	        this.off();
+
+	        domUtil.off(this._container, 'click', this._onClickHandler, this);
+	        domUtil.off(this._inputElement, 'keydown', this._onKeydownInputElement, this);
+	        domUtil.off(this._inputElement, 'change', this._onChangeHandler, this);
+	    },
+
+	    /**
+	     * Click event handler
+	     * @param {Event} ev - Change event on up/down buttons.
+	     */
+	    _onClickHandler: function(ev) {
+	        var target = util.getTarget(ev);
+
+	        if (domUtil.closest(target, SELECTOR_DOWN_BUTTON)) {
+	            this._setNextValue(true);
+	        } else if (domUtil.closest(target, SELECTOR_UP_BUTTON)) {
+	            this._setNextValue(false);
+	        }
+	    },
+
+	    /**
+	     * Set input value
 	     * @param {boolean} isDown - From down-action?
 	     * @private
 	     */
@@ -908,41 +956,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this._disabledItems[index]) {
 	            this._selectedIndex = index;
 	            this._setNextValue(isDown);
-
-	            return;
+	        } else {
+	            this.setValue(this._items[index]);
 	        }
-	        this.setValue(this._items[index]);
 	    },
 
 	    /**
 	     * DOM(Input element) Keydown Event handler
-	     * @param {Event} event event-object
+	     * @param {Event} ev event-object
 	     * @private
 	     */
-	    _onKeyDownInputElement: function(event) {
-	        var keyCode = event.which || event.keyCode;
+	    _onKeydownInputElement: function(ev) {
+	        var keyCode = ev.which || ev.keyCode;
 	        var isDown;
 
-	        switch (keyCode) {
-	            case 38:
-	                isDown = false;
-	                break;
-	            case 40:
-	                isDown = true;
-	                break;
-	            default: return;
-	        }
+	        if (domUtil.closest(util.getTarget(ev), 'input')) {
+	            switch (keyCode) {
+	                case 38:
+	                    isDown = false;
+	                    break;
+	                case 40:
+	                    isDown = true;
+	                    break;
+	                default: return;
+	            }
 
-	        this._setNextValue(isDown);
+	            this._setNextValue(isDown);
+	        }
 	    },
 
 	    /**
 	     * DOM(Input element) Change Event handler
+	     * @param {Event} ev Change event on an input element.
 	     * @private
 	     */
-	    _onChangeInput: function() {
-	        var newValue = Number(this._$inputElement.val());
+	    _onChangeHandler: function(ev) {
+	        if (domUtil.closest(util.getTarget(ev), 'input')) {
+	            this._changeToInputValue();
+	        }
+	    },
+
+	    /**
+	     * Change value to input-box if it is valid.
+	     * @private
+	     */
+	    _changeToInputValue: function() {
+	        var newValue = Number(this._inputElement.value);
 	        var newIndex = snippet.inArray(newValue, this._items);
+
 	        if (this._disabledItems[newIndex]) {
 	            newIndex = this._findEnabledIndex();
 	            newValue = this._items[newIndex];
@@ -965,7 +1026,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {number} value - Value
 	     */
 	    setValue: function(value) {
-	        this._$inputElement.val(timeFormat(value, this._format)).change();
+	        this._inputElement.value = timeFormat(value, this._format);
+	        this._changeToInputValue();
 	    },
 
 	    /**
@@ -980,12 +1042,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Destory
 	     */
 	    destroy: function() {
-	        this.off();
-	        this._$container.off('.spinbox');
-	        this._$element.remove();
-	        this._$container
-	            = this._$element
-	            = this._$inputElement
+	        this._removeEvents();
+	        domUtil.removeElement(this._element);
+	        this._container
+	            = this._element
+	            = this._inputElement
 	            = this._items
 	            = this._selectedIndex
 	            = null;
@@ -1000,7 +1061,88 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var Handlebars = __webpack_require__(12);
+	/**
+	 * @fileoverview Utils for Timepicker component
+	 * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
+	 */
+
+	'use strict';
+
+	var snippet = __webpack_require__(8);
+
+	/**
+	 * Utils
+	 * @namespace util
+	 * @ignore
+	 */
+	var utils = {
+	    /**
+	     * Get meridiem hour
+	     * @param {number} hour - Original hour
+	     * @returns {number} Converted meridiem hour
+	     */
+	    getMeridiemHour: function(hour) {
+	        hour %= 12;
+
+	        if (hour === 0) {
+	            hour = 12;
+	        }
+
+	        return hour;
+	    },
+
+	    /**
+	     * Returns range arr
+	     * @param {number} start - Start value
+	     * @param {number} end - End value
+	     * @param {number} [step] - Step value
+	     * @returns {Array}
+	     */
+	    getRangeArr: function(start, end, step) {
+	        var arr = [];
+	        var i;
+
+	        step = step || 1;
+
+	        if (start > end) {
+	            for (i = end; i >= start; i -= step) {
+	                arr.push(i);
+	            }
+	        } else {
+	            for (i = start; i <= end; i += step) {
+	                arr.push(i);
+	            }
+	        }
+
+	        return arr;
+	    },
+
+	    /**
+	     * Get a target element
+	     * @param {Event} ev Event object
+	     * @returns {HTMLElement} An event target element
+	     */
+	    getTarget: function(ev) {
+	        return ev.target || ev.srcElement;
+	    },
+
+	    /**
+	     * send host name
+	     * @ignore
+	     */
+	    sendHostName: function() {
+	        snippet.sendHostname('time-picker', 'UA-129987462-1');
+	    }
+	};
+
+	module.exports = utils;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(13);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
 	    var alias1=container.lambda, alias2=container.escapeExpression;
@@ -1010,21 +1152,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    + "\"\n           size=\""
 	    + alias2(alias1((depth0 != null ? depth0.maxLength : depth0), depth0))
 	    + "\"\n           value=\""
-	    + alias2(__default(__webpack_require__(31)).call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.initialValue : depth0),(depth0 != null ? depth0.format : depth0),{"name":"../helpers/timeFormat","hash":{},"data":data}))
+	    + alias2(__default(__webpack_require__(32)).call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.initialValue : depth0),(depth0 != null ? depth0.format : depth0),{"name":"../helpers/timeFormat","hash":{},"data":data}))
 	    + "\"\n           aria-label=\"TimePicker spinbox value\">\n    <button type=\"button\" class=\"tui-timepicker-btn tui-timepicker-btn-up\">\n        <span class=\"tui-ico-t-btn\">Increase</span>\n    </button>\n    <button type=\"button\" class=\"tui-timepicker-btn tui-timepicker-btn-down\">\n        <span class=\"tui-ico-t-btn\">Decrease</span>\n    </button>\n</div>\n";
 	},"useData":true});
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Create a simple path alias to allow browserify to resolve
 	// the runtime on a supported path.
-	module.exports = __webpack_require__(13)['default'];
+	module.exports = __webpack_require__(14)['default'];
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1038,30 +1180,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _handlebarsBase = __webpack_require__(14);
+	var _handlebarsBase = __webpack_require__(15);
 
 	var base = _interopRequireWildcard(_handlebarsBase);
 
 	// Each of these augment the Handlebars object. No need to setup here.
 	// (This is done to easily share code between commonjs and browse envs)
 
-	var _handlebarsSafeString = __webpack_require__(28);
+	var _handlebarsSafeString = __webpack_require__(29);
 
 	var _handlebarsSafeString2 = _interopRequireDefault(_handlebarsSafeString);
 
-	var _handlebarsException = __webpack_require__(16);
+	var _handlebarsException = __webpack_require__(17);
 
 	var _handlebarsException2 = _interopRequireDefault(_handlebarsException);
 
-	var _handlebarsUtils = __webpack_require__(15);
+	var _handlebarsUtils = __webpack_require__(16);
 
 	var Utils = _interopRequireWildcard(_handlebarsUtils);
 
-	var _handlebarsRuntime = __webpack_require__(29);
+	var _handlebarsRuntime = __webpack_require__(30);
 
 	var runtime = _interopRequireWildcard(_handlebarsRuntime);
 
-	var _handlebarsNoConflict = __webpack_require__(30);
+	var _handlebarsNoConflict = __webpack_require__(31);
 
 	var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
 
@@ -1096,7 +1238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1107,17 +1249,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
-	var _exception = __webpack_require__(16);
+	var _exception = __webpack_require__(17);
 
 	var _exception2 = _interopRequireDefault(_exception);
 
-	var _helpers = __webpack_require__(17);
+	var _helpers = __webpack_require__(18);
 
-	var _decorators = __webpack_require__(25);
+	var _decorators = __webpack_require__(26);
 
-	var _logger = __webpack_require__(27);
+	var _logger = __webpack_require__(28);
 
 	var _logger2 = _interopRequireDefault(_logger);
 
@@ -1206,7 +1348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1336,7 +1478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1393,7 +1535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1404,31 +1546,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _helpersBlockHelperMissing = __webpack_require__(18);
+	var _helpersBlockHelperMissing = __webpack_require__(19);
 
 	var _helpersBlockHelperMissing2 = _interopRequireDefault(_helpersBlockHelperMissing);
 
-	var _helpersEach = __webpack_require__(19);
+	var _helpersEach = __webpack_require__(20);
 
 	var _helpersEach2 = _interopRequireDefault(_helpersEach);
 
-	var _helpersHelperMissing = __webpack_require__(20);
+	var _helpersHelperMissing = __webpack_require__(21);
 
 	var _helpersHelperMissing2 = _interopRequireDefault(_helpersHelperMissing);
 
-	var _helpersIf = __webpack_require__(21);
+	var _helpersIf = __webpack_require__(22);
 
 	var _helpersIf2 = _interopRequireDefault(_helpersIf);
 
-	var _helpersLog = __webpack_require__(22);
+	var _helpersLog = __webpack_require__(23);
 
 	var _helpersLog2 = _interopRequireDefault(_helpersLog);
 
-	var _helpersLookup = __webpack_require__(23);
+	var _helpersLookup = __webpack_require__(24);
 
 	var _helpersLookup2 = _interopRequireDefault(_helpersLookup);
 
-	var _helpersWith = __webpack_require__(24);
+	var _helpersWith = __webpack_require__(25);
 
 	var _helpersWith2 = _interopRequireDefault(_helpersWith);
 
@@ -1445,14 +1587,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	exports['default'] = function (instance) {
 	  instance.registerHelper('blockHelperMissing', function (context, options) {
@@ -1490,7 +1632,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1500,9 +1642,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
-	var _exception = __webpack_require__(16);
+	var _exception = __webpack_require__(17);
 
 	var _exception2 = _interopRequireDefault(_exception);
 
@@ -1590,7 +1732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1600,7 +1742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _exception = __webpack_require__(16);
+	var _exception = __webpack_require__(17);
 
 	var _exception2 = _interopRequireDefault(_exception);
 
@@ -1621,14 +1763,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	exports['default'] = function (instance) {
 	  instance.registerHelper('if', function (conditional, options) {
@@ -1656,7 +1798,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1688,7 +1830,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1706,14 +1848,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	exports['default'] = function (instance) {
 	  instance.registerHelper('with', function (context, options) {
@@ -1745,7 +1887,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1756,7 +1898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _decoratorsInline = __webpack_require__(26);
+	var _decoratorsInline = __webpack_require__(27);
 
 	var _decoratorsInline2 = _interopRequireDefault(_decoratorsInline);
 
@@ -1767,14 +1909,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	exports['default'] = function (instance) {
 	  instance.registerDecorator('inline', function (fn, props, container, options) {
@@ -1802,14 +1944,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	var logger = {
 	  methodMap: ['debug', 'info', 'warn', 'error'],
@@ -1855,7 +1997,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 	// Build out our basic SafeString type
@@ -1876,7 +2018,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1896,15 +2038,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(16);
 
 	var Utils = _interopRequireWildcard(_utils);
 
-	var _exception = __webpack_require__(16);
+	var _exception = __webpack_require__(17);
 
 	var _exception2 = _interopRequireDefault(_exception);
 
-	var _base = __webpack_require__(14);
+	var _base = __webpack_require__(15);
 
 	function checkRevision(compilerInfo) {
 	  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
@@ -2179,7 +2321,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/* global window */
@@ -2206,8 +2348,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports) {
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @fileoverview Handlebars helper - Equals
@@ -2215,6 +2357,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	'use strict';
+
+	var snippet = __webpack_require__(8);
 
 	var PADDING_ZERO_TYPES = ['hh', 'mm'];
 
@@ -2226,12 +2370,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function(value, format) {
 	    value = String(value);
 
-	    return (PADDING_ZERO_TYPES.indexOf(format) >= 0 && value.length === 1) ? '0' + value : value;
+	    return (snippet.inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1) ? '0' + value : value;
 	};
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -2241,15 +2385,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var $ = __webpack_require__(8);
-	var snippet = __webpack_require__(9);
+	var snippet = __webpack_require__(8);
+	var domUtil = __webpack_require__(9);
 
-	var tmpl = __webpack_require__(33);
+	var util = __webpack_require__(11);
+	var tmpl = __webpack_require__(34);
 
 	/**
 	 * @class
 	 * @ignore
-	 * @param {jQuery|string|Element} container - Container element
+	 * @param {string|HTMLElement} container - Container element or selector
 	 * @param {object} options - Options
 	 * @param {Array.<number>} options.items - Items
 	 * @param {number} options.initialValue - Initial value
@@ -2262,10 +2407,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Container element
-	         * @type {jQuery}
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$container = $(container);
+	        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
 
 	        /**
 	         * Selectbox items
@@ -2296,11 +2441,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._format = options.format;
 
 	        /**
-	         * Element
-	         * @type {jQuery}
+	         * Select element
+	         * @type {HTMLElement}
 	         * @private
 	         */
-	        this._$element = $();
+	        this._element = null;
 
 	        this._render();
 	        this._setEvents();
@@ -2327,9 +2472,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            })
 	        };
 
-	        this._$element.remove();
-	        this._$element = $(tmpl(context));
-	        this._$element.appendTo(this._$container);
+	        if (this._element) {
+	            domUtil.removeElement(this._element);
+	        }
+	        this._container.innerHTML = tmpl(context);
+	        this._element = this._container.firstChild;
 	    },
 
 	    /**
@@ -2337,7 +2484,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _changeEnabledIndex: function() {
-	        if (this._disabledItems[this._items.indexOf(this.getValue())]) {
+	        var index = snippet.inArray(this.getValue(), this._items);
+	        if (this._disabledItems[index]) {
 	            this._selectedIndex = snippet.inArray(false, this._disabledItems);
 	        }
 	    },
@@ -2357,7 +2505,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    _setEvents: function() {
-	        this._$container.on('change.selectbox', 'select', $.proxy(this._onChange, this));
+	        domUtil.on(this._element, 'change', this._onChangeHandler, this);
+
 	        this.on('changeItems', function(items) {
 	            this._items = items;
 	            this._render();
@@ -2365,13 +2514,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    /**
-	     * Change event handler
-	     * @param {jQuery.Event} ev - Event object
+	     * Remove events
 	     * @private
 	     */
-	    _onChange: function(ev) {
-	        var newValue = Number(ev.target.value);
+	    _removeEvents: function() {
+	        this.off();
 
+	        domUtil.off(this._element, 'change', this._onChangeHandler, this);
+	    },
+
+	    /**
+	     * Change event handler
+	     * @param {Event} ev Change event on a select element.
+	     * @private
+	     */
+	    _onChangeHandler: function(ev) {
+	        if (domUtil.closest(util.getTarget(ev), 'select')) {
+	            this._setNewValue();
+	        }
+	    },
+
+	    /**
+	     * Set new value
+	     * @private
+	     */
+	    _setNewValue: function() {
+	        var newValue = Number(this._element.value);
 	        this._selectedIndex = snippet.inArray(newValue, this._items);
 	        this.fire('change', {
 	            value: newValue
@@ -2395,7 +2563,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (newIndex > -1 && newIndex !== this._selectedIndex) {
 	            this._selectedIndex = newIndex;
-	            this._$element.val(value).change();
+	            this._element.value = value;
+	            this._setNewValue();
 	        }
 	    },
 
@@ -2403,15 +2572,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Destory
 	     */
 	    destroy: function() {
-	        this.off();
-	        this._$container.off('.selectbox');
-	        this._$element.remove();
-
-	        this._$container
+	        this._removeEvents();
+	        domUtil.removeElement(this._element);
+	        this._container
 	            = this._items
 	            = this._selectedIndex
-	            = this._$element
-	            = this._$element
+	            = this._element
 	            = null;
 	    }
 	});
@@ -2421,15 +2587,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var Handlebars = __webpack_require__(12);
+	var Handlebars = __webpack_require__(13);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
-	  return ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depths[1] != null ? depths[1].initialValue : depths[1]),blockParams[0][0],{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	  return ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(35)).call(alias1,(depths[1] != null ? depths[1].initialValue : depths[1]),blockParams[0][0],{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
 	},"2":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var alias1=container.escapeExpression, alias2=depth0 != null ? depth0 : {};
 
@@ -2438,7 +2604,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    + "\" selected "
 	    + alias1(helpers.lookup.call(alias2,(depths[1] != null ? depths[1].disabledItems : depths[1]),(data && data.index),{"name":"lookup","hash":{},"data":data,"blockParams":blockParams}))
 	    + ">"
-	    + alias1(__default(__webpack_require__(31)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
+	    + alias1(__default(__webpack_require__(32)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
 	    + "</option>\n";
 	},"4":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var alias1=container.escapeExpression, alias2=depth0 != null ? depth0 : {};
@@ -2448,7 +2614,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    + "\" "
 	    + alias1(helpers.lookup.call(alias2,(depths[1] != null ? depths[1].disabledItems : depths[1]),(data && data.index),{"name":"lookup","hash":{},"data":data,"blockParams":blockParams}))
 	    + ">"
-	    + alias1(__default(__webpack_require__(31)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
+	    + alias1(__default(__webpack_require__(32)).call(alias2,blockParams[1][0],(depths[1] != null ? depths[1].format : depths[1]),{"name":"../helpers/timeFormat","hash":{},"data":data,"blockParams":blockParams}))
 	    + "</option>\n";
 	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
 	    var stack1;
@@ -2459,7 +2625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	},"useData":true,"useDepths":true,"useBlockParams":true});
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2477,79 +2643,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function(a, b) {
 	    return a === b;
 	};
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/**
-	 * @fileoverview Utils for Datepicker component
-	 * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
-	 * @dependency tui-code-snippet ^1.3.0
-	 */
-
-	'use strict';
-
-	var snippet = __webpack_require__(9);
-
-	/**
-	 * Utils
-	 * @namespace util
-	 * @ignore
-	 */
-	var utils = {
-	    /**
-	     * Get meridiem hour
-	     * @param {number} hour - Original hour
-	     * @returns {number} Converted meridiem hour
-	     */
-	    getMeridiemHour: function(hour) {
-	        hour %= 12;
-
-	        if (hour === 0) {
-	            hour = 12;
-	        }
-
-	        return hour;
-	    },
-
-	    /**
-	     * Returns range arr
-	     * @param {number} start - Start value
-	     * @param {number} end - End value
-	     * @param {number} [step] - Step value
-	     * @returns {Array}
-	     */
-	    getRangeArr: function(start, end, step) {
-	        var arr = [];
-	        var i;
-
-	        step = step || 1;
-
-	        if (start > end) {
-	            for (i = end; i >= start; i -= step) {
-	                arr.push(i);
-	            }
-	        } else {
-	            for (i = start; i <= end; i += step) {
-	                arr.push(i);
-	            }
-	        }
-
-	        return arr;
-	    },
-
-	    /**
-	     * send host name
-	     * @ignore
-	     */
-	    sendHostName: function() {
-	        snippet.sendHostname('time-picker', 'UA-129987462-1');
-	    }
-	};
-
-	module.exports = utils;
 
 
 /***/ }),
@@ -2579,7 +2672,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var Handlebars = __webpack_require__(12);
+	var Handlebars = __webpack_require__(13);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
 	    var stack1;
@@ -2601,7 +2694,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
 	  return "<div class=\"tui-timepicker\">\n    <div class=\"tui-timepicker-body\">\n        <div class=\"tui-timepicker-row\">\n"
-	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data}),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(35)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data}),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(4, data, 0),"data":data})) != null ? stack1 : "")
 	    + "        </div>\n    </div>\n</div>\n";
 	},"useData":true});
 
@@ -2609,7 +2702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var Handlebars = __webpack_require__(12);
+	var Handlebars = __webpack_require__(13);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data,blockParams) {
 	    var stack1, alias1=depth0 != null ? depth0 : {};
@@ -2647,7 +2740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var stack1, alias1=depth0 != null ? depth0 : {};
 
 	  return "\n"
-	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(34)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
+	    + ((stack1 = helpers["if"].call(alias1,__default(__webpack_require__(35)).call(alias1,(depth0 != null ? depth0.inputType : depth0),"spinbox",{"name":"../helpers/equals","hash":{},"data":data,"blockParams":blockParams}),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams})) != null ? stack1 : "");
 	},"useData":true,"useBlockParams":true});
 
 /***/ }),
