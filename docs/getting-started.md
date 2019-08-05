@@ -1,7 +1,7 @@
 ## v2.0.0 Migration Guide
 In v2.0.0, jQuery is removed. It might cause other components to fail if they pass a jQuery object as a container.
 
-Previously, you can use a `jQuery` object to create an instance.
+Previously, you can use a `jQuery` to create an instance.
 ```javascript
 // v1
 var instance = new tui.TimePicker($('#timepicker-wrapper'), {
