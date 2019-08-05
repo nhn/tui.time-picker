@@ -1,6 +1,33 @@
-### 1. Load dependency files
-* Script - [jQuery](https://github.com/jquery/jquery) 1.11.0 or later
-* Script - [tui-code-snippet](https://github.com/nhnent/tui.code-snippet) 1.2.5 or later
+## v2.0.0 Migration Guide
+In v2.0.0, jQuery is removed. It might cause other components to fail if they pass a jQuery object as a container.
+
+Previously, you can use a `jQuery` to create an instance.
+```javascript
+// v1
+var instance = new tui.TimePicker($('#timepicker-wrapper'), {
+   // options
+});
+```
+
+Now, you have to use `selector` or `HTMLElement` as a container.
+```javascript
+// v2
+var instance = new tui.TimePicker('#timepicker-wrapper', {
+   // options
+});
+
+// or
+
+var container = document.getElementById('timepicker-wrapper');
+var instance = new tui.TimePicker(container, {
+    // options
+});
+```
+
+## Load dependency files
+* Script - [tui-code-snippet](https://github.com/nhn/tui.code-snippet) 1.5.0 or later
+* Script - [tui-dom](https://github.com/nhn/tui.dom) 3.0.0 or later
+    > If your project should support IE8, please use `tui-dom.js`, not `tui-dom.min.js`.
 
 ```html
 <html>
@@ -10,21 +37,21 @@
     </head>
     <body>
         ....
-        <script type="text/javascript" src="jquery.min.js"></script>
         <script type="text/javascript" src="tui-code-snippet.min.js"></script>
+        <script type="text/javascript" src="tui-dom.min.js"></script>
         <script type="text/javascript" src="tui-time-picker.min.js"></script>
         ....
     </body>
 </html>
 ```
 
-### 2. Write a wrapper element
+## Write a wrapper element
 
 ```html
 <div id="timepicker-wrapper"></div>
 ```
 
-### 3. Create instance
+## Create instance
 
 ```js
 var instance = new tui.TimePicker('#timepicker-wrapper', {
@@ -32,4 +59,4 @@ var instance = new tui.TimePicker('#timepicker-wrapper', {
 });
 ```
 
-You can see the detail information at the [API & Examples](https://nhnent.github.io/tui.time-picker/latest)
+You can see the detail information at the [API & Examples](https://nhn.github.io/tui.time-picker/latest)

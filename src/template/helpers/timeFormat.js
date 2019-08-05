@@ -5,6 +5,8 @@
 
 'use strict';
 
+var snippet = require('tui-code-snippet');
+
 var PADDING_ZERO_TYPES = ['hh', 'mm'];
 
 /**
@@ -15,5 +17,5 @@ var PADDING_ZERO_TYPES = ['hh', 'mm'];
 module.exports = function(value, format) {
     value = String(value);
 
-    return (PADDING_ZERO_TYPES.indexOf(format) >= 0 && value.length === 1) ? '0' + value : value;
+    return (snippet.inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1) ? '0' + value : value;
 };
