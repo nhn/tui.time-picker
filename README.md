@@ -68,7 +68,7 @@ tui.usageStatistics = false;
 
 
 ## 🐾 Examples
-* [Basic](https://nhn.github.io/tui.date-picker/latest/tutorial-example01-basic) : Example of using default options.
+* [Basic](https://nhn.github.io/tui.time-picker/latest/tutorial-example01-basic) : Example of using default options.
 * [Using meridiem](https://nhn.github.io/tui.time-picker/latest/tutorial-example01-basic) : An example of selecting AM/PM(Meridiem).
 * [Using step](https://nhn.github.io/tui.time-picker/latest/tutorial-example04-i18n) : Example of selecting the time for a specific interval.
 
