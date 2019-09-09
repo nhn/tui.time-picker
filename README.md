@@ -8,7 +8,7 @@
 [![code with hearth by NHN](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN-ff1414.svg)](https://github.com/nhn)
 
 
-<p><a href="https://nhn.github.io/tui.time-picker/latest/"><img src="https://user-images.githubusercontent.com/8615506/64507389-993a0080-d315-11e9-83ed-b9a7ae64bfeb.gif" /></a></p>
+<p><a href="https://nhn.github.io/tui.time-picker/latest/"><img src="https://user-images.githubusercontent.com/8615506/64507615-27ae8200-d316-11e9-85a0-8f384d74cc02.gif" /></a></p>
 
 
 ## 🚩 Table of Contents
