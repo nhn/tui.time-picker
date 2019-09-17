@@ -5,89 +5,83 @@
 
 'use strict';
 
+var path = require('path');
 var pkg = require('./package.json');
 var webpack = require('webpack');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var SafeUmdPlugin = require('safe-umd-webpack-plugin');
-
-var isProduction = process.argv.indexOf('--production') >= 0;
-
-var FILENAME = pkg.name + (isProduction ? '.min.js' : '.js');
-var BANNER = [
-    FILENAME,
+module.exports = function(env, argv) {
+  var isProduction = argv.mode === 'production';
+  var FILENAME = pkg.name + (isProduction ? '.min.js' : '.js');
+  var BANNER = [
+    'TOAST UI Time Picker',
     '@version ' + pkg.version,
     '@author ' + pkg.author,
     '@license ' + pkg.license
-].join('\n');
+  ].join('\n');
 
-var config = {
-    eslint: {
-        failOnError: isProduction
-    },
+  return {
+    mode: 'development',
     entry: './src/js/index.js',
     output: {
-        library: ['tui', 'TimePicker'],
-        libraryTarget: 'umd',
-        path: 'dist',
-        publicPath: 'dist',
-        filename: FILENAME
+      library: ['tui', 'TimePicker'],
+      libraryTarget: 'umd',
+      path: path.resolve(__dirname, 'dist'),
+      publicPath: 'dist',
+      filename: FILENAME
     },
     externals: {
-        'tui-code-snippet': {
-            'commonjs': 'tui-code-snippet',
-            'commonjs2': 'tui-code-snippet',
-            'amd': 'tui-code-snippet',
-            'root': ['tui', 'util']
-        },
-        'tui-dom': {
-            'commonjs': 'tui-dom',
-            'commonjs2': 'tui-dom',
-            'amd': 'tui-dom',
-            'root': ['tui', 'dom']
-        }
+      'tui-code-snippet': {
+        commonjs: 'tui-code-snippet',
+        commonjs2: 'tui-code-snippet',
+        amd: 'tui-code-snippet',
+        root: ['tui', 'util']
+      },
+      'tui-dom': {
+        commonjs: 'tui-dom',
+        commonjs2: 'tui-dom',
+        amd: 'tui-dom',
+        root: ['tui', 'dom']
+      }
     },
     module: {
-        preLoaders: [
-            {
-                test: /\.js$/,
-                exclude: /(test|node_modules)/,
-                loader: 'eslint-loader'
-            },
-            {
-                test: /\.hbs$/,
-                exclude: /(node_modules)/,
-                loader: 'handlebars-loader'
-            },
-            {
-                test: /\.css/,
-                loader: ExtractTextPlugin.extract('style-loader', ['css-loader'])
-            },
-            {
-                test: /\.png/,
-                loader: 'url-loader'
-            }
-        ]
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /(test|node_modules)/,
+          loader: 'eslint-loader',
+          enforce: 'pre',
+          options: {
+            failOnError: isProduction
+          }
+        },
+        {
+          test: /\.hbs$/,
+          exclude: /(node_modules)/,
+          loader: 'handlebars-loader'
+        },
+        {
+          test: /\.css/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
+        },
+        {
+          test: /\.png/,
+          loader: 'url-loader'
+        }
+      ]
     },
     plugins: [
-        new SafeUmdPlugin(),
-        new webpack.BannerPlugin(BANNER),
-        new ExtractTextPlugin(pkg.name + '.css')
+      new webpack.BannerPlugin(BANNER),
+      new MiniCssExtractPlugin({filename: pkg.name + '.css'})
     ],
     devServer: {
-        historyApiFallback: false,
-        progress: true,
-        host: '0.0.0.0',
-        disableHostCheck: true
+      historyApiFallback: false,
+      progress: true,
+      host: '0.0.0.0',
+      disableHostCheck: true
     }
+  };
 };
-
-if (isProduction) {
-    config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-        compress: {
-            warnings: false
-        }
-    }));
-}
-
-module.exports = config;

@@ -31,19 +31,22 @@ var INPUT_TYPE_SELECTBOX = 'selectbox';
  * @returns {object} Merged options
  */
 var mergeDefaultOptions = function(options) {
-    return snippet.extend({
-        language: 'en',
-        initialHour: 0,
-        initialMinute: 0,
-        showMeridiem: true,
-        inputType: 'selectbox',
-        hourStep: 1,
-        minuteStep: 1,
-        meridiemPosition: 'right',
-        format: 'h:m',
-        disabledHours: [],
-        usageStatistics: true
-    }, options);
+  return snippet.extend(
+    {
+      language: 'en',
+      initialHour: 0,
+      initialMinute: 0,
+      showMeridiem: true,
+      inputType: 'selectbox',
+      hourStep: 1,
+      minuteStep: 1,
+      meridiemPosition: 'right',
+      format: 'h:m',
+      disabledHours: [],
+      usageStatistics: true
+    },
+    options
+  );
 };
 
 /**
@@ -70,142 +73,145 @@ var mergeDefaultOptions = function(options) {
  *     showMeridiem: false
  * });
  */
-var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
+var TimePicker = snippet.defineClass(
+  /** @lends TimePicker.prototype */ {
     static: {
-        /**
-         * Locale text data
-         * @type {object}
-         * @memberof TimePicker
-         * @static
-         * @example
-         * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
-         *
-         * TimePicker.localeTexts['customKey'] = {
-         *     am: 'a.m.',
-         *     pm: 'p.m.'
-         * };
-         *
-         * var instance = new tui.TimePicker('#timepicker-container', {
-         *     language: 'customKey',
-         * });
-         */
-        localeTexts: localeTexts
+      /**
+       * Locale text data
+       * @type {object}
+       * @memberof TimePicker
+       * @static
+       * @example
+       * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
+       *
+       * TimePicker.localeTexts['customKey'] = {
+       *     am: 'a.m.',
+       *     pm: 'p.m.'
+       * };
+       *
+       * var instance = new tui.TimePicker('#timepicker-container', {
+       *     language: 'customKey',
+       * });
+       */
+      localeTexts: localeTexts
     },
     init: function(container, options) {
-        options = mergeDefaultOptions(options);
+      options = mergeDefaultOptions(options);
 
-        /**
-         * @type {HTMLElement}
-         * @private
-         */
-        this._container = snippet.isHTMLNode(container) ? container : document.querySelector(container);
+      /**
+       * @type {HTMLElement}
+       * @private
+       */
+      this._container = snippet.isHTMLNode(container)
+        ? container
+        : document.querySelector(container);
 
-        /**
-         * @type {HTMLElement}
-         * @private
-         */
-        this._element = null;
+      /**
+       * @type {HTMLElement}
+       * @private
+       */
+      this._element = null;
 
-        /**
-         * @type {HTMLElement}
-         * @private
-         */
-        this._meridiemElement = null;
+      /**
+       * @type {HTMLElement}
+       * @private
+       */
+      this._meridiemElement = null;
 
-        /**
-         * @type {HTMLElement}
-         * @private
-         */
-        this._amEl = null;
+      /**
+       * @type {HTMLElement}
+       * @private
+       */
+      this._amEl = null;
 
-        /**
-         * @type {HTMLElement}
-         * @private
-         */
-        this._pmEl = null;
+      /**
+       * @type {HTMLElement}
+       * @private
+       */
+      this._pmEl = null;
 
-        /**
-         * @type {boolean}
-         * @private
-         */
-        this._showMeridiem = options.showMeridiem;
+      /**
+       * @type {boolean}
+       * @private
+       */
+      this._showMeridiem = options.showMeridiem;
 
-        /**
-         * Meridiem postion
-         * @type {'left'|'right'}
-         * @private
-         */
-        this._meridiemPosition = options.meridiemPosition;
+      /**
+       * Meridiem postion
+       * @type {'left'|'right'}
+       * @private
+       */
+      this._meridiemPosition = options.meridiemPosition;
 
-        /**
-         * @type {Spinbox|Selectbox}
-         * @private
-         */
-        this._hourInput = null;
+      /**
+       * @type {Spinbox|Selectbox}
+       * @private
+       */
+      this._hourInput = null;
 
-        /**
-         * @type {Spinbox|Selectbox}
-         * @private
-         */
-        this._minuteInput = null;
+      /**
+       * @type {Spinbox|Selectbox}
+       * @private
+       */
+      this._minuteInput = null;
 
-        /**
-         * @type {number}
-         * @private
-         */
-        this._hour = options.initialHour;
+      /**
+       * @type {number}
+       * @private
+       */
+      this._hour = options.initialHour;
 
-        /**
-         * @type {number}
-         * @private
-         */
-        this._minute = options.initialMinute;
+      /**
+       * @type {number}
+       * @private
+       */
+      this._minute = options.initialMinute;
 
-        /**
-         * @type {number}
-         * @private
-         */
-        this._hourStep = options.hourStep;
+      /**
+       * @type {number}
+       * @private
+       */
+      this._hourStep = options.hourStep;
 
-        /**
-         * @type {number}
-         * @private
-         */
-        this._minuteStep = options.minuteStep;
+      /**
+       * @type {number}
+       * @private
+       */
+      this._minuteStep = options.minuteStep;
 
-        /**
-         * @type {Array}
-         * @private
-         */
-        this._disabledHours = options.disabledHours;
+      /**
+       * @type {Array}
+       * @private
+       */
+      this._disabledHours = options.disabledHours;
 
-        /**
-         * TimePicker inputType
-         * @type {'spinbox'|'selectbox'}
-         * @private
-         */
-        this._inputType = options.inputType;
+      /**
+       * TimePicker inputType
+       * @type {'spinbox'|'selectbox'}
+       * @private
+       */
+      this._inputType = options.inputType;
 
-        /**
-         * Locale text for meridiem
-         * @type {string}
-         * @private
-         */
-        this._localeText = localeTexts[options.language];
+      /**
+       * Locale text for meridiem
+       * @type {string}
+       * @private
+       */
+      this._localeText = localeTexts[options.language];
 
-        /**
-         * Time format for output
-         * @type {string}
-         * @private
-         */
-        this._format = this._getValidTimeFormat(options.format);
+      /**
+       * Time format for output
+       * @type {string}
+       * @private
+       */
+      this._format = this._getValidTimeFormat(options.format);
 
-        this._render();
-        this._setEvents();
+      this._render();
+      this._setEvents();
 
-        if (options.usageStatistics) {
-            util.sendHostName();
-        }
+      if (options.usageStatistics) {
+        util.sendHostName();
+      }
     },
 
     /**
@@ -213,16 +219,21 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _setEvents: function() {
-        this._hourInput.on('change', this._onChangeTimeInput, this);
-        this._minuteInput.on('change', this._onChangeTimeInput, this);
+      this._hourInput.on('change', this._onChangeTimeInput, this);
+      this._minuteInput.on('change', this._onChangeTimeInput, this);
 
-        if (this._showMeridiem) {
-            if (this._inputType === INPUT_TYPE_SELECTBOX) {
-                domUtil.on(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
-            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
-                domUtil.on(this._meridiemElement, 'click', this._onChangeMeridiem, this);
-            }
+      if (this._showMeridiem) {
+        if (this._inputType === INPUT_TYPE_SELECTBOX) {
+          domUtil.on(
+            this._meridiemElement.querySelector('select'),
+            'change',
+            this._onChangeMeridiem,
+            this
+          );
+        } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+          domUtil.on(this._meridiemElement, 'click', this._onChangeMeridiem, this);
         }
+      }
     },
 
     /**
@@ -230,18 +241,23 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _removeEvents: function() {
-        this.off();
+      this.off();
 
-        this._hourInput.destroy();
-        this._minuteInput.destroy();
+      this._hourInput.destroy();
+      this._minuteInput.destroy();
 
-        if (this._showMeridiem) {
-            if (this._inputType === INPUT_TYPE_SELECTBOX) {
-                domUtil.off(this._meridiemElement.querySelector('select'), 'change', this._onChangeMeridiem, this);
-            } else if (this._inputType === INPUT_TYPE_SPINBOX) {
-                domUtil.off(this._meridiemElement, 'click', this._onChangeMeridiem, this);
-            }
+      if (this._showMeridiem) {
+        if (this._inputType === INPUT_TYPE_SELECTBOX) {
+          domUtil.off(
+            this._meridiemElement.querySelector('select'),
+            'change',
+            this._onChangeMeridiem,
+            this
+          );
+        } else if (this._inputType === INPUT_TYPE_SPINBOX) {
+          domUtil.off(this._meridiemElement, 'click', this._onChangeMeridiem, this);
         }
+      }
     },
 
     /**
@@ -249,28 +265,28 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _render: function() {
-        var context = {
-            showMeridiem: this._showMeridiem,
-            inputType: this._inputType
-        };
+      var context = {
+        showMeridiem: this._showMeridiem,
+        inputType: this._inputType
+      };
 
-        if (this._showMeridiem) {
-            snippet.extend(context, {
-                meridiemElement: this._makeMeridiemHTML()
-            });
-        }
+      if (this._showMeridiem) {
+        snippet.extend(context, {
+          meridiemElement: this._makeMeridiemHTML()
+        });
+      }
 
-        if (this._element) {
-            domUtil.removeElement(this._element);
-        }
-        this._container.innerHTML = tmpl(context);
-        this._element = this._container.firstChild;
+      if (this._element) {
+        domUtil.removeElement(this._element);
+      }
+      this._container.innerHTML = tmpl(context);
+      this._element = this._container.firstChild;
 
-        this._renderTimeInputs();
+      this._renderTimeInputs();
 
-        if (this._showMeridiem) {
-            this._setMeridiemElement();
-        }
+      if (this._showMeridiem) {
+        this._setMeridiemElement();
+      }
     },
 
     /**
@@ -278,13 +294,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _setMeridiemElement: function() {
-        if (this._meridiemPosition === 'left') {
-            domUtil.addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
-        }
-        this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELELMENT);
-        this._amEl = this._meridiemElement.querySelector('[value="AM"]');
-        this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
-        this._syncToMeridiemElements();
+      if (this._meridiemPosition === 'left') {
+        domUtil.addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
+      }
+      this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELELMENT);
+      this._amEl = this._meridiemElement.querySelector('[value="AM"]');
+      this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
+      this._syncToMeridiemElements();
     },
 
     /**
@@ -293,13 +309,13 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _makeMeridiemHTML: function() {
-        var localeText = this._localeText;
+      var localeText = this._localeText;
 
-        return meridiemTemplate({
-            inputType: this._inputType,
-            am: localeText.am,
-            pm: localeText.pm
-        });
+      return meridiemTemplate({
+        inputType: this._inputType,
+        am: localeText.am,
+        pm: localeText.pm
+      });
     },
 
     /**
@@ -307,71 +323,71 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _renderTimeInputs: function() {
-        var hour = this._hour;
-        var showMeridiem = this._showMeridiem;
-        var hourElement = this._element.querySelector(SELECTOR_HOUR_ELELMENT);
-        var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELELMENT);
-        var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
-        var formatExplode = this._format.split(':');
-        var hourItems = this._getHourItems();
+      var hour = this._hour;
+      var showMeridiem = this._showMeridiem;
+      var hourElement = this._element.querySelector(SELECTOR_HOUR_ELELMENT);
+      var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELELMENT);
+      var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
+      var formatExplode = this._format.split(':');
+      var hourItems = this._getHourItems();
 
-        if (showMeridiem) {
-            hour = util.getMeridiemHour(hour);
-        }
+      if (showMeridiem) {
+        hour = util.getMeridiemHour(hour);
+      }
 
-        this._hourInput = new BoxComponent(hourElement, {
-            initialValue: hour,
-            items: hourItems,
-            format: formatExplode[0],
-            disabledItems: this._makeDisabledStatItems(hourItems)
-        });
+      this._hourInput = new BoxComponent(hourElement, {
+        initialValue: hour,
+        items: hourItems,
+        format: formatExplode[0],
+        disabledItems: this._makeDisabledStatItems(hourItems)
+      });
 
-        this._minuteInput = new BoxComponent(minuteElement, {
-            initialValue: this._minute,
-            items: this._getMinuteItems(),
-            format: formatExplode[1]
-        });
+      this._minuteInput = new BoxComponent(minuteElement, {
+        initialValue: this._minute,
+        items: this._getMinuteItems(),
+        format: formatExplode[1]
+      });
     },
 
     _makeDisabledStatItems: function(hourItems) {
-        var disabledHours = this._disabledHours.concat();
+      var disabledHours = this._disabledHours.concat();
 
-        if (this._showMeridiem) {
-            disabledHours = this._meridiemableTime(disabledHours);
+      if (this._showMeridiem) {
+        disabledHours = this._meridiemableTime(disabledHours);
+      }
+
+      return snippet.map(hourItems, function(hour) {
+        if (snippet.inArray(hour, disabledHours) >= 0) {
+          return true;
         }
 
-        return snippet.map(hourItems, function(hour) {
-            if (snippet.inArray(hour, disabledHours) >= 0) {
-                return true;
-            }
-
-            return false;
-        });
+        return false;
+      });
     },
 
     _meridiemableTime: function(disabledHours) {
-        var diffHour = 0;
-        var startHour = 0;
-        var endHour = 11;
+      var diffHour = 0;
+      var startHour = 0;
+      var endHour = 11;
 
-        if (this._hour >= 12) {
-            diffHour = 12;
-            startHour = 12;
-            endHour = 23;
+      if (this._hour >= 12) {
+        diffHour = 12;
+        startHour = 12;
+        endHour = 23;
+      }
+
+      disabledHours = snippet.map(disabledHours, function(hour) {
+        if (hour >= startHour && hour <= endHour) {
+          return hour - diffHour === 0 ? 12 : hour - diffHour;
         }
 
-        disabledHours = snippet.map(disabledHours, function(hour) {
-            if (hour >= startHour && hour <= endHour) {
-                return (hour - diffHour === 0) ? 12 : hour - diffHour;
-            }
+        return false;
+      });
+      disabledHours = snippet.filter(disabledHours, function(hour) {
+        return hour;
+      });
 
-            return false;
-        });
-        disabledHours = snippet.filter(disabledHours, function(hour) {
-            return hour;
-        });
-
-        return disabledHours;
+      return disabledHours;
     },
 
     /**
@@ -381,11 +397,11 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _getValidTimeFormat: function(format) {
-        if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
-            return 'h:m';
-        }
+      if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
+        return 'h:m';
+      }
 
-        return format.toLowerCase();
+      return format.toLowerCase();
     },
 
     /**
@@ -393,15 +409,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _syncToMeridiemElements: function() {
-        var selectedEl = this._hour >= 12 ? this._pmEl : this._amEl;
-        var notSelectedEl = selectedEl === this._pmEl ? this._amEl : this._pmEl;
+      var selectedEl = this._hour >= 12 ? this._pmEl : this._amEl;
+      var notSelectedEl = selectedEl === this._pmEl ? this._amEl : this._pmEl;
 
-        selectedEl.setAttribute('selected', true);
-        selectedEl.setAttribute('checked', true);
-        domUtil.addClass(selectedEl, CLASS_NAME_CHECKED);
-        notSelectedEl.removeAttribute('selected');
-        notSelectedEl.removeAttribute('checked');
-        domUtil.removeClass(notSelectedEl, CLASS_NAME_CHECKED);
+      selectedEl.setAttribute('selected', true);
+      selectedEl.setAttribute('checked', true);
+      domUtil.addClass(selectedEl, CLASS_NAME_CHECKED);
+      notSelectedEl.removeAttribute('selected');
+      notSelectedEl.removeAttribute('checked');
+      domUtil.removeClass(notSelectedEl, CLASS_NAME_CHECKED);
     },
 
     /**
@@ -409,15 +425,15 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _syncToInputs: function() {
-        var hour = this._hour;
-        var minute = this._minute;
+      var hour = this._hour;
+      var minute = this._minute;
 
-        if (this._showMeridiem) {
-            hour = util.getMeridiemHour(hour);
-        }
+      if (this._showMeridiem) {
+        hour = util.getMeridiemHour(hour);
+      }
 
-        this._hourInput.setValue(hour);
-        this._minuteInput.setValue(minute);
+      this._hourInput.setValue(hour);
+      this._minuteInput.setValue(minute);
     },
 
     /**
@@ -426,14 +442,14 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _onChangeMeridiem: function(ev) {
-        var hour = this._hour;
-        var target = util.getTarget(ev);
+      var hour = this._hour;
+      var target = util.getTarget(ev);
 
-        if (target.value && domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
-            hour = this._to24Hour(target.value === 'PM', hour);
-            this.setTime(hour, this._minute);
-            this._setDisabledHours();
-        }
+      if (target.value && domUtil.closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
+        hour = this._to24Hour(target.value === 'PM', hour);
+        this.setTime(hour, this._minute);
+        this._setDisabledHours();
+      }
     },
 
     /**
@@ -441,14 +457,14 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _onChangeTimeInput: function() {
-        var hour = this._hourInput.getValue();
-        var minute = this._minuteInput.getValue();
-        var isPM = this._hour >= 12;
+      var hour = this._hourInput.getValue();
+      var minute = this._minuteInput.getValue();
+      var isPM = this._hour >= 12;
 
-        if (this._showMeridiem) {
-            hour = this._to24Hour(isPM, hour);
-        }
-        this.setTime(hour, minute);
+      if (this._showMeridiem) {
+        hour = this._to24Hour(isPM, hour);
+      }
+      this.setTime(hour, minute);
     },
 
     /**
@@ -459,19 +475,19 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _to24Hour: function(isPM, hour) {
-        hour %= 12;
-        if (isPM) {
-            hour += 12;
-        }
+      hour %= 12;
+      if (isPM) {
+        hour += 12;
+      }
 
-        return hour;
+      return hour;
     },
 
     _setDisabledHours: function() {
-        var hourItems = this._getHourItems();
-        var disabledItems = this._makeDisabledStatItems(hourItems);
+      var hourItems = this._getHourItems();
+      var disabledItems = this._makeDisabledStatItems(hourItems);
 
-        this._hourInput.setDisabledItems(disabledItems);
+      this._hourInput.setDisabledItems(disabledItems);
     },
 
     /**
@@ -480,9 +496,9 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _getHourItems: function() {
-        var step = this._hourStep;
+      var step = this._hourStep;
 
-        return this._showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
+      return this._showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
     },
 
     /**
@@ -491,7 +507,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _getMinuteItems: function() {
-        return util.getRangeArr(0, 59, this._minuteStep);
+      return util.getRangeArr(0, 59, this._minuteStep);
     },
 
     /**
@@ -502,16 +518,18 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @private
      */
     _validItems: function(hour, minute) {
-        if (!snippet.isNumber(hour) || !snippet.isNumber(minute)) {
-            return false;
-        }
+      if (!snippet.isNumber(hour) || !snippet.isNumber(minute)) {
+        return false;
+      }
 
-        if (this._showMeridiem) {
-            hour = util.getMeridiemHour(hour);
-        }
+      if (this._showMeridiem) {
+        hour = util.getMeridiemHour(hour);
+      }
 
-        return snippet.inArray(hour, this._getHourItems()) > -1 &&
-            snippet.inArray(minute, this._getMinuteItems()) > -1;
+      return (
+        snippet.inArray(hour, this._getHourItems()) > -1 &&
+        snippet.inArray(minute, this._getMinuteItems()) > -1
+      );
     },
 
     /**
@@ -519,8 +537,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {array} step - Step to create items of hour
      */
     setHourStep: function(step) {
-        this._hourStep = step;
-        this._hourInput.fire('changeItems', this._getHourItems());
+      this._hourStep = step;
+      this._hourInput.fire('changeItems', this._getHourItems());
     },
 
     /**
@@ -528,7 +546,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {number} Step of hour
      */
     getHourStep: function() {
-        return this._hourStep;
+      return this._hourStep;
     },
 
     /**
@@ -536,8 +554,8 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {array} step - Step to create items of minute
      */
     setMinuteStep: function(step) {
-        this._minuteStep = step;
-        this._minuteInput.fire('changeItems', this._getMinuteItems());
+      this._minuteStep = step;
+      this._minuteInput.fire('changeItems', this._getMinuteItems());
     },
 
     /**
@@ -545,21 +563,21 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {number} Step of minute
      */
     getMinuteStep: function() {
-        return this._minuteStep;
+      return this._minuteStep;
     },
 
     /**
      * Show time picker element
      */
     show: function() {
-        domUtil.removeClass(this._element, CLASS_NAME_HIDDEN);
+      domUtil.removeClass(this._element, CLASS_NAME_HIDDEN);
     },
 
     /**
      * Hide time picker element
      */
     hide: function() {
-        domUtil.addClass(this._element, CLASS_NAME_HIDDEN);
+      domUtil.addClass(this._element, CLASS_NAME_HIDDEN);
     },
 
     /**
@@ -568,7 +586,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {boolean} result of set time
      */
     setHour: function(hour) {
-        return this.setTime(hour, this._minute);
+      return this.setTime(hour, this._minute);
     },
 
     /**
@@ -577,7 +595,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {boolean} result of set time
      */
     setMinute: function(minute) {
-        return this.setTime(this._hour, minute);
+      return this.setTime(this._hour, minute);
     },
 
     /**
@@ -586,26 +604,26 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {number} minute for time picker
      */
     setTime: function(hour, minute) {
-        if (!this._validItems(hour, minute)) {
-            return;
-        }
+      if (!this._validItems(hour, minute)) {
+        return;
+      }
 
-        this._hour = hour;
-        this._minute = minute;
+      this._hour = hour;
+      this._minute = minute;
 
-        this._syncToInputs();
-        if (this._showMeridiem) {
-            this._syncToMeridiemElements();
-        }
+      this._syncToInputs();
+      if (this._showMeridiem) {
+        this._syncToMeridiemElements();
+      }
 
-        /**
-         * Change event - TimePicker
-         * @event TimePicker#change
-         */
-        this.fire('change', {
-            hour: this._hour,
-            minute: this._minute
-        });
+      /**
+       * Change event - TimePicker
+       * @event TimePicker#change
+       */
+      this.fire('change', {
+        hour: this._hour,
+        minute: this._minute
+      });
     },
 
     /**
@@ -613,7 +631,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {number} hour - (0~23)
      */
     getHour: function() {
-        return this._hour;
+      return this._hour;
     },
 
     /**
@@ -621,7 +639,7 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @returns {number} minute
      */
     getMinute: function() {
-        return this._minute;
+      return this._minute;
     },
 
     /**
@@ -629,31 +647,32 @@ var TimePicker = snippet.defineClass(/** @lends TimePicker.prototype */ {
      * @param {string} language - Language code
      */
     changeLanguage: function(language) {
-        this._localeText = localeTexts[language];
-        this._render();
+      this._localeText = localeTexts[language];
+      this._render();
     },
 
     /**
      * Destroy
      */
     destroy: function() {
-        this._removeEvents();
-        domUtil.removeElement(this._element);
+      this._removeEvents();
+      domUtil.removeElement(this._element);
 
-        this._container
-            = this._showMeridiem
-            = this._hourInput
-            = this._minuteInput
-            = this._hour
-            = this._minute
-            = this._inputType
-            = this._element
-            = this._meridiemElement
-            = this._amEl
-            = this._pmEl
-            = null;
+      this._container
+        = this._showMeridiem
+        = this._hourInput
+        = this._minuteInput
+        = this._hour
+        = this._minute
+        = this._inputType
+        = this._element
+        = this._meridiemElement
+        = this._amEl
+        = this._pmEl
+        = null;
     }
-});
+  }
+);
 
 snippet.CustomEvents.mixin(TimePicker);
 module.exports = TimePicker;
