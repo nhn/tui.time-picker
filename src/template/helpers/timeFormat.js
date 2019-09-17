@@ -15,7 +15,9 @@ var PADDING_ZERO_TYPES = ['hh', 'mm'];
  * @returns {boolean}
  */
 module.exports = function(value, format) {
-    value = String(value);
+  value = String(value);
 
-    return (snippet.inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1) ? '0' + value : value;
+  return snippet.inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1
+    ? '0' + value
+    : value;
 };
