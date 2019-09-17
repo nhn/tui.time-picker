@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/tui-time-picker",
   "files": [
     "dist"
@@ -8,7 +8,7 @@
   "scripts": {
     "test": "karma start --no-single-run",
     "test:ne": "KARMA_SERVER=ne karma start",
-    "bundle": "webpack & webpack --p",
+    "bundle": "webpack & webpack -p",
     "serve": "webpack-dev-server --inline --hot -d",
     "serve:ie8": "webpack-dev-server -d",
     "doc:serve": "tuidoc --serv",
