@@ -99,10 +99,12 @@ var Selectbox = snippet.defineClass(
       };
 
       if (this._element) {
-        domUtil.removeElement(this._element);
+        this._removeElement();
       }
+
       this._container.innerHTML = tmpl(context);
       this._element = this._container.firstChild;
+      domUtil.on(this._element, 'change', this._onChangeHandler, this);
     },
 
     /**
@@ -131,8 +133,6 @@ var Selectbox = snippet.defineClass(
      * @private
      */
     _setEvents: function() {
-      domUtil.on(this._element, 'change', this._onChangeHandler, this);
-
       this.on(
         'changeItems',
         function(items) {
@@ -149,8 +149,15 @@ var Selectbox = snippet.defineClass(
      */
     _removeEvents: function() {
       this.off();
+    },
 
+    /**
+     * Remove element
+     * @private
+     */
+    _removeElement: function() {
       domUtil.off(this._element, 'change', this._onChangeHandler, this);
+      domUtil.removeElement(this._element);
     },
 
     /**
@@ -203,7 +210,7 @@ var Selectbox = snippet.defineClass(
      */
     destroy: function() {
       this._removeEvents();
-      domUtil.removeElement(this._element);
+      this._removeElement();
       this._container = this._items = this._selectedIndex = this._element = null;
     }
   }
