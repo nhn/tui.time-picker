@@ -99,10 +99,13 @@ var Selectbox = snippet.defineClass(
       };
 
       if (this._element) {
+        domUtil.off(this._element, 'change');
         domUtil.removeElement(this._element);
       }
+
       this._container.innerHTML = tmpl(context);
       this._element = this._container.firstChild;
+      domUtil.on(this._element, 'change', this._onChangeHandler, this);
     },
 
     /**
@@ -131,8 +134,6 @@ var Selectbox = snippet.defineClass(
      * @private
      */
     _setEvents: function() {
-      domUtil.on(this._element, 'change', this._onChangeHandler, this);
-
       this.on(
         'changeItems',
         function(items) {
