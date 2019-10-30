@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "dist/tui-time-picker",
   "files": [
     "dist"
@@ -17,7 +17,7 @@
   "description": "TOAST UI Components: TimePicker",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nhn/tui.time-picker"
+    "url": "https://github.com/nhn/tui.time-picker.git"
   },
   "keywords": [
     "nhn",
