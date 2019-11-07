@@ -2,7 +2,7 @@
 
 var snippet = require('tui-code-snippet');
 
-var EXPRESSION_REGEXP = /{{\s?(\w+)\s?}}/g;
+var EXPRESSION_REGEXP = /{{\s?(\w+[a-zA-Z0-9_ ]+\w+)\s?}}/g;
 
 /**
  * Analyze string.
@@ -13,7 +13,7 @@ var EXPRESSION_REGEXP = /{{\s?(\w+)\s?}}/g;
  * @example
  * var string = '<div class="{{ className }}">{{content}}</div>';
  * var result = analyze(string);
- * console.log(result.splitString); // ['<div class="', 'className', '">', 'content', '</div>']
+ * console.log(result.strings); // ['<div class="', 'className', '">', 'content', '</div>']
  * console.log(result.expressions); // ['expression', 'content']
  */
 function analyze(string) {
@@ -25,34 +25,58 @@ function analyze(string) {
   }
 
   return {
-    splitString: string.split(EXPRESSION_REGEXP),
+    strings: string.split(EXPRESSION_REGEXP),
     expressions: expressions
   };
 }
 
 /**
- * Compile with the context.
+ * Execute a helper function.
+ * @param {array<string>} expressions - first: function, others: arguments
+ * @param {object} context - context
+ * @return {string} - result of executing the function with arguments
+ * @private
+ */
+function executeFunction(expressions, context) {
+  var args = [];
+  snippet.forEachArray(expressions.splice(1), function(exp) {
+    args.push(context[exp]);
+  });
+
+  return context[expressions[0]].apply(null, args);
+}
+
+/**
+ * Bind expressions with the context.
  * @param {string} string - string with expressions
  * @param {object} context - context
  * @return {string} - string that bind with its context
  */
 function compile(string, context) {
-  var analyzedSource = analyze(string);
-  var splitString = analyzedSource.splitString;
+  var analyzedString = analyze(string);
+  var strings = analyzedString.strings;
   var index = 0;
 
-  snippet.forEachArray(analyzedSource.expressions, function replace(expression) {
-    index = snippet.inArray(expression, splitString, index);
+  snippet.forEachArray(analyzedString.expressions, function replace(expression) {
+    var expArray, firstExp;
+
+    index = snippet.inArray(expression, strings, index);
     if (index < 0) {
       return false;
     }
 
-    splitString[index] = context[expression];
+    expArray = expression.split(' ');
+    firstExp = context[expArray[0]];
+    if (firstExp instanceof Function) {
+      strings[index] = executeFunction(expArray, context);
+    } else {
+      strings[index] = firstExp;
+    }
 
     return true;
   });
 
-  return splitString.join('');
+  return strings.join('');
 }
 
 module.exports = compile;
