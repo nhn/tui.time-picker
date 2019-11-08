@@ -22,7 +22,7 @@ describe('template', function() {
     expect(template(source, context)).toBe('<h3></h3>');
   });
 
-  it('should execute a helper function with arguments when the expression consists of several words separated by spaces.', function() {
+  it('should execute a custom helper function with arguments.', function() {
     var source = '<div class="{{getClassNamesByStatus disabled prefix}}"></div><div class="{{getClassNamesByStatus enabled}}"></div>';
     var context = {
       disabled: true,
@@ -65,5 +65,40 @@ describe('template', function() {
     source = '{{if content}}<p>Hello, world!</p>{{/if}}';
     expect(template(source, {content: 'Hello, world!'})).toBe('<p>Hello, world!</p>');
     expect(template(source, {})).toBe('');
+  });
+
+  it('should use each expression as a helper function.', function() {
+    var source = '{{each alphabets}}<p>{{content}}</p>{{/each}}';
+    expect(template(source, {
+      alphabets: ['A', 'B', 'C'],
+      content: 'Paragraph'
+    })).toBe('<p>Paragraph</p><p>Paragraph</p><p>Paragraph</p>');
+
+    source = '{{each alphabets}}<p>{{@index}}</p>{{/each}}';
+    expect(template(source, {
+      alphabets: ['A', 'B', 'C']
+    })).toBe('<p>0</p><p>1</p><p>2</p>');
+
+    source = '{{each alphabets}}<p>{{@this}}</p>{{/each}}';
+    expect(template(source, {
+      alphabets: ['A', 'B', 'C']
+    })).toBe('<p>A</p><p>B</p><p>C</p>');
+
+    source = '{{each alphabets}}<p>{{@key}}: {{@this}}</p>{{/each}}';
+    expect(template(source, {
+      alphabets: {
+        'A': '1st',
+        'B': '2nd',
+        'C': '3rd'
+      }
+    })).toBe('<p>A: 1st</p><p>B: 2nd</p><p>C: 3rd</p>');
+
+    source = '{{each getPositiveNumbersSmallerThanFive n}}<p>{{@this}}</p>{{/each}}';
+    expect(template(source, {
+      n: 3,
+      getPositiveNumbersSmallerThanFive: function(n) {
+        return [1, 2, 3, 4, 5].slice(0, n);
+      }
+    })).toBe('<p>1</p><p>2</p><p>3</p>');
   });
 });
