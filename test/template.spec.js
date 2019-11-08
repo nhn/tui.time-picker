@@ -55,4 +55,15 @@ describe('template', function() {
     context = {};
     expect(template(source, context)).toBe('<h2></h2>');
   });
+
+  it('should use if expression as a helper function.', function() {
+    var source = '<div>{{if content}}<p>{{content}}</p>{{/if}}</div>';
+    expect(template(source, {content: 'Hello, world!'})).toBe('<div><p>Hello, world!</p></div>');
+    expect(template(source, {content: ''})).toBe('<div></div>');
+    expect(template(source, {})).toBe('<div></div>');
+
+    source = '{{if content}}<p>Hello, world!</p>{{/if}}';
+    expect(template(source, {content: 'Hello, world!'})).toBe('<p>Hello, world!</p>');
+    expect(template(source, {})).toBe('');
+  });
 });

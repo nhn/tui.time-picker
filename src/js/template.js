@@ -2,81 +2,89 @@
 
 var snippet = require('tui-code-snippet');
 
-var EXPRESSION_REGEXP = /{{\s?(\w+[a-zA-Z0-9_ ]+\w+)\s?}}/g;
+var EXPRESSION_REGEXP = /{{\s?(\/?\w+[a-zA-Z0-9_ ]*\w+)\s?}}/g;
+var BLOCK_HELPERS = {
+  if: handleIf
+};
 
 /**
- * Analyze string.
- * Split string by {{ }} and extract expressions.
- * @param {string} string - string to analyze
- * @return {object}
- * @private
- * @example
- * var string = '<div class="{{ className }}">{{content}}</div>';
- * var result = analyze(string);
- * console.log(result.strings); // ['<div class="', 'className', '">', 'content', '</div>']
- * console.log(result.expressions); // ['expression', 'content']
+ * Helper function for "if". 
+ * @param {array<string>} exps - array of expressions split by spaces
+ * @param {object} context - context
+ * @param {array<string>} stringsInsideBlock - block
  */
-function analyze(string) {
-  var expressions = [];
-  var match = EXPRESSION_REGEXP.exec(string);
-  while (match) {
-    expressions.push(match[1]);
-    match = EXPRESSION_REGEXP.exec(string);
+function handleIf(exps, context, stringsInsideBlock) {
+  var firstExp = context[exps[0]];
+  var result = firstExp;
+  if (firstExp instanceof Function) {
+    result = executeFunction(firstExp, exps.splice(1), context);
   }
 
-  return {
-    strings: string.split(EXPRESSION_REGEXP),
-    expressions: expressions
-  };
+  return result ? compile(stringsInsideBlock, context).join('') : '';
 }
 
 /**
  * Execute a helper function.
- * @param {array<string>} expressions - first: function, others: arguments
+ * @param {Function} helper - helper function
+ * @param {array<string>} argExps - expressions of arguments
  * @param {object} context - context
  * @return {string} - result of executing the function with arguments
  * @private
  */
-function executeFunction(expressions, context) {
+function executeFunction(helper, argExps, context) {
   var args = [];
-  snippet.forEachArray(expressions.splice(1), function(exp) {
+  snippet.forEachArray(argExps, function(exp) {
     args.push(context[exp]);
   });
 
-  return context[expressions[0]].apply(null, args);
+  return helper.apply(null, args);
+}
+
+/**
+ * Get a result of compiling an expression with the context.
+ * @param {array<string>} strings - array of strings split by regexp of expression. (even: expression)
+ * @param {object} context - context
+ * @return {string} - result of compilation
+ * @private
+ */
+function compile(strings, context) {
+  var index = 1;
+  var expression = strings[index];
+  var exps, firstExp, firstContext, endBlockIndex, stringsInsideBlock;
+
+  while (snippet.isString(expression)) {
+    exps = expression.split(' ');
+    firstExp = exps[0];
+    firstContext = context[firstExp];
+
+    if (firstContext instanceof Function) {
+      strings[index] = executeFunction(firstContext, exps.splice(1), context);
+    } else if (BLOCK_HELPERS[firstExp]) {
+      endBlockIndex = snippet.inArray('/' + firstExp, strings, index);
+      if (endBlockIndex < 0) {
+        throw Error(firstExp + ' needs {{/' + firstExp + '}} expression.');
+      }
+      stringsInsideBlock = strings.splice(index + 1, endBlockIndex - index);
+      stringsInsideBlock.pop();
+      strings[index] = BLOCK_HELPERS[firstExp](exps.splice(1), context, stringsInsideBlock);
+    } else {
+      strings[index] = firstContext;
+    }
+
+    expression = strings[index += 2];
+  }
+
+  return strings;
 }
 
 /**
  * Bind expressions with the context.
- * @param {string} string - string with expressions
+ * @param {string} source - string with expressions
  * @param {object} context - context
  * @return {string} - string that bind with its context
  */
-function compile(string, context) {
-  var analyzedString = analyze(string);
-  var strings = analyzedString.strings;
-  var index = 0;
-
-  snippet.forEachArray(analyzedString.expressions, function replace(expression) {
-    var expArray, firstExp;
-
-    index = snippet.inArray(expression, strings, index);
-    if (index < 0) {
-      return false;
-    }
-
-    expArray = expression.split(' ');
-    firstExp = context[expArray[0]];
-    if (firstExp instanceof Function) {
-      strings[index] = executeFunction(expArray, context);
-    } else {
-      strings[index] = firstExp;
-    }
-
-    return true;
-  });
-
-  return strings.join('');
+function template(source, context) {
+  return compile(source.split(EXPRESSION_REGEXP), context).join('');
 }
 
-module.exports = compile;
+module.exports = template;
