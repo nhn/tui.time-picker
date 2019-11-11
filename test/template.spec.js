@@ -135,3 +135,24 @@ describe('{{each ...}} @this @index @key {{/each}}', function() {
     })).toBe('<p>1</p><p>2 is even</p><p>3</p>');
   });
 });
+
+describe('{{with ... as ...}} ... {{/with}}', function() {
+  it('should be make an alias.', function() {
+    var source = '{{with content as c}}<p>{{c}}</p>{{/with}}';
+    expect(template(source, {
+      content: 'Hello, world!'
+    })).toBe('<p>Hello, world!</p>');
+
+    source = '{{with getNumberInEnglish 1 as n}}<p>{{n}}</p>{{/with}}';
+    expect(template(source, {
+      getNumberInEnglish: function(num) {
+        switch (num) {
+          case 1:
+            return 'one';
+          default:
+            return 'bigger than one';
+        }
+      }
+    })).toBe('<p>one</p>');
+  });
+});

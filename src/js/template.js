@@ -8,7 +8,8 @@ var NUMBER_REGEXP = /^-?\d+\.?\d*$/;
 
 var BLOCK_HELPERS = {
   if: handleIf,
-  each: handleEach
+  each: handleEach,
+  with: handleWith
 };
 
 /**
@@ -70,6 +71,25 @@ function handleEach(exps, context, stringsInsideBlock) {
   });
 
   return result;
+}
+
+/**
+ * Helper function for "with ... as"
+ * @param {array<string>} exps - array of expressions split by spaces
+ * @param {object} context - context
+ * @param {array<string>} stringsInsideBlock - array of strings inside the each block
+ * @return {string}
+ * @private
+ */
+function handleWith(exps, context, stringsInsideBlock) {
+  var asIndex = snippet.inArray('as', exps);
+  var alias = exps[asIndex + 1];
+  var result = handleFunction(exps.slice(0, asIndex), context);
+
+  var additionalContext = {};
+  additionalContext[alias] = result;
+
+  return compile(stringsInsideBlock, snippet.extend(additionalContext, context)).join('') || '';
 }
 
 /**
