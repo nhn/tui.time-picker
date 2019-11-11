@@ -27,9 +27,14 @@ describe('{{expression}}', function() {
     expect(template('<p>{{123.4567}}</p>', {})).toBe('<p>123.4567</p>');
   });
 
-  it('should use bracket if value is an object or array.', function() {
+  it('should access the value with brackets if value is an object or array.', function() {
     expect(template('<p>{{ arr[2] }}</p>', {arr: [0, 1, 2]})).toBe('<p>2</p>');
     expect(template('<p>{{obj[key]}}</p>', {obj: {key: 'value'}})).toBe('<p>value</p>');
+  });
+
+  it('should bind with boolean if value is "true" or "false".', function() {
+    expect(template('<p>{{ false }}</p>', {})).toBe('<p>false</p>');
+    expect(template('<p>{{true}}</p>', {})).toBe('<p>true</p>');
   });
 });
 
@@ -69,7 +74,23 @@ describe('{{helper arg1 arg2}}', function() {
   });
 });
 
-describe('{{if ...}} ... {{/if}}', function() {
+describe('block helper', function() {
+  it('should throw an error when endblock is missing.', function() {
+    expect(function() {
+      return template('{{if 1}}', {});
+    }).toThrowError('if needs {{/if}} expression.');
+
+    expect(function() {
+      return template('{{each arr}}', {});
+    }).toThrowError('each needs {{/each}} expression.');
+
+    expect(function() {
+      return template('{{with 1 as one}}', {});
+    }).toThrowError('with needs {{/with}} expression.');
+  });
+});
+
+describe('{{if ...}} {{elseif ...}} {{else}} ... {{/if}}', function() {
   it('should use if expression as a helper function.', function() {
     var source = '<div>{{if content}}<p>{{content}}</p>{{/if}}</div>';
     expect(template(source, {content: 'Hello, world!'})).toBe('<div><p>Hello, world!</p></div>');
@@ -87,6 +108,45 @@ describe('{{if ...}} ... {{/if}}', function() {
         return a === b;
       }
     })).toBe('<p>Hello, world!</p>');
+  });
+
+  it('should use elseif, else expression.', function() {
+    var source = '<p>{{if equals n 1}}one{{else}}other{{/if}}</p>';
+    var context = {
+      equals: function(a, b) {
+        return a === b;
+      }
+    };
+    context.n = 0;
+    expect(template(source, context)).toBe('<p>other</p>');
+    context.n = 1;
+    expect(template(source, context)).toBe('<p>one</p>');
+
+    source = '<p>{{if equals n 1}}{{n}} is one{{ elseif equals n 2 }}{{n}} is two{{else}}{{n}} is other{{/if}}</p>';
+    context.n = 1;
+    expect(template(source, context)).toBe('<p>1 is one</p>');
+    context.n = 4;
+    expect(template(source, context)).toBe('<p>4 is other</p>');
+    context.n = 2;
+    expect(template(source, context)).toBe('<p>2 is two</p>');
+  });
+
+  it('should use each expression in the if expression.', function() {
+    var source = '<p>{{if isNumber arr[0]}}Number: {{each arr}}{{@this}}{{/each}}{{elseif isString arr[0]}}String: {{each arr}}{{@this}}{{/each}}{{else}}Nothing{{/if}}</p>';
+    var context = {
+      isNumber: function(n) {
+        return typeof n === 'number';
+      },
+      isString: function(c) {
+        return typeof c === 'string';
+      }
+    };
+    context.arr = [1, 2, 3];
+    expect(template(source, context)).toBe('<p>Number: 123</p>');
+    context.arr = ['a', 'b', 'c'];
+    expect(template(source, context)).toBe('<p>String: abc</p>');
+    context.arr = [];
+    expect(template(source, context)).toBe('<p>Nothing</p>');
   });
 });
 
@@ -126,13 +186,13 @@ describe('{{each ...}} @this @index @key {{/each}}', function() {
   });
 
   it('should use if expression in the each expression.', function() {
-    var source = '{{each numbers}}<p>{{@this}}{{if equals @this 2}} is even{{/if}}</p>{{/each}}';
+    var source = '{{each numbers}}<p>{{@this}}{{if equals @this 2}} is even{{elseif equals @this 0}} is zero{{else}} is odd{{/if}}</p>{{/each}}';
     expect(template(source, {
-      numbers: [1, 2, 3],
+      numbers: [1, 2, 0],
       equals: function(a, b) {
         return parseInt(a, 10) === parseInt(b, 10);
       }
-    })).toBe('<p>1</p><p>2 is even</p><p>3</p>');
+    })).toBe('<p>1 is odd</p><p>2 is even</p><p>0 is zero</p>');
   });
 });
 

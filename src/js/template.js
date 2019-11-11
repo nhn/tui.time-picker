@@ -24,6 +24,10 @@ function getValueFromContext(exp, context) {
 
   if (exp in context) {
     value = context[exp];
+  } else if (exp === 'true') {
+    value = true;
+  } else if (exp === 'false') {
+    value = false;
   } else if (BRACKET_REGEXP.test(exp)) {
     bracketExps = exp.split(BRACKET_REGEXP);
     value = context[bracketExps[1]][bracketExps[2]];
@@ -35,6 +39,37 @@ function getValueFromContext(exp, context) {
 }
 
 /**
+ * Extract elseif and else expressions.
+ * @param {array<string>} ifExps - args of if expression
+ * @param {array<string>} strings - strings inside if block
+ * @return {object} - exps: expressions of if, elseif, and else / stringsInsideBlock: strings inside if, elseif, and else block.
+ * @private
+ */
+function extractElseif(ifExps, strings) {
+  var exps = [ifExps];
+  var stringsInsideBlock = [];
+
+  var start = 0;
+  var i, len, string;
+
+  for (i = 0, len = strings.length; i < len; i += 1) {
+    string = strings[i];
+
+    if (string.indexOf('elseif') > -1 || string === 'else') {
+      exps.push(string === 'else' ? ['true'] : string.split(' ').slice(1));
+      stringsInsideBlock.push(strings.slice(start, i));
+      start = i + 1;
+    }
+  }
+  stringsInsideBlock.push(strings.slice(start));
+
+  return {
+    exps: exps,
+    stringsInsideBlock: stringsInsideBlock
+  };
+}
+
+/**
  * Helper function for "if". 
  * @param {array<string>} exps - array of expressions split by spaces
  * @param {object} context - context
@@ -43,9 +78,20 @@ function getValueFromContext(exp, context) {
  * @private
  */
 function handleIf(exps, context, stringsInsideBlock) {
-  var result = handleFunction(exps, context);
+  var analyzed = extractElseif(exps, stringsInsideBlock);
+  var result = false;
+  var compiledString = '';
 
-  return result ? compile(stringsInsideBlock, context).join('') : '';
+  snippet.forEach(analyzed.exps, function(exp, index) {
+    result = handleFunction(exp, context);
+    if (result) {
+      compiledString = compile(analyzed.stringsInsideBlock[index], context).join('');
+    }
+
+    return !result;
+  });
+
+  return compiledString;
 }
 
 /**
@@ -77,7 +123,7 @@ function handleEach(exps, context, stringsInsideBlock) {
  * Helper function for "with ... as"
  * @param {array<string>} exps - array of expressions split by spaces
  * @param {object} context - context
- * @param {array<string>} stringsInsideBlock - array of strings inside the each block
+ * @param {array<string>} stringsInsideBlock - array of strings inside the with block
  * @return {string}
  * @private
  */
@@ -104,7 +150,7 @@ function handleFunction(exps, context) {
   var result = getValueFromContext(exps[0], context);
 
   if (result instanceof Function) {
-    result = executeFunction(result, exps.splice(1), context);
+    result = executeFunction(result, exps.slice(1), context);
   }
 
   return result;
@@ -131,7 +177,7 @@ function executeFunction(helper, argExps, context) {
  * Get a result of compiling an expression with the context.
  * @param {array<string>} strings - array of strings split by regexp of expression. (even elements: expression)
  * @param {object} context - context
- * @return {string} - result of compilation
+ * @return {array<string>} - array of strings that bind with its context
  * @private
  */
 function compile(strings, context) {
@@ -153,7 +199,7 @@ function compile(strings, context) {
       stringsInsideBlock = strings.splice(index + 1, endBlockIndex - index);
       stringsInsideBlock.pop();
 
-      result = BLOCK_HELPERS[firstExp](exps.splice(1), context, stringsInsideBlock);
+      result = BLOCK_HELPERS[firstExp](exps.slice(1), context, stringsInsideBlock);
     } else {
       result = handleFunction(exps, context);
     }
