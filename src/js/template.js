@@ -2,11 +2,36 @@
 
 var snippet = require('tui-code-snippet');
 
-var EXPRESSION_REGEXP = /{{\s?(\/?@?\w+[a-zA-Z0-9_ ]*\w+)\s?}}/g;
+var EXPRESSION_REGEXP = /{{\s?(\/?[a-zA-Z0-9_.@[\] ]+)\s?}}/g;
+var BRACKET_REGEXP = /^([a-zA-Z0-9_@]+)\[(\w+)\]$/;
+var NUMBER_REGEXP = /^-?\d+\.?\d*$/;
+
 var BLOCK_HELPERS = {
   if: handleIf,
   each: handleEach
 };
+
+/**
+ * Find value in the context by an expression.
+ * @param {string} exp - an expression
+ * @param {object} context - context
+ * @return {*}
+ * @private
+ */
+function getValueFromContext(exp, context) {
+  var bracketExps, value;
+
+  if (exp in context) {
+    value = context[exp];
+  } else if (BRACKET_REGEXP.test(exp)) {
+    bracketExps = exp.split(BRACKET_REGEXP);
+    value = context[bracketExps[1]][bracketExps[2]];
+  } else if (NUMBER_REGEXP.test(exp)) {
+    value = parseFloat(exp);
+  }
+
+  return value;
+}
 
 /**
  * Helper function for "if". 
@@ -56,7 +81,7 @@ function handleEach(exps, context, stringsInsideBlock) {
  * @private
  */
 function handleFunction(exps, context) {
-  var result = context[exps[0]];
+  var result = getValueFromContext(exps[0], context);
 
   if (result instanceof Function) {
     result = executeFunction(result, exps.splice(1), context);
@@ -76,7 +101,7 @@ function handleFunction(exps, context) {
 function executeFunction(helper, argExps, context) {
   var args = [];
   snippet.forEachArray(argExps, function(exp) {
-    args.push(context[exp]);
+    args.push(getValueFromContext(exp, context));
   });
 
   return helper.apply(null, args);

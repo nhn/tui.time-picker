@@ -6,7 +6,7 @@
 
 var template = require('../src/js/template');
 
-describe('template', function() {
+describe('{{expression}}', function() {
   it('should bind expressions with the context.', function() {
     var source = '<div class="{{className}}"><p>{{content}}</p></div>';
     var context = {
@@ -22,6 +22,18 @@ describe('template', function() {
     expect(template(source, context)).toBe('<h3></h3>');
   });
 
+  it('should bind with number if value is a number.', function() {
+    expect(template('<p>{{ 3 }}</p>', {})).toBe('<p>3</p>');
+    expect(template('<p>{{123.4567}}</p>', {})).toBe('<p>123.4567</p>');
+  });
+
+  it('should use bracket if value is an object or array.', function() {
+    expect(template('<p>{{ arr[2] }}</p>', {arr: [0, 1, 2]})).toBe('<p>2</p>');
+    expect(template('<p>{{obj[key]}}</p>', {obj: {key: 'value'}})).toBe('<p>value</p>');
+  });
+});
+
+describe('{{helper arg1 arg2}}', function() {
   it('should execute a custom helper function with arguments.', function() {
     var source = '<div class="{{getClassNamesByStatus disabled prefix}}"></div><div class="{{getClassNamesByStatus enabled}}"></div>';
     var context = {
@@ -55,7 +67,9 @@ describe('template', function() {
     context = {};
     expect(template(source, context)).toBe('<h2></h2>');
   });
+});
 
+describe('{{if ...}} ... {{/if}}', function() {
   it('should use if expression as a helper function.', function() {
     var source = '<div>{{if content}}<p>{{content}}</p>{{/if}}</div>';
     expect(template(source, {content: 'Hello, world!'})).toBe('<div><p>Hello, world!</p></div>');
@@ -63,10 +77,20 @@ describe('template', function() {
     expect(template(source, {})).toBe('<div></div>');
 
     source = '{{if content}}<p>Hello, world!</p>{{/if}}';
-    expect(template(source, {content: 'Hello, world!'})).toBe('<p>Hello, world!</p>');
+    expect(template(source, {content: true})).toBe('<p>Hello, world!</p>');
     expect(template(source, {})).toBe('');
-  });
 
+    source = '{{if equals two 2}}<p>Hello, world!</p>{{/if}}';
+    expect(template(source, {
+      two: 2,
+      equals: function(a, b) {
+        return a === b;
+      }
+    })).toBe('<p>Hello, world!</p>');
+  });
+});
+
+describe('{{each ...}} @this @index @key {{/each}}', function() {
   it('should use each expression as a helper function.', function() {
     var source = '{{each alphabets}}<p>{{content}}</p>{{/each}}';
     expect(template(source, {
@@ -93,12 +117,21 @@ describe('template', function() {
       }
     })).toBe('<p>A: 1st</p><p>B: 2nd</p><p>C: 3rd</p>');
 
-    source = '{{each getPositiveNumbersSmallerThanFive n}}<p>{{@this}}</p>{{/each}}';
+    source = '{{each getPositiveNumbersSmallerThanFive 3}}<p>{{@this}}</p>{{/each}}';
     expect(template(source, {
-      n: 3,
       getPositiveNumbersSmallerThanFive: function(n) {
         return [1, 2, 3, 4, 5].slice(0, n);
       }
     })).toBe('<p>1</p><p>2</p><p>3</p>');
+  });
+
+  it('should use if expression in the each expression.', function() {
+    var source = '{{each numbers}}<p>{{@this}}{{if equals @this 2}} is even{{/if}}</p>{{/each}}';
+    expect(template(source, {
+      numbers: [1, 2, 3],
+      equals: function(a, b) {
+        return parseInt(a, 10) === parseInt(b, 10);
+      }
+    })).toBe('<p>1</p><p>2 is even</p><p>3</p>');
   });
 });
