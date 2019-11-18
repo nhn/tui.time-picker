@@ -130,11 +130,6 @@ module.exports = function(config) {
             enforce: 'pre'
           },
           {
-            test: /\.hbs$/,
-            exclude: /(node_modules)/,
-            loader: 'handlebars-loader'
-          },
-          {
             test: /\.css/,
             loader: 'style-loader!css'
           },

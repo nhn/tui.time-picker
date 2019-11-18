@@ -56,11 +56,6 @@ module.exports = function(env, argv) {
           }
         },
         {
-          test: /\.hbs$/,
-          exclude: /(node_modules)/,
-          loader: 'handlebars-loader'
-        },
-        {
           test: /\.css/,
           use: [
             MiniCssExtractPlugin.loader,
