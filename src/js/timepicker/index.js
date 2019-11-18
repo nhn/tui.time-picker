@@ -12,8 +12,8 @@ var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
 var util = require('../util');
 var localeTexts = require('./../localeTexts');
-var tmpl = require('./../../template/timepicker/index.hbs');
-var meridiemTemplate = require('./../../template/timepicker/meridiem.hbs');
+var tmpl = require('./../../template/timepicker/index');
+var meridiemTmpl = require('./../../template/timepicker/meridiem');
 
 var SELECTOR_HOUR_ELELMENT = '.tui-timepicker-hour';
 var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
@@ -97,6 +97,12 @@ var TimePicker = snippet.defineClass(
     },
     init: function(container, options) {
       options = mergeDefaultOptions(options);
+
+      /**
+       * @type {number}
+       * @private
+       */
+      this._id = util.getUniqueId();
 
       /**
        * @type {HTMLElement}
@@ -267,7 +273,10 @@ var TimePicker = snippet.defineClass(
     _render: function() {
       var context = {
         showMeridiem: this._showMeridiem,
-        inputType: this._inputType
+        inputType: this._inputType,
+        isSpinbox: function(type) {
+          return type === 'spinbox';
+        }
       };
 
       if (this._showMeridiem) {
@@ -311,10 +320,14 @@ var TimePicker = snippet.defineClass(
     _makeMeridiemHTML: function() {
       var localeText = this._localeText;
 
-      return meridiemTemplate({
+      return meridiemTmpl({
         inputType: this._inputType,
         am: localeText.am,
-        pm: localeText.pm
+        pm: localeText.pm,
+        radioId: this._id,
+        isSpinbox: function(type) {
+          return type === 'spinbox';
+        }
       });
     },
 

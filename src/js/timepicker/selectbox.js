@@ -9,7 +9,7 @@ var snippet = require('tui-code-snippet');
 var domUtil = require('tui-dom');
 
 var util = require('../util');
-var tmpl = require('./../../template/timepicker/selectbox.hbs');
+var tmpl = require('./../../template/timepicker/selectbox');
 
 /**
  * @class
@@ -87,15 +87,14 @@ var Selectbox = snippet.defineClass(
       this._changeEnabledIndex();
       context = {
         items: this._items,
-        initialValue: this.getValue(),
         format: this._format,
-        disabledItems: snippet.map(this._disabledItems, function(item) {
-          if (item) {
-            return 'disabled';
-          }
-
-          return '';
-        })
+        isInitialValue: snippet.bind(function(value) {
+          return this.getValue() === value;
+        }, this),
+        disabledItems: snippet.bind(function(index) {
+          return this._disabledItems[index];
+        }, this),
+        timeFormat: util.timeFormat
       };
 
       if (this._element) {

@@ -7,12 +7,40 @@
 
 var snippet = require('tui-code-snippet');
 
+var uniqueId = 0;
+
 /**
  * Utils
  * @namespace util
  * @ignore
  */
 var utils = {
+  /**
+   * Returns unique id
+   * @returns {number}
+   */
+  getUniqueId: function() {
+    uniqueId += 1;
+
+    return uniqueId;
+  },
+
+  /**
+   * Convert a value to meet the format
+   * @param {number|string} value 
+   * @param {string} format 
+   * @returns {string}
+   */
+  timeFormat: function(value, format) {
+    var PADDING_ZERO_TYPES = ['hh', 'mm'];
+    value = String(value);
+
+    return snippet.inArray(format, PADDING_ZERO_TYPES) >= 0
+      && value.length === 1
+      ? '0' + value
+      : value;
+  },
+
   /**
    * Get meridiem hour
    * @param {number} hour - Original hour

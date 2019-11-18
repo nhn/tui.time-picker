@@ -9,8 +9,7 @@ var snippet = require('tui-code-snippet');
 var domUtil = require('tui-dom');
 
 var util = require('../util');
-var tmpl = require('./../../template/timepicker/spinbox.hbs');
-var timeFormat = require('./../../template/helpers/timeFormat');
+var tmpl = require('./../../template/timepicker/spinbox');
 
 var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
@@ -99,7 +98,8 @@ var Spinbox = snippet.defineClass(
       context = {
         maxLength: this._getMaxLength(),
         initialValue: this.getValue(),
-        format: this._format
+        format: this._format,
+        timeFormat: util.timeFormat
       };
 
       this._container.innerHTML = tmpl(context);
@@ -271,7 +271,7 @@ var Spinbox = snippet.defineClass(
      * @param {number} value - Value
      */
     setValue: function(value) {
-      this._inputElement.value = timeFormat(value, this._format);
+      this._inputElement.value = util.timeFormat(value, this._format);
       this._changeToInputValue();
     },
 

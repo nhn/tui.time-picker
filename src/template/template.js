@@ -7,9 +7,9 @@ var BRACKET_REGEXP = /^([a-zA-Z0-9_@]+)\[(\w+)\]$/;
 var NUMBER_REGEXP = /^-?\d+\.?\d*$/;
 
 var BLOCK_HELPERS = {
-  if: handleIf,
-  each: handleEach,
-  with: handleWith
+  'if': handleIf,
+  'each': handleEach,
+  'with': handleWith
 };
 
 /**
@@ -228,14 +228,15 @@ function executeFunction(helper, argExps, context) {
 function compile(strings, context) {
   var index = 1;
   var expression = strings[index];
-  var exps, firstExp;
+  var exps, firstExp, stringsToEnd;
 
   while (snippet.isString(expression)) {
     exps = expression.split(' ');
     firstExp = exps[0];
 
     if (BLOCK_HELPERS[firstExp]) {
-      Array.prototype.push.apply(strings, handleBlockHelper(firstExp, context, strings.splice(index)));
+      stringsToEnd = strings.splice(index, strings.length - index);
+      strings.push(handleBlockHelper(firstExp, context, stringsToEnd));
     } else {
       strings[index] = handleFunction(exps, context);
     }
