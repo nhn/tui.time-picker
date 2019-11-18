@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var template = require('../src/js/template');
+var template = require('../src/template/template');
 
 describe('{{expression}}', function() {
   it('should bind expressions with the context.', function() {
@@ -148,6 +148,24 @@ describe('{{if ...}} {{elseif ...}} {{else}} ... {{/if}}', function() {
     context.arr = [];
     expect(template(source, context)).toBe('<p>Nothing</p>');
   });
+
+  it('should use if expressions in the if expression.', function() {
+    var source = '{{if true}}It is {{if false}}False{{else}}True{{/if}}{{/if}}';
+    var context = {};
+    expect(template(source, context)).toBe('It is True');
+
+    source = 'It is {{if smaller n 5}}smaller than 5 and {{if equals n 2 }}same as 2 {{else}}not same as 2 and {{if equals n 3}}same as 3 {{/if}}{{/if}}{{else}}bigger than 5 and {{if equals n 5}}same as 5 {{else}}not same as 5 {{/if}}{{/if}}';
+    context = {
+      smaller: function(a, b) {
+        return a < b;
+      },
+      equals: function(a, b) {
+        return a === b;
+      },
+      n: 3
+    };
+    expect(template(source, context)).toBe('It is smaller than 5 and not same as 2 and same as 3 ');
+  });
 });
 
 describe('{{each ...}} @this @index @key {{/each}}', function() {
@@ -193,6 +211,15 @@ describe('{{each ...}} @this @index @key {{/each}}', function() {
         return parseInt(a, 10) === parseInt(b, 10);
       }
     })).toBe('<p>1 is odd</p><p>2 is even</p><p>0 is zero</p>');
+  });
+
+  it('should use each expressions in the each expression.', function() {
+    var source = '{{each first}}{{each second}}{{@this}}{{/each}}{{/each}}';
+    var context = {
+      first: [1, 2, 3],
+      second: [4, 5, 6]
+    };
+    expect(template(source, context)).toBe('456456456');
   });
 });
 

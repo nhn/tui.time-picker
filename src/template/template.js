@@ -139,6 +139,51 @@ function handleWith(exps, context, stringsInsideBlock) {
 }
 
 /**
+ * Handle block helper function
+ * @param {string} helperKeyword - helper keyword (ex. if, each, with)
+ * @param {object} context - context
+ * @param {array<string>} strings - array of strings after the starting block
+ * @return {array<string>}
+ * @private
+ */
+function handleBlockHelper(helperKeyword, context, strings) {
+  var helperFunc = BLOCK_HELPERS[helperKeyword];
+  var keywordLength = helperKeyword.length;
+  var helperCount = 1;
+
+  var startBlockIndices = [0];
+
+  var index = 2;
+  var expression = strings[index];
+
+  var start, stringsInsideBlock;
+  while (helperCount !== 0 && snippet.isString(expression)) {
+    if (expression.substring(0, keywordLength) === helperKeyword) {
+      helperCount += 1;
+      startBlockIndices.push(index);
+    } else if (expression.substring(0, keywordLength + 1) === '/' + helperKeyword) {
+      helperCount -= 1;
+
+      start = startBlockIndices.pop();
+      stringsInsideBlock = strings.splice(start + 1, index - start);
+      stringsInsideBlock.pop();
+      strings[start] = helperFunc(strings[start].split(' ').slice(1), context, stringsInsideBlock);
+      strings.splice(Math.max(start - 1, 0), 0, strings.splice(Math.max(start - 1, 0), 3).join(''));
+
+      index = start - 2;
+    }
+
+    expression = strings[index += 2];
+  }
+
+  if (helperCount !== 0) {
+    throw Error(helperKeyword + ' needs {{/' + helperKeyword + '}} expression.');
+  }
+
+  return strings;
+}
+
+/**
  * Helper function for "custom helper".
  * If helper is not a function, return helper itself.
  * @param {array<string>} exps - array of expressions split by spaces (first element: helper)
@@ -183,27 +228,17 @@ function executeFunction(helper, argExps, context) {
 function compile(strings, context) {
   var index = 1;
   var expression = strings[index];
-  var result = '';
-  var exps, firstExp, endBlockIndex, stringsInsideBlock;
+  var exps, firstExp;
 
   while (snippet.isString(expression)) {
     exps = expression.split(' ');
     firstExp = exps[0];
 
     if (BLOCK_HELPERS[firstExp]) {
-      endBlockIndex = snippet.inArray('/' + firstExp, strings, index);
-      if (endBlockIndex < 0) {
-        throw Error(firstExp + ' needs {{/' + firstExp + '}} expression.');
-      }
-
-      stringsInsideBlock = strings.splice(index + 1, endBlockIndex - index);
-      stringsInsideBlock.pop();
-
-      result = BLOCK_HELPERS[firstExp](exps.slice(1), context, stringsInsideBlock);
+      Array.prototype.push.apply(strings, handleBlockHelper(firstExp, context, strings.splice(index)));
     } else {
-      result = handleFunction(exps, context);
+      strings[index] = handleFunction(exps, context);
     }
-    strings[index] = result;
 
     expression = strings[index += 2];
   }
@@ -218,6 +253,8 @@ function compile(strings, context) {
  * @return {string} - string that bind with its context
  */
 function template(source, context) {
+  source = source.replace(/\n\s*/g, '');
+
   return compile(source.split(EXPRESSION_REGEXP), context).join('');
 }
 
