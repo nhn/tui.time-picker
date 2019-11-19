@@ -28,7 +28,7 @@ var utils = {
   /**
    * Convert a value to meet the format
    * @param {number|string} value 
-   * @param {string} format 
+   * @param {string} format - ex) hh, h, mm, m
    * @returns {string}
    */
   timeFormat: function(value, format) {

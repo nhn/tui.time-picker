@@ -29,7 +29,11 @@ describe('{{expression}}', function() {
 
   it('should access the value with brackets if value is an object or array.', function() {
     expect(template('<p>{{ arr[2] }}</p>', {arr: [0, 1, 2]})).toBe('<p>2</p>');
-    expect(template('<p>{{obj[key]}}</p>', {obj: {key: 'value'}})).toBe('<p>value</p>');
+    expect(template('<p>{{obj[key]}}</p>', {
+      obj: {key: 'value'},
+      key: 'key'
+    })).toBe('<p>value</p>');
+    expect(template('{{each nums}}{{nums[@index]}}{{/each}}', {nums: [1, 2, 3]})).toBe('123');
   });
 
   it('should bind with boolean if value is "true" or "false".', function() {

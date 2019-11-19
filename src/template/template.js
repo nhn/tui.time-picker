@@ -3,7 +3,7 @@
 var snippet = require('tui-code-snippet');
 
 var EXPRESSION_REGEXP = /{{\s?(\/?[a-zA-Z0-9_.@[\] ]+)\s?}}/g;
-var BRACKET_REGEXP = /^([a-zA-Z0-9_@]+)\[(\w+)\]$/;
+var BRACKET_REGEXP = /^([a-zA-Z0-9_@]+)\[([a-zA-Z0-9_@]+)\]$/;
 var NUMBER_REGEXP = /^-?\d+\.?\d*$/;
 
 var BLOCK_HELPERS = {
@@ -20,17 +20,16 @@ var BLOCK_HELPERS = {
  * @private
  */
 function getValueFromContext(exp, context) {
-  var bracketExps, value;
+  var bracketExps;
+  var value = context[exp];
 
-  if (exp in context) {
-    value = context[exp];
-  } else if (exp === 'true') {
+  if (exp === 'true') {
     value = true;
   } else if (exp === 'false') {
     value = false;
   } else if (BRACKET_REGEXP.test(exp)) {
     bracketExps = exp.split(BRACKET_REGEXP);
-    value = context[bracketExps[1]][bracketExps[2]];
+    value = getValueFromContext(bracketExps[1], context)[getValueFromContext(bracketExps[2], context)];
   } else if (NUMBER_REGEXP.test(exp)) {
     value = parseFloat(exp);
   }
@@ -40,69 +39,69 @@ function getValueFromContext(exp, context) {
 
 /**
  * Extract elseif and else expressions.
- * @param {array<string>} ifExps - args of if expression
- * @param {array<string>} strings - strings inside if block
- * @return {object} - exps: expressions of if, elseif, and else / stringsInsideBlock: strings inside if, elseif, and else block.
+ * @param {Array.<string>} ifExps - args of if expression
+ * @param {Array.<string>} sourcesInsideBlock - sources inside if block
+ * @return {object} - exps: expressions of if, elseif, and else / sourcesInsideIf: sources inside if, elseif, and else block.
  * @private
  */
-function extractElseif(ifExps, strings) {
+function extractElseif(ifExps, sourcesInsideBlock) {
   var exps = [ifExps];
-  var stringsInsideBlock = [];
+  var sourcesInsideIf = [];
 
   var start = 0;
-  var i, len, string;
+  var i, len, source;
 
-  for (i = 0, len = strings.length; i < len; i += 1) {
-    string = strings[i];
+  for (i = 0, len = sourcesInsideBlock.length; i < len; i += 1) {
+    source = sourcesInsideBlock[i];
 
-    if (string.indexOf('elseif') > -1 || string === 'else') {
-      exps.push(string === 'else' ? ['true'] : string.split(' ').slice(1));
-      stringsInsideBlock.push(strings.slice(start, i));
+    if (source.indexOf('elseif') > -1 || source === 'else') {
+      exps.push(source === 'else' ? ['true'] : source.split(' ').slice(1));
+      sourcesInsideIf.push(sourcesInsideBlock.slice(start, i));
       start = i + 1;
     }
   }
-  stringsInsideBlock.push(strings.slice(start));
+  sourcesInsideIf.push(sourcesInsideBlock.slice(start));
 
   return {
     exps: exps,
-    stringsInsideBlock: stringsInsideBlock
+    sourcesInsideIf: sourcesInsideIf
   };
 }
 
 /**
  * Helper function for "if". 
- * @param {array<string>} exps - array of expressions split by spaces
+ * @param {Array.<string>} exps - array of expressions split by spaces
  * @param {object} context - context
- * @param {array<string>} stringsInsideBlock - array of strings inside the if block
+ * @param {Array.<string>} sourcesInsideBlock - array of sources inside the if block
  * @return {string}
  * @private
  */
-function handleIf(exps, context, stringsInsideBlock) {
-  var analyzed = extractElseif(exps, stringsInsideBlock);
+function handleIf(exps, context, sourcesInsideBlock) {
+  var analyzed = extractElseif(exps, sourcesInsideBlock);
   var result = false;
-  var compiledString = '';
+  var compiledSource = '';
 
   snippet.forEach(analyzed.exps, function(exp, index) {
     result = handleFunction(exp, context);
     if (result) {
-      compiledString = compile(analyzed.stringsInsideBlock[index], context).join('');
+      compiledSource = compile(analyzed.sourcesInsideIf[index], context);
     }
 
     return !result;
   });
 
-  return compiledString;
+  return compiledSource;
 }
 
 /**
  * Helper function for "each".
- * @param {array<string>} exps - array of expressions split by spaces
+ * @param {Array.<string>} exps - array of expressions split by spaces
  * @param {object} context - context
- * @param {array<string>} stringsInsideBlock - array of strings inside the each block
+ * @param {Array.<string>} sourcesInsideBlock - array of sources inside the each block
  * @return {string}
  * @private
  */
-function handleEach(exps, context, stringsInsideBlock) {
+function handleEach(exps, context, sourcesInsideBlock) {
   var collection = handleFunction(exps, context);
   var additionalKey = snippet.isArray(collection) ? '@index' : '@key';
   var additionalContext = {};
@@ -113,7 +112,7 @@ function handleEach(exps, context, stringsInsideBlock) {
     additionalContext['@this'] = item;
     snippet.extend(additionalContext, context);
 
-    result += compile(stringsInsideBlock.slice(), additionalContext).join('');
+    result += compile(sourcesInsideBlock.slice(), additionalContext);
   });
 
   return result;
@@ -121,13 +120,13 @@ function handleEach(exps, context, stringsInsideBlock) {
 
 /**
  * Helper function for "with ... as"
- * @param {array<string>} exps - array of expressions split by spaces
+ * @param {Array.<string>} exps - array of expressions split by spaces
  * @param {object} context - context
- * @param {array<string>} stringsInsideBlock - array of strings inside the with block
+ * @param {Array.<string>} sourcesInsideBlock - array of sources inside the with block
  * @return {string}
  * @private
  */
-function handleWith(exps, context, stringsInsideBlock) {
+function handleWith(exps, context, sourcesInsideBlock) {
   var asIndex = snippet.inArray('as', exps);
   var alias = exps[asIndex + 1];
   var result = handleFunction(exps.slice(0, asIndex), context);
@@ -135,28 +134,25 @@ function handleWith(exps, context, stringsInsideBlock) {
   var additionalContext = {};
   additionalContext[alias] = result;
 
-  return compile(stringsInsideBlock, snippet.extend(additionalContext, context)).join('') || '';
+  return compile(sourcesInsideBlock, snippet.extend(additionalContext, context)) || '';
 }
 
 /**
  * Handle block helper function
  * @param {string} helperKeyword - helper keyword (ex. if, each, with)
  * @param {object} context - context
- * @param {array<string>} strings - array of strings after the starting block
- * @return {array<string>}
+ * @param {Array.<string>} sourcesToEnd - array of sources after the starting block
+ * @return {Array.<string>}
  * @private
  */
-function handleBlockHelper(helperKeyword, context, strings) {
+function handleBlockHelper(helperKeyword, context, sourcesToEnd) {
   var helperFunc = BLOCK_HELPERS[helperKeyword];
   var keywordLength = helperKeyword.length;
   var helperCount = 1;
-
   var startBlockIndices = [0];
-
   var index = 2;
-  var expression = strings[index];
-
-  var start, stringsInsideBlock;
+  var expression = sourcesToEnd[index];
+  var start, sourcesInsideBlock;
   while (helperCount !== 0 && snippet.isString(expression)) {
     if (expression.substring(0, keywordLength) === helperKeyword) {
       helperCount += 1;
@@ -165,28 +161,29 @@ function handleBlockHelper(helperKeyword, context, strings) {
       helperCount -= 1;
 
       start = startBlockIndices.pop();
-      stringsInsideBlock = strings.splice(start + 1, index - start);
-      stringsInsideBlock.pop();
-      strings[start] = helperFunc(strings[start].split(' ').slice(1), context, stringsInsideBlock);
-      strings.splice(Math.max(start - 1, 0), 0, strings.splice(Math.max(start - 1, 0), 3).join(''));
+      sourcesInsideBlock = sourcesToEnd.splice(start + 1, index - start);
+      sourcesInsideBlock.pop();
+      sourcesToEnd[start] = helperFunc(sourcesToEnd[start].split(' ').slice(1), context, sourcesInsideBlock);
+      sourcesToEnd.splice(Math.max(start - 1, 0), 0, sourcesToEnd.splice(Math.max(start - 1, 0), 3).join(''));
 
       index = start - 2;
     }
 
-    expression = strings[index += 2];
+    index += 2;
+    expression = sourcesToEnd[index];
   }
 
   if (helperCount !== 0) {
     throw Error(helperKeyword + ' needs {{/' + helperKeyword + '}} expression.');
   }
 
-  return strings;
+  return sourcesToEnd;
 }
 
 /**
  * Helper function for "custom helper".
  * If helper is not a function, return helper itself.
- * @param {array<string>} exps - array of expressions split by spaces (first element: helper)
+ * @param {Array.<string>} exps - array of expressions split by spaces (first element: helper)
  * @param {object} context - context
  * @return {string}
  * @private
@@ -204,7 +201,7 @@ function handleFunction(exps, context) {
 /**
  * Execute a helper function.
  * @param {Function} helper - helper function
- * @param {array<string>} argExps - expressions of arguments
+ * @param {Array.<string>} argExps - expressions of arguments
  * @param {object} context - context
  * @return {string} - result of executing the function with arguments
  * @private
@@ -220,43 +217,44 @@ function executeFunction(helper, argExps, context) {
 
 /**
  * Get a result of compiling an expression with the context.
- * @param {array<string>} strings - array of strings split by regexp of expression. (even elements: expression)
+ * @param {Array.<string>} sources - array of sources split by regexp of expression. (even elements: expression)
  * @param {object} context - context
- * @return {array<string>} - array of strings that bind with its context
+ * @return {Array.<string>} - array of sources that bind with its context
  * @private
  */
-function compile(strings, context) {
+function compile(sources, context) {
   var index = 1;
-  var expression = strings[index];
-  var exps, firstExp, stringsToEnd;
+  var expression = sources[index];
+  var exps, firstExp, sourcesToEnd;
 
   while (snippet.isString(expression)) {
     exps = expression.split(' ');
     firstExp = exps[0];
 
     if (BLOCK_HELPERS[firstExp]) {
-      stringsToEnd = strings.splice(index, strings.length - index);
-      strings.push(handleBlockHelper(firstExp, context, stringsToEnd));
+      sourcesToEnd = sources.splice(index, sources.length - index);
+      sources.push(handleBlockHelper(firstExp, context, sourcesToEnd));
     } else {
-      strings[index] = handleFunction(exps, context);
+      sources[index] = handleFunction(exps, context);
     }
 
-    expression = strings[index += 2];
+    index += 2;
+    expression = sources[index];
   }
 
-  return strings;
+  return sources.join('');
 }
 
 /**
  * Bind expressions with the context.
- * @param {string} source - string with expressions
+ * @param {string} rawSource - source with expressions
  * @param {object} context - context
- * @return {string} - string that bind with its context
+ * @return {string} - source that bind with its context
  */
-function template(source, context) {
-  source = source.replace(/\n\s*/g, '');
+function template(rawSource, context) {
+  rawSource = rawSource.replace(/\n\s*/g, '');
 
-  return compile(source.split(EXPRESSION_REGEXP), context).join('');
+  return compile(rawSource.split(EXPRESSION_REGEXP), context);
 }
 
 module.exports = template;
