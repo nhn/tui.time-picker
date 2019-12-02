@@ -1,6 +1,6 @@
 'use strict';
 
-var template = require('../template');
+var template = require('tui-code-snippet/domUtil/template');
 
 module.exports = function(context) {
   var source =

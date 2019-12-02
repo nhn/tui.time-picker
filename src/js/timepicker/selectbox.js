@@ -5,8 +5,15 @@
 
 'use strict';
 
-var snippet = require('tui-code-snippet');
-var domUtil = require('tui-dom');
+var inArray = require('tui-code-snippet/array/inArray');
+var CustomEvents = require('tui-code-snippet/customEvents/customEvents');
+var defineClass = require('tui-code-snippet/defineClass/defineClass');
+var extend = require('tui-code-snippet/object/extend');
+var on = require('tui-code-snippet/domEvent/on');
+var off = require('tui-code-snippet/domEvent/off');
+var closest = require('tui-code-snippet/domUtil/closest');
+var removeElement = require('tui-code-snippet/domUtil/removeElement');
+var isHTMLNode = require('tui-code-snippet/type/isHTMLNode');
 
 var util = require('../util');
 var tmpl = require('./../../template/timepicker/selectbox');
@@ -19,10 +26,10 @@ var tmpl = require('./../../template/timepicker/selectbox');
  * @param {Array.<number>} options.items - Items
  * @param {number} options.initialValue - Initial value
  */
-var Selectbox = snippet.defineClass(
+var Selectbox = defineClass(
   /** @lends Selectbox.prototype */ {
     init: function(container, options) {
-      options = snippet.extend(
+      options = extend(
         {
           items: []
         },
@@ -34,7 +41,7 @@ var Selectbox = snippet.defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._container = snippet.isHTMLNode(container)
+      this._container = isHTMLNode(container)
         ? container
         : document.querySelector(container);
 
@@ -57,7 +64,7 @@ var Selectbox = snippet.defineClass(
        * @type {number}
        * @private
        */
-      this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
+      this._selectedIndex = Math.max(0, inArray(options.initialValue, this._items));
 
       /**
        * Time format for output
@@ -88,13 +95,12 @@ var Selectbox = snippet.defineClass(
       context = {
         items: this._items,
         format: this._format,
-        isInitialValue: snippet.bind(function(value) {
-          return this.getValue() === value;
-        }, this),
-        disabledItems: snippet.bind(function(index) {
-          return this._disabledItems[index];
-        }, this),
-        timeFormat: util.timeFormat
+        initialValue: this.getValue(),
+        disabledItems: this._disabledItems,
+        timeFormat: util.timeFormat,
+        equals: function(a, b) {
+          return a === b;
+        }
       };
 
       if (this._element) {
@@ -103,7 +109,7 @@ var Selectbox = snippet.defineClass(
 
       this._container.innerHTML = tmpl(context);
       this._element = this._container.firstChild;
-      domUtil.on(this._element, 'change', this._onChangeHandler, this);
+      on(this._element, 'change', this._onChangeHandler, this);
     },
 
     /**
@@ -111,9 +117,9 @@ var Selectbox = snippet.defineClass(
      * @private
      */
     _changeEnabledIndex: function() {
-      var index = snippet.inArray(this.getValue(), this._items);
+      var index = inArray(this.getValue(), this._items);
       if (this._disabledItems[index]) {
-        this._selectedIndex = snippet.inArray(false, this._disabledItems);
+        this._selectedIndex = inArray(false, this._disabledItems);
       }
     },
 
@@ -155,8 +161,8 @@ var Selectbox = snippet.defineClass(
      * @private
      */
     _removeElement: function() {
-      domUtil.off(this._element, 'change', this._onChangeHandler, this);
-      domUtil.removeElement(this._element);
+      off(this._element, 'change', this._onChangeHandler, this);
+      removeElement(this._element);
     },
 
     /**
@@ -165,7 +171,7 @@ var Selectbox = snippet.defineClass(
      * @private
      */
     _onChangeHandler: function(ev) {
-      if (domUtil.closest(util.getTarget(ev), 'select')) {
+      if (closest(util.getTarget(ev), 'select')) {
         this._setNewValue();
       }
     },
@@ -176,7 +182,7 @@ var Selectbox = snippet.defineClass(
      */
     _setNewValue: function() {
       var newValue = Number(this._element.value);
-      this._selectedIndex = snippet.inArray(newValue, this._items);
+      this._selectedIndex = inArray(newValue, this._items);
       this.fire('change', {
         value: newValue
       });
@@ -195,7 +201,7 @@ var Selectbox = snippet.defineClass(
      * @param {number} value - New value
      */
     setValue: function(value) {
-      var newIndex = snippet.inArray(value, this._items);
+      var newIndex = inArray(value, this._items);
 
       if (newIndex > -1 && newIndex !== this._selectedIndex) {
         this._selectedIndex = newIndex;
@@ -215,5 +221,5 @@ var Selectbox = snippet.defineClass(
   }
 );
 
-snippet.CustomEvents.mixin(Selectbox);
+CustomEvents.mixin(Selectbox);
 module.exports = Selectbox;

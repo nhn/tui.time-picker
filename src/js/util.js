@@ -5,7 +5,8 @@
 
 'use strict';
 
-var snippet = require('tui-code-snippet');
+var inArray = require('tui-code-snippet/array/inArray');
+var sendHostname = require('tui-code-snippet/request/sendHostname');
 
 var uniqueId = 0;
 
@@ -35,7 +36,7 @@ var utils = {
     var PADDING_ZERO_TYPES = ['hh', 'mm'];
     value = String(value);
 
-    return snippet.inArray(format, PADDING_ZERO_TYPES) >= 0
+    return inArray(format, PADDING_ZERO_TYPES) >= 0
       && value.length === 1
       ? '0' + value
       : value;
@@ -96,7 +97,7 @@ var utils = {
    * @ignore
    */
   sendHostName: function() {
-    snippet.sendHostname('time-picker', 'UA-129987462-1');
+    sendHostname('time-picker', 'UA-129987462-1');
   }
 };
 
