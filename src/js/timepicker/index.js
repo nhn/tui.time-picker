@@ -23,8 +23,8 @@ var Spinbox = require('./spinbox');
 var Selectbox = require('./selectbox');
 var util = require('../util');
 var localeTexts = require('./../localeTexts');
-var tmpl = require('./../../template/timepicker/index');
-var meridiemTmpl = require('./../../template/timepicker/meridiem');
+var tmpl = require('../../template/index');
+var meridiemTmpl = require('../../template/meridiem');
 
 var SELECTOR_HOUR_ELELMENT = '.tui-timepicker-hour';
 var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';

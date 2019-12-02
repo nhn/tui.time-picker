@@ -16,7 +16,7 @@ var removeElement = require('tui-code-snippet/domUtil/removeElement');
 var isHTMLNode = require('tui-code-snippet/type/isHTMLNode');
 
 var util = require('../util');
-var tmpl = require('./../../template/timepicker/selectbox');
+var tmpl = require('../../template/selectbox');
 
 /**
  * @class

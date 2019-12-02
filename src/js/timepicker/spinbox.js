@@ -17,7 +17,7 @@ var removeElement = require('tui-code-snippet/domUtil/removeElement');
 var isHTMLNode = require('tui-code-snippet/type/isHTMLNode');
 
 var util = require('../util');
-var tmpl = require('./../../template/timepicker/spinbox');
+var tmpl = require('../../template/spinbox');
 
 var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
