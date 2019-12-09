@@ -32,7 +32,7 @@ var utils = {
    * @param {string} format - ex) hh, h, mm, m
    * @returns {string}
    */
-  timeFormat: function(value, format) {
+  formatTime: function(value, format) {
     var PADDING_ZERO_TYPES = ['hh', 'mm'];
     value = String(value);
 

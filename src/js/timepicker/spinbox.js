@@ -107,7 +107,7 @@ var Spinbox = defineClass(
         maxLength: this._getMaxLength(),
         initialValue: this.getValue(),
         format: this._format,
-        timeFormat: util.timeFormat
+        formatTime: util.formatTime
       };
 
       this._container.innerHTML = tmpl(context);
@@ -281,7 +281,7 @@ var Spinbox = defineClass(
      * @param {number} value - Value
      */
     setValue: function(value) {
-      this._inputElement.value = util.timeFormat(value, this._format);
+      this._inputElement.value = util.formatTime(value, this._format);
       this._changeToInputValue();
     },
 

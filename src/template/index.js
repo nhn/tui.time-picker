@@ -7,7 +7,7 @@ module.exports = function(context) {
       '<div class="tui-timepicker">'
     + '  <div class="tui-timepicker-body">'
     + '    <div class="tui-timepicker-row">'
-    + '      {{if isSpinbox inputType}}'
+    + '      {{if isSpinbox}}'
     + '        <div class="tui-timepicker-column tui-timepicker-spinbox tui-timepicker-hour"></div>'
     + '        <span class="tui-timepicker-column tui-timepicker-colon"><span class="tui-ico-colon">:</span></span>'
     + '        <div class="tui-timepicker-column tui-timepicker-spinbox tui-timepicker-minute"></div>'

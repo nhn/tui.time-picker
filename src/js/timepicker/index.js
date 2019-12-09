@@ -26,9 +26,9 @@ var localeTexts = require('./../localeTexts');
 var tmpl = require('../../template/index');
 var meridiemTmpl = require('../../template/meridiem');
 
-var SELECTOR_HOUR_ELELMENT = '.tui-timepicker-hour';
-var SELECTOR_MINUTE_ELELMENT = '.tui-timepicker-minute';
-var SELECTOR_MERIDIEM_ELELMENT = '.tui-timepicker-meridiem';
+var SELECTOR_HOUR_ELEMENT = '.tui-timepicker-hour';
+var SELECTOR_MINUTE_ELEMENT = '.tui-timepicker-minute';
+var SELECTOR_MERIDIEM_ELEMENT = '.tui-timepicker-meridiem';
 var CLASS_NAME_LEFT_MERIDIEM = 'tui-has-left';
 var CLASS_NAME_HIDDEN = 'tui-hidden';
 var CLASS_NAME_CHECKED = 'tui-timepicker-meridiem-checked';
@@ -284,10 +284,7 @@ var TimePicker = defineClass(
     _render: function() {
       var context = {
         showMeridiem: this._showMeridiem,
-        inputType: this._inputType,
-        isSpinbox: function(type) {
-          return type === 'spinbox';
-        }
+        isSpinbox: this._inputType === 'spinbox'
       };
 
       if (this._showMeridiem) {
@@ -317,7 +314,7 @@ var TimePicker = defineClass(
       if (this._meridiemPosition === 'left') {
         addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
       }
-      this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELELMENT);
+      this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELEMENT);
       this._amEl = this._meridiemElement.querySelector('[value="AM"]');
       this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
       this._syncToMeridiemElements();
@@ -332,13 +329,10 @@ var TimePicker = defineClass(
       var localeText = this._localeText;
 
       return meridiemTmpl({
-        inputType: this._inputType,
         am: localeText.am,
         pm: localeText.pm,
         radioId: this._id,
-        isSpinbox: function(type) {
-          return type === 'spinbox';
-        }
+        isSpinbox: this._inputType === 'spinbox'
       });
     },
 
@@ -349,8 +343,8 @@ var TimePicker = defineClass(
     _renderTimeInputs: function() {
       var hour = this._hour;
       var showMeridiem = this._showMeridiem;
-      var hourElement = this._element.querySelector(SELECTOR_HOUR_ELELMENT);
-      var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELELMENT);
+      var hourElement = this._element.querySelector(SELECTOR_HOUR_ELEMENT);
+      var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELEMENT);
       var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
       var formatExplode = this._format.split(':');
       var hourItems = this._getHourItems();
@@ -382,11 +376,7 @@ var TimePicker = defineClass(
       }
 
       forEachArray(hourItems, function(hour) {
-        if (inArray(hour, disabledHours) >= 0) {
-          result.push(true);
-        } else {
-          result.push(false);
-        }
+        result.push(inArray(hour, disabledHours) >= 0);
       });
 
       return result;
@@ -468,7 +458,7 @@ var TimePicker = defineClass(
       var hour = this._hour;
       var target = util.getTarget(ev);
 
-      if (target.value && closest(target, SELECTOR_MERIDIEM_ELELMENT)) {
+      if (target.value && closest(target, SELECTOR_MERIDIEM_ELEMENT)) {
         hour = this._to24Hour(target.value === 'PM', hour);
         this.setTime(hour, this._minute);
         this._setDisabledHours();

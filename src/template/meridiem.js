@@ -4,7 +4,7 @@ var template = require('tui-code-snippet/domUtil/template');
 
 module.exports = function(context) {
   var source =
-      '{{if isSpinbox inputType}}'
+      '{{if isSpinbox}}'
     + '  <div class="tui-timepicker-column tui-timepicker-checkbox tui-timepicker-meridiem">'
     + '    <div class="tui-timepicker-check-area">'
     + '      <ul class="tui-timepicker-check-lst">'

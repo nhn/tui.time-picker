@@ -8,7 +8,7 @@ module.exports = function(context) {
     + '  <input type="text" class="tui-timepicker-spinbox-input"'
     + '        maxlength="{{maxLength}}"'
     + '        size="{{maxLength}}"'
-    + '        value="{{timeFormat initialValue format}}"'
+    + '        value="{{formatTime initialValue format}}"'
     + '        aria-label="TimePicker spinbox value">'
     + '  <button type="button" class="tui-timepicker-btn tui-timepicker-btn-up">'
     + '    <span class="tui-ico-t-btn">Increase</span>'

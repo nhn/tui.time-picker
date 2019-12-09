@@ -97,7 +97,7 @@ var Selectbox = defineClass(
         format: this._format,
         initialValue: this.getValue(),
         disabledItems: this._disabledItems,
-        timeFormat: util.timeFormat,
+        formatTime: util.formatTime,
         equals: function(a, b) {
           return a === b;
         }
