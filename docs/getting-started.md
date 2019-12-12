@@ -24,8 +24,7 @@ var instance = new tui.TimePicker(container, {
 });
 ```
 
-## Load dependency files
-* Script - [tui-code-snippet](https://github.com/nhn/tui.code-snippet) 2.1.0 or later
+## Load files
 
 ```html
 <html>
@@ -35,7 +34,6 @@ var instance = new tui.TimePicker(container, {
     </head>
     <body>
         ....
-        <script type="text/javascript" src="tui-code-snippet.min.js"></script>
         <script type="text/javascript" src="tui-time-picker.min.js"></script>
         ....
     </body>

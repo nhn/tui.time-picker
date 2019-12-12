@@ -21,6 +21,6 @@
         "package-lock.json"
     ],
     "dependencies": {
-        "tui-code-snippet": "^2.1.0"
+        "tui-code-snippet": "^2.2.0"
     }
 }

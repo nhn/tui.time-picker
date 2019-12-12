@@ -30,14 +30,6 @@ module.exports = function(env, argv) {
       publicPath: 'dist',
       filename: FILENAME
     },
-    externals: {
-      'tui-code-snippet': {
-        commonjs: 'tui-code-snippet',
-        commonjs2: 'tui-code-snippet',
-        amd: 'tui-code-snippet',
-        root: ['tui', 'util']
-      }
-    },
     module: {
       rules: [
         {
