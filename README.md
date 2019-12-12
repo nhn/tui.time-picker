@@ -119,8 +119,9 @@ tui.time-picker/
 ├─ latest/
 │  ├─ tui-time-picker.css
 │  ├─ tui-time-picker.js
-│  ├─ tui-time-picker.min.js
-├─ v1.2.0/
+│  ├─ tui-time-picker.min.css
+│  └─ tui-time-picker.min.js
+├─ v2.0.0/
 │  ├─ ...
 ```
 
