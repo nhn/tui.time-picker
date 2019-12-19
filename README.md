@@ -41,7 +41,7 @@ var options = {
 var instance = new TimePicker(container, options);
 ```
 
- Or, include [`tui-code-snippet`](https://github.com/nhn/tui.code-snippet)(**v1.5.0** or **later**) and then immediately write the options as follows:
+ Or, include [`tui-code-snippet`](https://github.com/nhn/tui.code-snippet)(**v2.2.0** or **later**) and then immediately write the options as follows:
 
 ```js
 tui.usageStatistics = false;
@@ -119,8 +119,9 @@ tui.time-picker/
 ├─ latest/
 │  ├─ tui-time-picker.css
 │  ├─ tui-time-picker.js
-│  ├─ tui-time-picker.min.js
-├─ v1.2.0/
+│  ├─ tui-time-picker.min.css
+│  └─ tui-time-picker.min.js
+├─ v2.0.0/
 │  ├─ ...
 ```
 
@@ -171,8 +172,7 @@ For more information about the API, please see [here](https://nhn.github.io/tui.
 
 
 ## 🔩 Dependency
-* [tui-code-snippet](https://github.com/nhn/tui.code-snippet) >=1.5.0
-* [tui-dom](https://github.com/nhn/tui.dom) >=3.0.0
+* [tui-code-snippet](https://github.com/nhn/tui.code-snippet) >= 2.2.0
 
 
 ## 🌏 Browser Support

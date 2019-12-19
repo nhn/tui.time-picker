@@ -5,12 +5,19 @@
 
 'use strict';
 
-var snippet = require('tui-code-snippet');
-var domUtil = require('tui-dom');
+var inArray = require('tui-code-snippet/array/inArray');
+var forEachArray = require('tui-code-snippet/collection/forEachArray');
+var CustomEvents = require('tui-code-snippet/customEvents/customEvents');
+var defineClass = require('tui-code-snippet/defineClass/defineClass');
+var extend = require('tui-code-snippet/object/extend');
+var on = require('tui-code-snippet/domEvent/on');
+var off = require('tui-code-snippet/domEvent/off');
+var closest = require('tui-code-snippet/domUtil/closest');
+var removeElement = require('tui-code-snippet/domUtil/removeElement');
+var isHTMLNode = require('tui-code-snippet/type/isHTMLNode');
 
 var util = require('../util');
-var tmpl = require('./../../template/timepicker/spinbox.hbs');
-var timeFormat = require('./../../template/helpers/timeFormat');
+var tmpl = require('../../template/spinbox');
 
 var SELECTOR_UP_BUTTON = '.tui-timepicker-btn-up';
 var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
@@ -23,10 +30,10 @@ var SELECTOR_DOWN_BUTTON = '.tui-timepicker-btn-down';
  * @param {number} [options.initialValue] - initial setting value
  * @param {Array.<number>} items - Items
  */
-var Spinbox = snippet.defineClass(
+var Spinbox = defineClass(
   /** @lends Spinbox.prototype */ {
     init: function(container, options) {
-      options = snippet.extend(
+      options = extend(
         {
           items: []
         },
@@ -37,7 +44,7 @@ var Spinbox = snippet.defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._container = snippet.isHTMLNode(container)
+      this._container = isHTMLNode(container)
         ? container
         : document.querySelector(container);
 
@@ -72,7 +79,7 @@ var Spinbox = snippet.defineClass(
        * @type {number}
        * @private
        */
-      this._selectedIndex = Math.max(0, snippet.inArray(options.initialValue, this._items));
+      this._selectedIndex = Math.max(0, inArray(options.initialValue, this._items));
 
       /**
        * Time format for output
@@ -90,7 +97,7 @@ var Spinbox = snippet.defineClass(
      * @private
      */
     _render: function() {
-      var index = snippet.inArray(this.getValue(), this._items);
+      var index = inArray(this.getValue(), this._items);
       var context;
 
       if (this._disabledItems[index]) {
@@ -99,7 +106,8 @@ var Spinbox = snippet.defineClass(
       context = {
         maxLength: this._getMaxLength(),
         initialValue: this.getValue(),
-        format: this._format
+        format: this._format,
+        formatTime: util.formatTime
       };
 
       this._container.innerHTML = tmpl(context);
@@ -113,7 +121,7 @@ var Spinbox = snippet.defineClass(
      * @private
      */
     _findEnabledIndex: function() {
-      return snippet.inArray(false, this._disabledItems);
+      return inArray(false, this._disabledItems);
     },
 
     /**
@@ -122,8 +130,10 @@ var Spinbox = snippet.defineClass(
      * @private
      */
     _getMaxLength: function() {
-      var lengths = snippet.map(this._items, function(item) {
-        return String(item).length;
+      var lengths = [];
+
+      forEachArray(this._items, function(item) {
+        lengths.push(String(item).length);
       });
 
       return Math.max.apply(null, lengths);
@@ -143,9 +153,9 @@ var Spinbox = snippet.defineClass(
      * @private
      */
     _setEvents: function() {
-      domUtil.on(this._container, 'click', this._onClickHandler, this);
-      domUtil.on(this._inputElement, 'keydown', this._onKeydownInputElement, this);
-      domUtil.on(this._inputElement, 'change', this._onChangeHandler, this);
+      on(this._container, 'click', this._onClickHandler, this);
+      on(this._inputElement, 'keydown', this._onKeydownInputElement, this);
+      on(this._inputElement, 'change', this._onChangeHandler, this);
 
       this.on(
         'changeItems',
@@ -164,9 +174,9 @@ var Spinbox = snippet.defineClass(
     _removeEvents: function() {
       this.off();
 
-      domUtil.off(this._container, 'click', this._onClickHandler, this);
-      domUtil.off(this._inputElement, 'keydown', this._onKeydownInputElement, this);
-      domUtil.off(this._inputElement, 'change', this._onChangeHandler, this);
+      off(this._container, 'click', this._onClickHandler, this);
+      off(this._inputElement, 'keydown', this._onKeydownInputElement, this);
+      off(this._inputElement, 'change', this._onChangeHandler, this);
     },
 
     /**
@@ -176,9 +186,9 @@ var Spinbox = snippet.defineClass(
     _onClickHandler: function(ev) {
       var target = util.getTarget(ev);
 
-      if (domUtil.closest(target, SELECTOR_DOWN_BUTTON)) {
+      if (closest(target, SELECTOR_DOWN_BUTTON)) {
         this._setNextValue(true);
-      } else if (domUtil.closest(target, SELECTOR_UP_BUTTON)) {
+      } else if (closest(target, SELECTOR_UP_BUTTON)) {
         this._setNextValue(false);
       }
     },
@@ -214,7 +224,7 @@ var Spinbox = snippet.defineClass(
       var keyCode = ev.which || ev.keyCode;
       var isDown;
 
-      if (domUtil.closest(util.getTarget(ev), 'input')) {
+      if (closest(util.getTarget(ev), 'input')) {
         switch (keyCode) {
           case 38:
             isDown = false;
@@ -236,7 +246,7 @@ var Spinbox = snippet.defineClass(
      * @private
      */
     _onChangeHandler: function(ev) {
-      if (domUtil.closest(util.getTarget(ev), 'input')) {
+      if (closest(util.getTarget(ev), 'input')) {
         this._changeToInputValue();
       }
     },
@@ -247,7 +257,7 @@ var Spinbox = snippet.defineClass(
      */
     _changeToInputValue: function() {
       var newValue = Number(this._inputElement.value);
-      var newIndex = snippet.inArray(newValue, this._items);
+      var newIndex = inArray(newValue, this._items);
 
       if (this._disabledItems[newIndex]) {
         newIndex = this._findEnabledIndex();
@@ -271,7 +281,7 @@ var Spinbox = snippet.defineClass(
      * @param {number} value - Value
      */
     setValue: function(value) {
-      this._inputElement.value = timeFormat(value, this._format);
+      this._inputElement.value = util.formatTime(value, this._format);
       this._changeToInputValue();
     },
 
@@ -288,11 +298,11 @@ var Spinbox = snippet.defineClass(
      */
     destroy: function() {
       this._removeEvents();
-      domUtil.removeElement(this._element);
+      removeElement(this._element);
       this._container = this._element = this._inputElement = this._items = this._selectedIndex = null;
     }
   }
 );
 
-snippet.CustomEvents.mixin(Spinbox);
+CustomEvents.mixin(Spinbox);
 module.exports = Spinbox;
