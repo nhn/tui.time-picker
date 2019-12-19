@@ -7,7 +7,7 @@ module.exports = function(context) {
       '<select class="tui-timepicker-select" aria-label="Time">'
     + '  {{each items}}'
     + '    {{if equals initialValue @this}}'
-    + '      <option value="{{@this}}" selected {{if disabledItems @index}}disabled{{/if}}>{{formatTime @this format}}</option>'
+    + '      <option value="{{@this}}" selected {{if disabledItems[@index]}}disabled{{/if}}>{{formatTime @this format}}</option>'
     + '    {{else}}'
     + '      <option value="{{@this}}" {{if disabledItems[@index]}}disabled{{/if}}>{{formatTime @this format}}</option>'
     + '    {{/if}}'
