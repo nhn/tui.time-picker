@@ -5,7 +5,10 @@
 
 'use strict';
 
-var snippet = require('tui-code-snippet');
+var inArray = require('tui-code-snippet/array/inArray');
+var sendHostname = require('tui-code-snippet/request/sendHostname');
+
+var uniqueId = 0;
 
 /**
  * Utils
@@ -13,6 +16,32 @@ var snippet = require('tui-code-snippet');
  * @ignore
  */
 var utils = {
+  /**
+   * Returns unique id
+   * @returns {number}
+   */
+  getUniqueId: function() {
+    uniqueId += 1;
+
+    return uniqueId;
+  },
+
+  /**
+   * Convert a value to meet the format
+   * @param {number|string} value 
+   * @param {string} format - ex) hh, h, mm, m
+   * @returns {string}
+   */
+  formatTime: function(value, format) {
+    var PADDING_ZERO_TYPES = ['hh', 'mm'];
+    value = String(value);
+
+    return inArray(format, PADDING_ZERO_TYPES) >= 0
+      && value.length === 1
+      ? '0' + value
+      : value;
+  },
+
   /**
    * Get meridiem hour
    * @param {number} hour - Original hour
@@ -68,7 +97,7 @@ var utils = {
    * @ignore
    */
   sendHostName: function() {
-    snippet.sendHostname('time-picker', 'UA-129987462-1');
+    sendHostname('time-picker', 'UA-129987462-1');
   }
 };
 

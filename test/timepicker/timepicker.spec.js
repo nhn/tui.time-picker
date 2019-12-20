@@ -4,7 +4,8 @@
  */
 'use strict';
 
-var snippet = require('tui-code-snippet');
+var util = require('../../src/js/util');
+
 var TimePicker = require('../../src/js/timepicker');
 
 describe('TimePicker', function() {
@@ -153,7 +154,7 @@ describe('TimePicker', function() {
   describe('usageStatistics', function() {
     var timePicker;
     beforeEach(function() {
-      spyOn(snippet, 'sendHostname');
+      spyOn(util, 'sendHostName');
     });
 
     it('should send hostname by default', function() {
@@ -161,7 +162,7 @@ describe('TimePicker', function() {
         showMeridiem: false
       });
 
-      expect(snippet.sendHostname).toHaveBeenCalled();
+      expect(util.sendHostName).toHaveBeenCalled();
     });
 
     it('should not send hostname on usageStatistics option false', function() {
@@ -170,7 +171,7 @@ describe('TimePicker', function() {
         usageStatistics: false
       });
 
-      expect(snippet.sendHostname).not.toHaveBeenCalled();
+      expect(util.sendHostName).not.toHaveBeenCalled();
     });
 
     afterEach(function() {
