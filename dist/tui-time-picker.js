@@ -2709,6 +2709,13 @@ var TimePicker = defineClass(
       /**
        * Change event - TimePicker
        * @event TimePicker#change
+       * @type {object} event - Event object
+       * @property {number} hour - changed hour
+       * @property {number} minute - changed minute
+       * @example
+       * timepicker.on('change', (e) => {
+       *   console.log(e.hour, e.minute);
+       * });
        */
       this.fire('change', {
         hour: this._hour,
