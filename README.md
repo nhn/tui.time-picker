@@ -48,12 +48,12 @@ It also serves as important index to determine the future course of projects.
  To disable GA, use the following `usageStatistics` option when creating the instance.
 
 ```js
-var options = {
+const options = {
     ...
     usageStatistics: false
 }
 
-var instance = new TimePicker(container, options);
+const instance = new TimePicker(container, options);
 ```
 
  Or, include [`tui-code-snippet`](https://github.com/nhn/tui.code-snippet)(**v2.2.0** or **later**) and then immediately write the options as follows:
@@ -162,12 +162,12 @@ To get the constructor function, you should import the module using one of the f
 
 #### Using namespace in browser environment
 ``` javascript
-var TimePicker = tui.TimePicker;
+const TimePicker = tui.TimePicker;
 ```
 
 #### Using module format in node environment
 ``` javascript
-var TimePicker = require('tui-time-picker'); /* CommonJS */
+const TimePicker = require('tui-time-picker'); /* CommonJS */
 ```
 
 ``` javascript
@@ -177,8 +177,8 @@ import TimePicker from 'tui-time-picker'; /* ES6 */
 You can create an instance with [options](https://nhn.github.io/tui.time-picker/latest/TimePicker) and call various APIs after creating an instance.
 
 ``` javascript
-var container = document.getElementById('tui-time-picker-container');
-var instance = new TimePicker(container, { ... });
+const container = document.getElementById('tui-time-picker-container');
+const instance = new TimePicker(container, { ... });
 
 instance.getHour();
 ```
