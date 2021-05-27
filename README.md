@@ -18,7 +18,6 @@
 * [Examples](#-examples)
 * [Install](#-install)
 * [Usage](#-usage)
-* [Dependency](#-dependency)
 * [Browser Support](#-browser-support)
 * [Pull Request Steps](#-pull-request-steps)
 * [Contributing](#-contributing)
@@ -169,10 +168,6 @@ instance.getHour();
 ```
 
 For more information about the API, please see [here](https://nhn.github.io/tui.time-picker/latest/TimePicker).
-
-
-## 🔩 Dependency
-* [tui-code-snippet](https://github.com/nhn/tui.code-snippet) >= 2.2.0
 
 
 ## 🌏 Browser Support

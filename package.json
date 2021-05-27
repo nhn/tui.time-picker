@@ -54,12 +54,10 @@
     "prettier": "^1.18.2",
     "style-loader": "^0.13.1",
     "terser-webpack-plugin": "^2.2.2",
+    "tui-code-snippet": "^2.2.0",
     "url-loader": "^0.5.7",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
-  },
-  "dependencies": {
-    "tui-code-snippet": "^2.2.0"
   }
 }
