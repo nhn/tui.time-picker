@@ -77,7 +77,11 @@ var mergeDefaultOptions = function(options) {
  * @param {string} [options.language = 'en'] Set locale texts
  * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
  * @example
- * var timepicker = new tui.TimePicker('#timepicker-container', {
+ * import TimePicker from 'tui-time-picker'; // ES6
+ * // or const TimePicker = require('tui-time-picker'); // CommonJS 
+ * // or var TimePicker = tui.TimePicker;
+ * 
+ * const timepicker = new TimePicker('#timepicker-container', {
  *     initialHour: 15,
  *     initialMinute: 13,
  *     inputType: 'selectbox',
@@ -93,14 +97,12 @@ var TimePicker = defineClass(
        * @memberof TimePicker
        * @static
        * @example
-       * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
-       *
        * TimePicker.localeTexts['customKey'] = {
        *     am: 'a.m.',
        *     pm: 'p.m.'
        * };
        *
-       * var instance = new tui.TimePicker('#timepicker-container', {
+       * const instance = new TimePicker('#timepicker-container', {
        *     language: 'customKey',
        * });
        */
