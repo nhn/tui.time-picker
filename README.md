@@ -12,17 +12,32 @@
 
 
 ## 🚩 Table of Contents
-* [Collect statistics on the use of open source](#Collect-statistics-on-the-use-of-open-source)
-* [Documents](#-documents)
-* [Features](#-features)
-* [Examples](#-examples)
-* [Install](#-install)
-* [Usage](#-usage)
-* [Browser Support](#-browser-support)
-* [Pull Request Steps](#-pull-request-steps)
-* [Contributing](#-contributing)
-* [TOAST UI Family](#-toast-ui-family)
-* [License](#-license)
+
+- [Collect statistics on the use of open source](#collect-statistics-on-the-use-of-open-source)
+- [📙 Documents](#-documents)
+- [🎨 Features](#-features)
+- [🐾 Examples](#-examples)
+- [💾 Install](#-install)
+  - [Via Package Manager](#via-package-manager)
+    - [npm](#npm)
+    - [bower](#bower)
+  - [Via Contents Delivery Network (CDN)](#via-contents-delivery-network-cdn)
+  - [Download Source Files](#download-source-files)
+- [🔨 Usage](#-usage)
+  - [HTML](#html)
+  - [JavaScript](#javascript)
+    - [Using namespace in browser environment](#using-namespace-in-browser-environment)
+    - [Using module format in node environment](#using-module-format-in-node-environment)
+- [🌏 Browser Support](#-browser-support)
+- [🔧 Pull Request Steps](#-pull-request-steps)
+  - [Setup](#setup)
+  - [Develop](#develop)
+    - [Run webpack-dev-server](#run-webpack-dev-server)
+    - [Run karma test](#run-karma-test)
+  - [Pull Request](#pull-request)
+- [💬 Contributing](#-contributing)
+- [🍞 TOAST UI Family](#-toast-ui-family)
+- [📜 License](#-license)
 
 
 ## Collect statistics on the use of open source
@@ -32,12 +47,12 @@ It also serves as important index to determine the future course of projects.
  To disable GA, use the following `usageStatistics` option when creating the instance.
 
 ```js
-var options = {
+const options = {
     ...
     usageStatistics: false
 }
 
-var instance = new TimePicker(container, options);
+const instance = new TimePicker(container, options);
 ```
 
  Or, include [`tui-code-snippet`](https://github.com/nhn/tui.code-snippet)(**v2.2.0** or **later**) and then immediately write the options as follows:
@@ -146,12 +161,12 @@ To get the constructor function, you should import the module using one of the f
 
 #### Using namespace in browser environment
 ``` javascript
-var TimePicker = tui.TimePicker;
+const TimePicker = tui.TimePicker;
 ```
 
 #### Using module format in node environment
 ``` javascript
-var TimePicker = require('tui-time-picker'); /* CommonJS */
+const TimePicker = require('tui-time-picker'); /* CommonJS */
 ```
 
 ``` javascript
@@ -161,8 +176,8 @@ import TimePicker from 'tui-time-picker'; /* ES6 */
 You can create an instance with [options](https://nhn.github.io/tui.time-picker/latest/TimePicker) and call various APIs after creating an instance.
 
 ``` javascript
-var container = document.getElementById('tui-time-picker-container');
-var instance = new TimePicker(container, { ... });
+const container = document.getElementById('tui-time-picker-container');
+const instance = new TimePicker(container, { ... });
 
 instance.getHour();
 ```
