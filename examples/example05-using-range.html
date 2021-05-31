@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>3. Using meridiem</title>
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+        <link rel="stylesheet" type="text/css" href="./css/tui-example-style.css" />
+        <link rel="stylesheet" type="text/css" href="../dist/tui-time-picker.css" />
+    </head>
+
+    <body>
+        <div class="code-html">
+            <table>
+                <tbody>
+                <tr>
+                    <td><div id="timepicker-selectbox-meridiem"></div></td>
+                </tr>
+                <tr>
+                    <td><div id="timepicker-spinbox"></div></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript" src="../dist/tui-time-picker.js"></script>
+        <script type="text/javascript" class="code-js">
+            var tpSelectboxMeridiem = new tui.TimePicker('#timepicker-selectbox-meridiem', {
+                inputType: 'selectbox',
+                showMeridiem: true
+            });
+
+            var tpSpinbox = new tui.TimePicker('#timepicker-spinbox', {
+                inputType: 'spinbox',
+                showMeridiem: false
+            });
+
+            var begin = { hour: 6, minute: 20 };
+            var end = { hour: 11, minute: 15 };
+  
+            tpSelectboxMeridiem.setRange(begin, end);   
+            
+            begin = { hour: 9, minute: 30 };
+            end = { hour: 18, minute: 40 };
+            tpSpinbox.setRange(begin, end);    
+        </script>
+    </body>
+</html>
