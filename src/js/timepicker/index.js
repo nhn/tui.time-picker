@@ -54,6 +54,7 @@ var mergeDefaultOptions = function(options) {
       meridiemPosition: 'right',
       format: 'h:m',
       disabledHours: [],
+      disabledMinutes: {},
       usageStatistics: true
     },
     options
@@ -72,6 +73,9 @@ var mergeDefaultOptions = function(options) {
  * @param {string} [options.format = 'h:m'] - hour, minute format for display
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @param {Array} [options.disabledHours = []] - Registered Hours is disabled.
+ * @param {Object} [options.disabledMinutes = {}] - Registered Minutes of selected hours is disabled.
+ * @param {Object} [options.disabledMinutes.hour] - Key must be hour(number).
+ *                 Value is array which contains only true or false and must be 60 of length
  * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
  *                 If this option set 'left', the meridiem element is created in front of the hour element.
  * @param {string} [options.language = 'en'] Set locale texts
@@ -208,6 +212,12 @@ var TimePicker = defineClass(
        * @private
        */
       this._disabledHours = options.disabledHours;
+
+      /**
+       * @type {Object}
+       * @private
+       */
+      this._disabledMinutes = options.disabledMinutes;
 
       /**
        * TimePicker inputType
@@ -469,6 +479,7 @@ var TimePicker = defineClass(
         hour = this._to24Hour(target.value === 'PM', hour);
         this.setTime(hour, this._minute);
         this._setDisabledHours();
+        this._setDisabledMinutes(hour);
       }
     },
 
@@ -485,6 +496,7 @@ var TimePicker = defineClass(
         hour = this._to24Hour(isPM, hour);
       }
       this.setTime(hour, minute);
+      this._setDisabledMinutes(hour);
     },
 
     /**
@@ -508,6 +520,13 @@ var TimePicker = defineClass(
       var disabledItems = this._makeDisabledStatItems(hourItems);
 
       this._hourInput.setDisabledItems(disabledItems);
+    },
+
+    _setDisabledMinutes: function(hour) {
+      var disabledItems;
+      disabledItems = this._disabledMinutes[hour] ? this._disabledMinutes[hour] : [];
+
+      this._minuteInput.setDisabledItems(disabledItems);
     },
 
     /**
@@ -651,6 +670,148 @@ var TimePicker = defineClass(
         hour: this._hour,
         minute: this._minute
       });
+    },
+
+    /**
+     * Set selectable range 
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} [end] - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     */
+    setRange: function(begin, end) {
+      var beginHour = begin.hour;
+      var beginMin = begin.minute;
+      var endHour;
+      var endMin;
+
+      var disabledHours;
+      var disabledMinRanges = [];
+
+      if (!this._isValidRange(begin, end)) {
+        return;
+      }
+
+      disabledHours = util.getRangeArr(0, beginHour - 1);
+      disabledMinRanges.push({
+        begin: 0,
+        end: beginMin
+      });
+
+      if (end) {
+        endHour = end.hour;
+        endMin = end.minute;
+        disabledHours = disabledHours.concat(util.getRangeArr(endHour + 1, 23));
+
+        disabledMinRanges.push({
+          begin: endMin,
+          end: 59
+        });
+      }
+
+      if (disabledMinRanges.length > 1 && beginHour === endHour) {
+        this._disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
+      } else {
+        this._disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
+        this._disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).concat();
+      }
+
+      this._disabledHours = disabledHours.concat();
+
+      this.setTime(beginHour, beginMin);
+      this._setDisabledHours();
+
+      if (this._showMeridiem) {
+        this._syncToMeridiemElements();
+
+        util.setDisabled(this._amEl, beginHour >= 12);
+        util.setDisabled(this._pmEl, endHour < 12);
+      }
+    },
+
+    /**
+     * Whether the given range a valid range 
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} [end] - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     * @returns {boolean} result of range validation
+     * @private
+     */
+    _isValidRange: function(begin, end) {
+      var beginHour = begin.hour;
+      var beginMin = begin.minute;
+      var endHour;
+      var endMin;
+
+      if (!this._isValidTime(beginHour, beginMin)) {
+        return false;
+      }
+
+      if (!end) {
+        return true;
+      }
+
+      endHour = end.hour;
+      endMin = end.minute;
+
+      if (!this._isValidTime(endHour, endMin)) {
+        return false;
+      }
+
+      if (this._CompareTimes(begin, end) <= 0) {
+        return false;
+      }
+
+      return true;
+    },
+
+    /**
+     * Whether the given time a valid time 
+     * @param {number} hour - hour for validation
+     * @param {number} minute - minute for validation
+     * @returns {boolean} result of time validation
+     * @private
+     */
+    _isValidTime: function(hour, minute) {
+      if (hour < 0 || hour > 23) {
+        return false;
+      }
+
+      if (minute < 0 || minute > 59) {
+        return false;
+      }
+
+      return true;
+    },
+
+    /**
+     * Compare two times
+     * it returns
+     *  0: when begin equals end
+     *  positive: when end later than begin
+     *  negative: when begin later than end
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} end - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     * @returns {boolean} result of range validation
+     * @private
+     */
+    _CompareTimes: function(begin, end) {
+      var first = new Date(0);
+      var second = new Date(0);
+
+      first.setHours(begin.hour, begin.minute);
+      second.setHours(end.hour, end.minute);
+
+      return second.getTime() - first.getTime();
     },
 
     /**

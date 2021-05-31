@@ -6,6 +6,7 @@
 'use strict';
 
 var inArray = require('tui-code-snippet/array/inArray');
+var forEachArray = require('tui-code-snippet/collection/forEachArray');
 var sendHostname = require('tui-code-snippet/request/sendHostname');
 
 var uniqueId = 0;
@@ -98,6 +99,36 @@ var utils = {
    */
   sendHostName: function() {
     sendHostname('time-picker', 'UA-129987462-1');
+  },
+
+  /**
+   * Get disabled minute array
+   * @param {Array} enableRanges array of object which contains range
+   */
+  getDisabledMinuteArr: function(enableRanges) {
+    var arr = [];
+    var i;
+
+    for (i = 0; i < 60; i += 1) {
+      arr.push(false);
+    }
+
+    forEachArray(enableRanges, function(enableRange) {
+      for (i = enableRange.begin; i <= enableRange.end; i += 1) {
+        arr[i] = true;
+      }
+    });
+
+    return arr;
+  },
+
+  /**
+   * Set disabled on target element
+   * @param {HTMLInputElement} el target element
+   * @param {boolean} isDisabled target element
+   */
+  setDisabled: function(el, isDisabled) {
+    el.disabled = isDisabled;
   }
 };
 
