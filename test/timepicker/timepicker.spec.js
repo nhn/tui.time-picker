@@ -8,27 +8,27 @@ var util = require('../../src/js/util');
 
 var TimePicker = require('../../src/js/timepicker');
 
+var container1 = document.createElement('div');
+var container2 = document.createElement('div');
+var timepickerNoMeridiem;
+var timepickerMeridiem;
+
+beforeEach(function() {
+  timepickerNoMeridiem = new TimePicker(container1, {
+    showMeridiem: false
+  });
+  timepickerMeridiem = new TimePicker(container2, {
+    initialHour: 13,
+    initialMinute: 45
+  });
+});
+
+afterEach(function() {
+  timepickerNoMeridiem.destroy();
+  timepickerMeridiem.destroy();
+});
+
 describe('TimePicker', function() {
-  var container1 = document.createElement('div');
-  var container2 = document.createElement('div');
-  var timepickerNoMeridiem;
-  var timepickerMeridiem;
-
-  beforeEach(function() {
-    timepickerNoMeridiem = new TimePicker(container1, {
-      showMeridiem: false
-    });
-    timepickerMeridiem = new TimePicker(container2, {
-      initialHour: 13,
-      initialMinute: 45
-    });
-  });
-
-  afterEach(function() {
-    timepickerNoMeridiem.destroy();
-    timepickerMeridiem.destroy();
-  });
-
   describe('constructor', function() {
     it('should set initial value', function() {
       expect(timepickerNoMeridiem.getHour()).toBe(0);
@@ -177,5 +177,172 @@ describe('TimePicker', function() {
     afterEach(function() {
       timePicker.destroy();
     });
+  });
+});
+
+describe('Set selectable range', function() {
+  function makeRangeObj(hour, minute) {
+    return {
+      hour: hour,
+      minute: minute
+    };
+  }
+
+  [
+    {
+      start: {
+        hour: 0,
+        minute: 0
+      },
+      expect: true
+    },
+    {
+      start: {
+        hour: 23,
+        minute: 59
+      },
+      expect: true
+    },
+    {
+      start: {
+        hour: -1,
+        minute: 30
+      },
+      expect: false
+    },
+    {
+      start: {
+        hour: 12,
+        minute: 60
+      },
+      expect: false
+    },
+    {
+      start: {
+        hour: 8,
+        minute: 30
+      },
+      end: {
+        hour: 8,
+        minute: 31
+      },
+      expect: true
+    },
+    {
+      start: {
+        hour: 8,
+        minute: 30
+      },
+      end: {
+        hour: 8,
+        minute: 30
+      },
+      expect: false
+    },
+    {
+      start: {
+        hour: 8,
+        minute: 30
+      },
+      end: {
+        hour: 8,
+        minute: 29
+      },
+      expect: false
+    }
+  ].forEach(function(option) {
+    it('should validate given range', function() {
+      var start;
+      var end;
+      start = makeRangeObj(option.start.hour, option.start.minute);
+
+      if (option.end) {
+        end = makeRangeObj(option.end.hour, option.end.minute);
+
+        expect(timepickerMeridiem._isValidRange(start, end)).toBe(option.expect);
+      } else {
+        expect(timepickerMeridiem._isValidRange(start)).toBe(option.expect);
+      }
+    });
+  });
+
+  [
+    {
+      value: 8,
+      expect: true
+    },
+    {
+      value: 9,
+      expect: false
+    },
+    {
+      value: 18,
+      expect: false
+    },
+    {
+      value: 19,
+      expect: true
+    }
+  ].forEach(function(option) {
+    it('should set selectable hour range', function() {
+      var start = makeRangeObj(9, 30);
+      var end = makeRangeObj(18, 30);
+      var hourSelect;
+
+      var selectOption;
+      timepickerNoMeridiem.setRange(start, end);
+
+      hourSelect = timepickerNoMeridiem._element.querySelector('select[aria-label="Time"]');
+
+      selectOption = hourSelect.querySelector('option[value="' + option.value + '"]');
+      expect(selectOption.disabled).toBe(option.expect);
+    });
+  });
+
+  [
+    {
+      target: 9,
+      value: 30,
+      expect: true
+    },
+    {
+      target: 9,
+      value: 31,
+      expect: false
+    },
+    {
+      target: 18,
+      value: 29,
+      expect: true
+    },
+    {
+      target: 18,
+      value: 30,
+      expect: true
+    }
+  ].forEach(function(option) {
+    it('should set selectable minute range', function() {
+      var start = makeRangeObj(9, 30);
+      var end = makeRangeObj(18, 30);
+      var minSelect;
+      var selectOption;
+
+      timepickerNoMeridiem.setRange(start, end);
+
+      minSelect = timepickerNoMeridiem._element.querySelectorAll('select[aria-label="Time"]')[1];
+      timepickerNoMeridiem.setTime(option.target, 0);
+
+      selectOption = minSelect.querySelector('option[value="' + option.value + '"]');
+      expect(selectOption.disabled).toBe(option.expect);
+    });
+  });
+
+  it('should disable a meridiem selector when range included in the other', function() {
+    var start = makeRangeObj(6, 30);
+    var end = makeRangeObj(11, 30);
+
+    timepickerMeridiem.setRange(start, end);
+
+    expect(timepickerMeridiem._pmEl.disabled).toBe(true);
   });
 });
