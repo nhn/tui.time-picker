@@ -38,16 +38,16 @@ describe('TimePicker', function() {
     });
 
     it('should set valid value to inputs', function() {
-      expect(timepickerNoMeridiem._hourInput.getValue()).toBe(0);
-      expect(timepickerNoMeridiem._minuteInput.getValue()).toBe(0);
+      expect(timepickerNoMeridiem.hourInput.getValue()).toBe(0);
+      expect(timepickerNoMeridiem.minuteInput.getValue()).toBe(0);
 
-      expect(timepickerMeridiem._hourInput.getValue()).toBe(1);
-      expect(timepickerMeridiem._minuteInput.getValue()).toBe(45);
+      expect(timepickerMeridiem.hourInput.getValue()).toBe(1);
+      expect(timepickerMeridiem.minuteInput.getValue()).toBe(45);
     });
 
     it('should set meridiem if "showMeridiem" is true', function() {
-      expect(timepickerNoMeridiem._meridiemElement).toBe(null);
-      expect(timepickerMeridiem._meridiemElement).not.toBe(null);
+      expect(timepickerNoMeridiem.meridiemElement).toBe(null);
+      expect(timepickerMeridiem.meridiemElement).not.toBe(null);
     });
   });
 
@@ -75,20 +75,20 @@ describe('TimePicker', function() {
 
   describe('changed from', function() {
     it('hour input', function() {
-      timepickerNoMeridiem._hourInput.setValue(17);
+      timepickerNoMeridiem.hourInput.setValue(17);
       expect(timepickerNoMeridiem.getHour()).toBe(17);
 
-      timepickerMeridiem._hourInput.setValue(10);
+      timepickerMeridiem.hourInput.setValue(10);
       expect(timepickerMeridiem.getHour()).toBe(22);
     });
 
     it('minute input', function() {
-      timepickerNoMeridiem._minuteInput.setValue(30);
+      timepickerNoMeridiem.minuteInput.setValue(30);
       expect(timepickerNoMeridiem.getMinute()).toBe(30);
     });
 
     it('hour in meridiem', function() {
-      timepickerMeridiem._hourInput.setValue(10);
+      timepickerMeridiem.hourInput.setValue(10);
       expect(timepickerMeridiem.getHour()).toBe(22);
     });
   });
@@ -136,8 +136,8 @@ describe('TimePicker', function() {
         language: 'ko'
       });
 
-      expect(timepickerMeridiem._amEl.innerText).toBe('오전');
-      expect(timepickerMeridiem._pmEl.innerText).toBe('오후');
+      expect(timepickerMeridiem.amEl.innerText).toBe('오전');
+      expect(timepickerMeridiem.pmEl.innerText).toBe('오후');
     });
 
     it('using "changeLanguage" method.', function() {
@@ -147,8 +147,8 @@ describe('TimePicker', function() {
       };
       timepickerMeridiem.changeLanguage('customKey');
 
-      expect(timepickerMeridiem._amEl.innerText).toBe('a.m.');
-      expect(timepickerMeridiem._pmEl.innerText).toBe('p.m.');
+      expect(timepickerMeridiem.amEl.innerText).toBe('a.m.');
+      expect(timepickerMeridiem.pmEl.innerText).toBe('p.m.');
     });
   });
   describe('usageStatistics', function() {
@@ -259,9 +259,9 @@ describe('Set selectable range', function() {
       if (option.end) {
         end = makeRangeObj(option.end.hour, option.end.minute);
 
-        expect(timepickerMeridiem._isValidRange(start, end)).toBe(option.expect);
+        expect(timepickerMeridiem.isValidRange(start, end)).toBe(option.expect);
       } else {
-        expect(timepickerMeridiem._isValidRange(start)).toBe(option.expect);
+        expect(timepickerMeridiem.isValidRange(start)).toBe(option.expect);
       }
     });
   });
@@ -292,7 +292,7 @@ describe('Set selectable range', function() {
       var selectOption;
       timepickerNoMeridiem.setRange(start, end);
 
-      hourSelect = timepickerNoMeridiem._element.querySelector('select[aria-label="Time"]');
+      hourSelect = timepickerNoMeridiem.element.querySelector('select[aria-label="Time"]');
 
       selectOption = hourSelect.querySelector('option[value="' + option.value + '"]');
       expect(selectOption.disabled).toBe(option.expect);
@@ -329,7 +329,7 @@ describe('Set selectable range', function() {
 
       timepickerNoMeridiem.setRange(start, end);
 
-      minSelect = timepickerNoMeridiem._element.querySelectorAll('select[aria-label="Time"]')[1];
+      minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
       timepickerNoMeridiem.setTime(option.target, 0);
 
       selectOption = minSelect.querySelector('option[value="' + option.value + '"]');
@@ -343,6 +343,6 @@ describe('Set selectable range', function() {
 
     timepickerMeridiem.setRange(start, end);
 
-    expect(timepickerMeridiem._pmEl.disabled).toBe(true);
+    expect(timepickerMeridiem.pmEl.disabled).toBe(true);
   });
 });

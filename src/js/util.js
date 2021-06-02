@@ -85,10 +85,34 @@ var utils = {
   },
 
   /**
+   * Returns array filled with selected value
+   * @param {number} start - Start index of array to fill
+   * @param {number} end - End index of array to fill
+   * @param {number} value - Value to be filled
+   * @param {Array} [target] - Array to fill
+   * @returns {Array}
+   */
+  fill: function(start, end, value, target) {
+    var arr = target || [];
+    var replaceEnd = Math.min(arr.length - 1, end);
+    var i;
+
+    for (i = start; i <= replaceEnd; i += 1) {
+      arr[i] = value;
+    }
+
+    for (; i <= end; i += 1) {
+      arr.push(value);
+    }
+
+    return arr;
+  },
+
+  /**
    * Get a target element
    * @param {Event} ev Event object
    * @returns {HTMLElement} An event target element
-   */
+   */ 
   getTarget: function(ev) {
     return ev.target || ev.srcElement;
   },
@@ -106,18 +130,13 @@ var utils = {
    * @param {Array} enableRanges array of object which contains range
    */
   getDisabledMinuteArr: function(enableRanges) {
-    var arr = [];
-    var i;
+    var arr = this.fill(0, 60, false);
 
-    for (i = 0; i < 60; i += 1) {
-      arr.push(false);
+    function setDisabled(enableRange) {
+      arr = this.fill(enableRange.begin, enableRange.end, true, arr);
     }
 
-    forEachArray(enableRanges, function(enableRange) {
-      for (i = enableRange.begin; i <= enableRange.end; i += 1) {
-        arr[i] = true;
-      }
-    });
+    forEachArray(enableRanges, setDisabled.bind(this));
 
     return arr;
   },
