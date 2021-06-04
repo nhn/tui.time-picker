@@ -101,7 +101,7 @@ var utils = {
       arr[i] = value;
     }
 
-    for (; i <= end; i += 1) {
+    for (i = replaceEnd; i <= end; i += 1) {
       arr.push(value);
     }
 

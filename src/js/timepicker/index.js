@@ -798,11 +798,7 @@ var TimePicker = defineClass(
       endHour = end.hour;
       endMin = end.minute;
 
-      if (!this.isValidTime(endHour, endMin) || this.compareTimes(begin, end) <= 0) {
-        return false;
-      }
-
-      return true;
+      return this.isValidTime(endHour, endMin) && this.compareTimes(begin, end) > 0;
     },
 
     /**
@@ -813,14 +809,10 @@ var TimePicker = defineClass(
      * @private
      */
     isValidTime: function(hour, minute) {
-      if (hour < START_NUMBER_OF_TIME ||
-        hour > END_NUMBER_OF_HOUR ||
-        minute < START_NUMBER_OF_TIME ||
-        minute > END_NUMBER_OF_MINUTE) {
-        return false;
-      }
-
-      return true;
+      return hour >= START_NUMBER_OF_TIME &&
+      hour <= END_NUMBER_OF_HOUR &&
+      minute >= START_NUMBER_OF_TIME &&
+      minute <= END_NUMBER_OF_MINUTE;
     },
 
     /**
