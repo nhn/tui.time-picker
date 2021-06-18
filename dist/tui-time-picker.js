@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.0.3
+ * @version 2.1.0
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -113,7 +113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 
-var isArray = __webpack_require__(2);
+var isArray = __webpack_require__(3);
 
 /**
  * @module array
@@ -168,74 +168,6 @@ module.exports = inArray;
 
 "use strict";
 /**
- * @fileoverview Extend the target object from other objects.
- * @author NHN FE Development Lab <dl_javascript@nhn.com>
- */
-
-
-
-/**
- * @module object
- */
-
-/**
- * Extend the target object from other objects.
- * @param {object} target - Object that will be extended
- * @param {...object} objects - Objects as sources
- * @returns {object} Extended object
- * @memberof module:object
- */
-function extend(target, objects) { // eslint-disable-line no-unused-vars
-  var hasOwnProp = Object.prototype.hasOwnProperty;
-  var source, prop, i, len;
-
-  for (i = 1, len = arguments.length; i < len; i += 1) {
-    source = arguments[i];
-    for (prop in source) {
-      if (hasOwnProp.call(source, prop)) {
-        target[prop] = source[prop];
-      }
-    }
-  }
-
-  return target;
-}
-
-module.exports = extend;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * @fileoverview Check whether the given variable is an instance of Array or not.
- * @author NHN FE Development Lab <dl_javascript@nhn.com>
- */
-
-
-
-/**
- * Check whether the given variable is an instance of Array or not.
- * If the given variable is an instance of Array, return true.
- * @param {*} obj - Target for checking
- * @returns {boolean} Is array instance?
- * @memberof module:type
- */
-function isArray(obj) {
-  return obj instanceof Array;
-}
-
-module.exports = isArray;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
  * @fileoverview Execute the provided callback once for each element present in the array(or Array-like object) in ascending order.
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  */
@@ -281,6 +213,74 @@ module.exports = forEachArray;
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * @fileoverview Extend the target object from other objects.
+ * @author NHN FE Development Lab <dl_javascript@nhn.com>
+ */
+
+
+
+/**
+ * @module object
+ */
+
+/**
+ * Extend the target object from other objects.
+ * @param {object} target - Object that will be extended
+ * @param {...object} objects - Objects as sources
+ * @returns {object} Extended object
+ * @memberof module:object
+ */
+function extend(target, objects) { // eslint-disable-line no-unused-vars
+  var hasOwnProp = Object.prototype.hasOwnProperty;
+  var source, prop, i, len;
+
+  for (i = 1, len = arguments.length; i < len; i += 1) {
+    source = arguments[i];
+    for (prop in source) {
+      if (hasOwnProp.call(source, prop)) {
+        target[prop] = source[prop];
+      }
+    }
+  }
+
+  return target;
+}
+
+module.exports = extend;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * @fileoverview Check whether the given variable is an instance of Array or not.
+ * @author NHN FE Development Lab <dl_javascript@nhn.com>
+ */
+
+
+
+/**
+ * Check whether the given variable is an instance of Array or not.
+ * If the given variable is an instance of Array, return true.
+ * @param {*} obj - Target for checking
+ * @returns {boolean} Is array instance?
+ * @memberof module:type
+ */
+function isArray(obj) {
+  return obj instanceof Array;
+}
+
+module.exports = isArray;
+
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -292,8 +292,8 @@ module.exports = forEachArray;
 
 
 
-var isArray = __webpack_require__(2);
-var forEachArray = __webpack_require__(3);
+var isArray = __webpack_require__(3);
+var forEachArray = __webpack_require__(1);
 var forEachOwnProperties = __webpack_require__(16);
 
 /**
@@ -405,9 +405,9 @@ module.exports = isString;
 
 var inArray = __webpack_require__(0);
 var forEach = __webpack_require__(4);
-var isArray = __webpack_require__(2);
+var isArray = __webpack_require__(3);
 var isString = __webpack_require__(6);
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 
 // IE8 does not support capture groups.
 var EXPRESSION_REGEXP = /{{\s?|\s?}}/g;
@@ -794,11 +794,11 @@ module.exports = template;
 
 
 
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 var isExisty = __webpack_require__(23);
 var isString = __webpack_require__(6);
 var isObject = __webpack_require__(25);
-var isArray = __webpack_require__(2);
+var isArray = __webpack_require__(3);
 var isFunction = __webpack_require__(26);
 var forEach = __webpack_require__(4);
 
@@ -1373,7 +1373,7 @@ module.exports = CustomEvents;
 
 
 var inherit = __webpack_require__(27);
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 
 /**
  * @module defineClass
@@ -1786,6 +1786,7 @@ module.exports = isHTMLNode;
 
 
 var inArray = __webpack_require__(0);
+var forEachArray = __webpack_require__(1);
 var sendHostname = __webpack_require__(35);
 
 var uniqueId = 0;
@@ -1864,10 +1865,34 @@ var utils = {
   },
 
   /**
+   * Returns array filled with selected value
+   * @param {number} start - Start index of array to fill
+   * @param {number} end - End index of array to fill
+   * @param {number} value - Value to be filled
+   * @param {Array} [target] - Array to fill
+   * @returns {Array}
+   */
+  fill: function(start, end, value, target) {
+    var arr = target || [];
+    var replaceEnd = Math.min(arr.length - 1, end);
+    var i;
+
+    for (i = start; i <= replaceEnd; i += 1) {
+      arr[i] = value;
+    }
+
+    for (i = replaceEnd; i <= end; i += 1) {
+      arr.push(value);
+    }
+
+    return arr;
+  },
+
+  /**
    * Get a target element
    * @param {Event} ev Event object
    * @returns {HTMLElement} An event target element
-   */
+   */ 
   getTarget: function(ev) {
     return ev.target || ev.srcElement;
   },
@@ -1878,6 +1903,31 @@ var utils = {
    */
   sendHostName: function() {
     sendHostname('time-picker', 'UA-129987462-1');
+  },
+
+  /**
+   * Get disabled minute array
+   * @param {Array} enableRanges array of object which contains range
+   */
+  getDisabledMinuteArr: function(enableRanges) {
+    var arr = this.fill(0, 60, false);
+
+    function setDisabled(enableRange) {
+      arr = this.fill(enableRange.begin, enableRange.end, true, arr);
+    }
+
+    forEachArray(enableRanges, setDisabled.bind(this));
+
+    return arr;
+  },
+
+  /**
+   * Set disabled on target element
+   * @param {HTMLInputElement} el target element
+   * @param {boolean} isDisabled target element
+   */
+  setDisabled: function(el, isDisabled) {
+    el.disabled = isDisabled;
   }
 };
 
@@ -2021,7 +2071,7 @@ module.exports = getClass;
 
 
 
-var isArray = __webpack_require__(2);
+var isArray = __webpack_require__(3);
 var isUndefined = __webpack_require__(5);
 
 /**
@@ -2083,10 +2133,10 @@ module.exports = __webpack_require__(22);
 
 
 var inArray = __webpack_require__(0);
-var forEachArray = __webpack_require__(3);
+var forEachArray = __webpack_require__(1);
 var CustomEvents = __webpack_require__(8);
 var defineClass = __webpack_require__(9);
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 var on = __webpack_require__(10);
 var off = __webpack_require__(11);
 var addClass = __webpack_require__(29);
@@ -2112,6 +2162,11 @@ var CLASS_NAME_CHECKED = 'tui-timepicker-meridiem-checked';
 var INPUT_TYPE_SPINBOX = 'spinbox';
 var INPUT_TYPE_SELECTBOX = 'selectbox';
 
+var START_NUMBER_OF_TIME = 0;
+var END_NUMBER_OF_MINUTE = 59;
+var END_NUMBER_OF_HOUR = 23;
+var END_NUMBER_OF_HOUR_WITH_MERIDIEM = 12;
+
 /**
  * Merge default options
  * @ignore
@@ -2131,6 +2186,7 @@ var mergeDefaultOptions = function(options) {
       meridiemPosition: 'right',
       format: 'h:m',
       disabledHours: [],
+      disabledMinutes: {},
       usageStatistics: true
     },
     options
@@ -2149,12 +2205,24 @@ var mergeDefaultOptions = function(options) {
  * @param {string} [options.format = 'h:m'] - hour, minute format for display
  * @param {boolean} [options.showMeridiem = true] - Show meridiem expression?
  * @param {Array} [options.disabledHours = []] - Registered Hours is disabled.
+ * @param {Object} [options.disabledMinutes = {}] - Registered Minutes of selected hours is disabled.
+ * @param {Object} [options.disabledMinutes.hour] - Key must be hour(number).
+ *                 Value is array which contains only true or false and must be 60 of length
  * @param {string} [options.meridiemPosition = 'right'] - Set location of the meridiem element.
  *                 If this option set 'left', the meridiem element is created in front of the hour element.
  * @param {string} [options.language = 'en'] Set locale texts
  * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
  * @example
- * var timepicker = new tui.TimePicker('#timepicker-container', {
+ * // ES6
+ * import TimePicker from 'tui-time-picker'; 
+ * 
+ * // CommonJS
+ * const TimePicker = require('tui-time-picker'); 
+ * 
+ * // Browser
+ * const TimePicker = tui.TimePicker;
+ * 
+ * const timepicker = new TimePicker('#timepicker-container', {
  *     initialHour: 15,
  *     initialMinute: 13,
  *     inputType: 'selectbox',
@@ -2170,14 +2238,12 @@ var TimePicker = defineClass(
        * @memberof TimePicker
        * @static
        * @example
-       * var TimePicker = tui.TimePicker; // or require('tui-time-picker');
-       *
        * TimePicker.localeTexts['customKey'] = {
        *     am: 'a.m.',
        *     pm: 'p.m.'
        * };
        *
-       * var instance = new tui.TimePicker('#timepicker-container', {
+       * const instance = new TimePicker('#timepicker-container', {
        *     language: 'customKey',
        * });
        */
@@ -2190,13 +2256,13 @@ var TimePicker = defineClass(
        * @type {number}
        * @private
        */
-      this._id = util.getUniqueId();
+      this.id = util.getUniqueId();
 
       /**
        * @type {HTMLElement}
        * @private
        */
-      this._container = isHTMLNode(container)
+      this.container = isHTMLNode(container)
         ? container
         : document.querySelector(container);
 
@@ -2204,104 +2270,110 @@ var TimePicker = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._element = null;
+      this.element = null;
 
       /**
        * @type {HTMLElement}
        * @private
        */
-      this._meridiemElement = null;
+      this.meridiemElement = null;
 
       /**
        * @type {HTMLElement}
        * @private
        */
-      this._amEl = null;
+      this.amEl = null;
 
       /**
        * @type {HTMLElement}
        * @private
        */
-      this._pmEl = null;
+      this.pmEl = null;
 
       /**
        * @type {boolean}
        * @private
        */
-      this._showMeridiem = options.showMeridiem;
+      this.showMeridiem = options.showMeridiem;
 
       /**
        * Meridiem postion
        * @type {'left'|'right'}
        * @private
        */
-      this._meridiemPosition = options.meridiemPosition;
+      this.meridiemPosition = options.meridiemPosition;
 
       /**
        * @type {Spinbox|Selectbox}
        * @private
        */
-      this._hourInput = null;
+      this.hourInput = null;
 
       /**
        * @type {Spinbox|Selectbox}
        * @private
        */
-      this._minuteInput = null;
+      this.minuteInput = null;
 
       /**
        * @type {number}
        * @private
        */
-      this._hour = options.initialHour;
+      this.hour = options.initialHour;
 
       /**
        * @type {number}
        * @private
        */
-      this._minute = options.initialMinute;
+      this.minute = options.initialMinute;
 
       /**
        * @type {number}
        * @private
        */
-      this._hourStep = options.hourStep;
+      this.hourStep = options.hourStep;
 
       /**
        * @type {number}
        * @private
        */
-      this._minuteStep = options.minuteStep;
+      this.minuteStep = options.minuteStep;
 
       /**
        * @type {Array}
        * @private
        */
-      this._disabledHours = options.disabledHours;
+      this.disabledHours = options.disabledHours;
+
+      /**
+       * @type {Object}
+       * @private
+       */
+      this.disabledMinutes = options.disabledMinutes;
 
       /**
        * TimePicker inputType
        * @type {'spinbox'|'selectbox'}
        * @private
        */
-      this._inputType = options.inputType;
+      this.inputType = options.inputType;
 
       /**
        * Locale text for meridiem
        * @type {string}
        * @private
        */
-      this._localeText = localeTexts[options.language];
+      this.localeText = localeTexts[options.language];
 
       /**
        * Time format for output
        * @type {string}
        * @private
        */
-      this._format = this._getValidTimeFormat(options.format);
+      this.format = this.getValidTimeFormat(options.format);
 
-      this._render();
-      this._setEvents();
+      this.render();
+      this.setEvents();
 
       if (options.usageStatistics) {
         util.sendHostName();
@@ -2312,20 +2384,20 @@ var TimePicker = defineClass(
      * Set event handlers to selectors, container
      * @private
      */
-    _setEvents: function() {
-      this._hourInput.on('change', this._onChangeTimeInput, this);
-      this._minuteInput.on('change', this._onChangeTimeInput, this);
+    setEvents: function() {
+      this.hourInput.on('change', this.onChangeTimeInput, this);
+      this.minuteInput.on('change', this.onChangeTimeInput, this);
 
-      if (this._showMeridiem) {
-        if (this._inputType === INPUT_TYPE_SELECTBOX) {
+      if (this.showMeridiem) {
+        if (this.inputType === INPUT_TYPE_SELECTBOX) {
           on(
-            this._meridiemElement.querySelector('select'),
+            this.meridiemElement.querySelector('select'),
             'change',
-            this._onChangeMeridiem,
+            this.onChangeMeridiem,
             this
           );
-        } else if (this._inputType === INPUT_TYPE_SPINBOX) {
-          on(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+        } else if (this.inputType === INPUT_TYPE_SPINBOX) {
+          on(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
       }
     },
@@ -2334,22 +2406,22 @@ var TimePicker = defineClass(
      * Remove events
      * @private
      */
-    _removeEvents: function() {
+    removeEvents: function() {
       this.off();
 
-      this._hourInput.destroy();
-      this._minuteInput.destroy();
+      this.hourInput.destroy();
+      this.minuteInput.destroy();
 
-      if (this._showMeridiem) {
-        if (this._inputType === INPUT_TYPE_SELECTBOX) {
+      if (this.showMeridiem) {
+        if (this.inputType === INPUT_TYPE_SELECTBOX) {
           off(
-            this._meridiemElement.querySelector('select'),
+            this.meridiemElement.querySelector('select'),
             'change',
-            this._onChangeMeridiem,
+            this.onChangeMeridiem,
             this
           );
-        } else if (this._inputType === INPUT_TYPE_SPINBOX) {
-          off(this._meridiemElement, 'click', this._onChangeMeridiem, this);
+        } else if (this.inputType === INPUT_TYPE_SPINBOX) {
+          off(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
       }
     },
@@ -2358,28 +2430,28 @@ var TimePicker = defineClass(
      * Render element
      * @private
      */
-    _render: function() {
+    render: function() {
       var context = {
-        showMeridiem: this._showMeridiem,
-        isSpinbox: this._inputType === 'spinbox'
+        showMeridiem: this.showMeridiem,
+        isSpinbox: this.inputType === 'spinbox'
       };
 
-      if (this._showMeridiem) {
+      if (this.showMeridiem) {
         extend(context, {
-          meridiemElement: this._makeMeridiemHTML()
+          meridiemElement: this.makeMeridiemHTML()
         });
       }
 
-      if (this._element) {
-        removeElement(this._element);
+      if (this.element) {
+        removeElement(this.element);
       }
-      this._container.innerHTML = tmpl(context);
-      this._element = this._container.firstChild;
+      this.container.innerHTML = tmpl(context);
+      this.element = this.container.firstChild;
 
-      this._renderTimeInputs();
+      this.renderTimeInputs();
 
-      if (this._showMeridiem) {
-        this._setMeridiemElement();
+      if (this.showMeridiem) {
+        this.setMeridiemElement();
       }
     },
 
@@ -2387,14 +2459,14 @@ var TimePicker = defineClass(
      * Set meridiem element on timepicker
      * @private
      */
-    _setMeridiemElement: function() {
-      if (this._meridiemPosition === 'left') {
-        addClass(this._element, CLASS_NAME_LEFT_MERIDIEM);
+    setMeridiemElement: function() {
+      if (this.meridiemPosition === 'left') {
+        addClass(this.element, CLASS_NAME_LEFT_MERIDIEM);
       }
-      this._meridiemElement = this._element.querySelector(SELECTOR_MERIDIEM_ELEMENT);
-      this._amEl = this._meridiemElement.querySelector('[value="AM"]');
-      this._pmEl = this._meridiemElement.querySelector('[value="PM"]');
-      this._syncToMeridiemElements();
+      this.meridiemElement = this.element.querySelector(SELECTOR_MERIDIEM_ELEMENT);
+      this.amEl = this.meridiemElement.querySelector('[value="AM"]');
+      this.pmEl = this.meridiemElement.querySelector('[value="PM"]');
+      this.syncToMeridiemElements();
     },
 
     /**
@@ -2402,14 +2474,14 @@ var TimePicker = defineClass(
      * @returns {HTMLElement} Meridiem element
      * @private
      */
-    _makeMeridiemHTML: function() {
-      var localeText = this._localeText;
+    makeMeridiemHTML: function() {
+      var localeText = this.localeText;
 
       return meridiemTmpl({
         am: localeText.am,
         pm: localeText.pm,
-        radioId: this._id,
-        isSpinbox: this._inputType === 'spinbox'
+        radioId: this.id,
+        isSpinbox: this.inputType === 'spinbox'
       });
     },
 
@@ -2417,39 +2489,39 @@ var TimePicker = defineClass(
      * Render time selectors
      * @private
      */
-    _renderTimeInputs: function() {
-      var hour = this._hour;
-      var showMeridiem = this._showMeridiem;
-      var hourElement = this._element.querySelector(SELECTOR_HOUR_ELEMENT);
-      var minuteElement = this._element.querySelector(SELECTOR_MINUTE_ELEMENT);
-      var BoxComponent = this._inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
-      var formatExplode = this._format.split(':');
-      var hourItems = this._getHourItems();
+    renderTimeInputs: function() {
+      var hour = this.hour;
+      var showMeridiem = this.showMeridiem;
+      var hourElement = this.element.querySelector(SELECTOR_HOUR_ELEMENT);
+      var minuteElement = this.element.querySelector(SELECTOR_MINUTE_ELEMENT);
+      var BoxComponent = this.inputType.toLowerCase() === 'selectbox' ? Selectbox : Spinbox;
+      var formatExplode = this.format.split(':');
+      var hourItems = this.getHourItems();
 
       if (showMeridiem) {
         hour = util.getMeridiemHour(hour);
       }
 
-      this._hourInput = new BoxComponent(hourElement, {
+      this.hourInput = new BoxComponent(hourElement, {
         initialValue: hour,
         items: hourItems,
         format: formatExplode[0],
-        disabledItems: this._makeDisabledStatItems(hourItems)
+        disabledItems: this.makeDisabledStatItems(hourItems)
       });
 
-      this._minuteInput = new BoxComponent(minuteElement, {
-        initialValue: this._minute,
-        items: this._getMinuteItems(),
+      this.minuteInput = new BoxComponent(minuteElement, {
+        initialValue: this.minute,
+        items: this.getMinuteItems(),
         format: formatExplode[1]
       });
     },
 
-    _makeDisabledStatItems: function(hourItems) {
+    makeDisabledStatItems: function(hourItems) {
       var result = [];
-      var disabledHours = this._disabledHours.concat();
+      var disabledHours = this.disabledHours.concat();
 
-      if (this._showMeridiem) {
-        disabledHours = this._meridiemableTime(disabledHours);
+      if (this.showMeridiem) {
+        disabledHours = this.meridiemableTime(disabledHours);
       }
 
       forEachArray(hourItems, function(hour) {
@@ -2459,13 +2531,13 @@ var TimePicker = defineClass(
       return result;
     },
 
-    _meridiemableTime: function(disabledHours) {
+    meridiemableTime: function(disabledHours) {
       var diffHour = 0;
       var startHour = 0;
       var endHour = 11;
       var result = [];
 
-      if (this._hour >= 12) {
+      if (this.hour >= 12) {
         diffHour = 12;
         startHour = 12;
         endHour = 23;
@@ -2486,7 +2558,7 @@ var TimePicker = defineClass(
      * @returns {string}
      * @private
      */
-    _getValidTimeFormat: function(format) {
+    getValidTimeFormat: function(format) {
       if (!format.match(/^[h]{1,2}:[m]{1,2}$/i)) {
         return 'h:m';
       }
@@ -2498,9 +2570,9 @@ var TimePicker = defineClass(
      * Initialize meridiem elements
      * @private
      */
-    _syncToMeridiemElements: function() {
-      var selectedEl = this._hour >= 12 ? this._pmEl : this._amEl;
-      var notSelectedEl = selectedEl === this._pmEl ? this._amEl : this._pmEl;
+    syncToMeridiemElements: function() {
+      var selectedEl = this.hour >= 12 ? this.pmEl : this.amEl;
+      var notSelectedEl = selectedEl === this.pmEl ? this.amEl : this.pmEl;
 
       selectedEl.setAttribute('selected', true);
       selectedEl.setAttribute('checked', true);
@@ -2514,16 +2586,16 @@ var TimePicker = defineClass(
      * Set values in spinboxes from time
      * @private
      */
-    _syncToInputs: function() {
-      var hour = this._hour;
-      var minute = this._minute;
+    syncToInputs: function() {
+      var hour = this.hour;
+      var minute = this.minute;
 
-      if (this._showMeridiem) {
+      if (this.showMeridiem) {
         hour = util.getMeridiemHour(hour);
       }
 
-      this._hourInput.setValue(hour);
-      this._minuteInput.setValue(minute);
+      this.hourInput.setValue(hour);
+      this.minuteInput.setValue(minute);
     },
 
     /**
@@ -2531,14 +2603,15 @@ var TimePicker = defineClass(
      * @param {Event} ev - Change event on meridiem element
      * @private
      */
-    _onChangeMeridiem: function(ev) {
-      var hour = this._hour;
+    onChangeMeridiem: function(ev) {
+      var hour = this.hour;
       var target = util.getTarget(ev);
 
       if (target.value && closest(target, SELECTOR_MERIDIEM_ELEMENT)) {
-        hour = this._to24Hour(target.value === 'PM', hour);
-        this.setTime(hour, this._minute);
-        this._setDisabledHours();
+        hour = this.to24Hour(target.value === 'PM', hour);
+        this.setTime(hour, this.minute);
+        this.setDisabledHours();
+        this.setDisabledMinutes(hour);
       }
     },
 
@@ -2546,15 +2619,16 @@ var TimePicker = defineClass(
      * Time change event handler
      * @private
      */
-    _onChangeTimeInput: function() {
-      var hour = this._hourInput.getValue();
-      var minute = this._minuteInput.getValue();
-      var isPM = this._hour >= 12;
+    onChangeTimeInput: function() {
+      var hour = this.hourInput.getValue();
+      var minute = this.minuteInput.getValue();
+      var isPM = this.hour >= 12;
 
-      if (this._showMeridiem) {
-        hour = this._to24Hour(isPM, hour);
+      if (this.showMeridiem) {
+        hour = this.to24Hour(isPM, hour);
       }
       this.setTime(hour, minute);
+      this.setDisabledMinutes(hour);
     },
 
     /**
@@ -2564,7 +2638,7 @@ var TimePicker = defineClass(
      * @returns {number}
      * @private
      */
-    _to24Hour: function(isPM, hour) {
+    to24Hour: function(isPM, hour) {
       hour %= 12;
       if (isPM) {
         hour += 12;
@@ -2573,11 +2647,18 @@ var TimePicker = defineClass(
       return hour;
     },
 
-    _setDisabledHours: function() {
-      var hourItems = this._getHourItems();
-      var disabledItems = this._makeDisabledStatItems(hourItems);
+    setDisabledHours: function() {
+      var hourItems = this.getHourItems();
+      var disabledItems = this.makeDisabledStatItems(hourItems);
 
-      this._hourInput.setDisabledItems(disabledItems);
+      this.hourInput.setDisabledItems(disabledItems);
+    },
+
+    setDisabledMinutes: function(hour) {
+      var disabledItems;
+      disabledItems = this.disabledMinutes[hour] || [];
+
+      this.minuteInput.setDisabledItems(disabledItems);
     },
 
     /**
@@ -2585,10 +2666,10 @@ var TimePicker = defineClass(
      * @returns {array} Hour item list
      * @private
      */
-    _getHourItems: function() {
-      var step = this._hourStep;
+    getHourItems: function() {
+      var step = this.hourStep;
 
-      return this._showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
+      return this.showMeridiem ? util.getRangeArr(1, 12, step) : util.getRangeArr(0, 23, step);
     },
 
     /**
@@ -2596,8 +2677,8 @@ var TimePicker = defineClass(
      * @returns {array} Minute item list
      * @private
      */
-    _getMinuteItems: function() {
-      return util.getRangeArr(0, 59, this._minuteStep);
+    getMinuteItems: function() {
+      return util.getRangeArr(0, 59, this.minuteStep);
     },
 
     /**
@@ -2607,18 +2688,18 @@ var TimePicker = defineClass(
      * @returns {boolean} State
      * @private
      */
-    _validItems: function(hour, minute) {
+    validItems: function(hour, minute) {
       if (!isNumber(hour) || !isNumber(minute)) {
         return false;
       }
 
-      if (this._showMeridiem) {
+      if (this.showMeridiem) {
         hour = util.getMeridiemHour(hour);
       }
 
       return (
-        inArray(hour, this._getHourItems()) > -1 &&
-        inArray(minute, this._getMinuteItems()) > -1
+        inArray(hour, this.getHourItems()) > -1 &&
+        inArray(minute, this.getMinuteItems()) > -1
       );
     },
 
@@ -2627,8 +2708,8 @@ var TimePicker = defineClass(
      * @param {array} step - Step to create items of hour
      */
     setHourStep: function(step) {
-      this._hourStep = step;
-      this._hourInput.fire('changeItems', this._getHourItems());
+      this.hourStep = step;
+      this.hourInput.fire('changeItems', this.getHourItems());
     },
 
     /**
@@ -2636,7 +2717,7 @@ var TimePicker = defineClass(
      * @returns {number} Step of hour
      */
     getHourStep: function() {
-      return this._hourStep;
+      return this.hourStep;
     },
 
     /**
@@ -2644,8 +2725,8 @@ var TimePicker = defineClass(
      * @param {array} step - Step to create items of minute
      */
     setMinuteStep: function(step) {
-      this._minuteStep = step;
-      this._minuteInput.fire('changeItems', this._getMinuteItems());
+      this.minuteStep = step;
+      this.minuteInput.fire('changeItems', this.getMinuteItems());
     },
 
     /**
@@ -2653,21 +2734,21 @@ var TimePicker = defineClass(
      * @returns {number} Step of minute
      */
     getMinuteStep: function() {
-      return this._minuteStep;
+      return this.minuteStep;
     },
 
     /**
      * Show time picker element
      */
     show: function() {
-      removeClass(this._element, CLASS_NAME_HIDDEN);
+      removeClass(this.element, CLASS_NAME_HIDDEN);
     },
 
     /**
      * Hide time picker element
      */
     hide: function() {
-      addClass(this._element, CLASS_NAME_HIDDEN);
+      addClass(this.element, CLASS_NAME_HIDDEN);
     },
 
     /**
@@ -2676,7 +2757,7 @@ var TimePicker = defineClass(
      * @returns {boolean} result of set time
      */
     setHour: function(hour) {
-      return this.setTime(hour, this._minute);
+      return this.setTime(hour, this.minute);
     },
 
     /**
@@ -2685,7 +2766,7 @@ var TimePicker = defineClass(
      * @returns {boolean} result of set time
      */
     setMinute: function(minute) {
-      return this.setTime(this._hour, minute);
+      return this.setTime(this.hour, minute);
     },
 
     /**
@@ -2694,16 +2775,16 @@ var TimePicker = defineClass(
      * @param {number} minute for time picker
      */
     setTime: function(hour, minute) {
-      if (!this._validItems(hour, minute)) {
+      if (!this.validItems(hour, minute)) {
         return;
       }
 
-      this._hour = hour;
-      this._minute = minute;
+      this.hour = hour;
+      this.minute = minute;
 
-      this._syncToInputs();
-      if (this._showMeridiem) {
-        this._syncToMeridiemElements();
+      this.syncToInputs();
+      if (this.showMeridiem) {
+        this.syncToMeridiemElements();
       }
 
       /**
@@ -2718,9 +2799,172 @@ var TimePicker = defineClass(
        * });
        */
       this.fire('change', {
-        hour: this._hour,
-        minute: this._minute
+        hour: this.hour,
+        minute: this.minute
       });
+    },
+
+    /**
+     * Set selectable range 
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} [end] - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     */
+    setRange: function(begin, end) {
+      var beginHour = begin.hour;
+      var beginMin = begin.minute;
+      var endHour, endMin;
+
+      if (!this.isValidRange(begin, end)) {
+        return;
+      }
+
+      if (end) {
+        endHour = end.hour;
+        endMin = end.minute;
+      }
+
+      this.setRangeHour(beginHour, endHour);
+      this.setRangeMinute(beginHour, beginMin, endHour, endMin);
+
+      this.applyRange(beginHour, beginMin, endHour);
+    },
+
+    /**
+     * Set selectable range on hour
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} [end.hour] - end hour of range
+     * @private
+     */
+    setRangeHour: function(beginHour, endHour) {
+      var disabledHours = util.getRangeArr(START_NUMBER_OF_TIME, beginHour - 1);
+
+      if (endHour) {
+        disabledHours = disabledHours.concat(util.getRangeArr(endHour + 1, END_NUMBER_OF_HOUR));
+      }
+
+      this.disabledHours = disabledHours.concat();
+    },
+
+    /**
+     * Set selectable range on minute
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {number} [end.hour] - end hour of range
+     * @param {number} [end.minute] - end minute of range
+     * @private
+     */
+    setRangeMinute: function(beginHour, beginMin, endHour, endMin) {
+      var disabledMinRanges = [];
+      disabledMinRanges.push({
+        begin: START_NUMBER_OF_TIME,
+        end: beginMin
+      });
+
+      if (endMin) {
+        disabledMinRanges.push({
+          begin: endMin,
+          end: END_NUMBER_OF_MINUTE
+        });
+      }
+
+      if (disabledMinRanges.length > 1 && beginHour === endHour) {
+        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
+      } else {
+        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
+        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).concat();
+      }
+    },
+
+    /**
+     * Apply range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {number} [end.hour] - end hour of range
+     * @private
+     */
+    applyRange: function(beginHour, beginMin, endHour) {
+      this.setTime(beginHour, beginMin);
+      this.setDisabledHours();
+
+      if (this.showMeridiem) {
+        this.syncToMeridiemElements();
+
+        util.setDisabled(this.amEl, beginHour >= END_NUMBER_OF_HOUR_WITH_MERIDIEM);
+        util.setDisabled(this.pmEl, endHour < END_NUMBER_OF_HOUR_WITH_MERIDIEM);
+      }
+    },
+
+    /**
+     * Whether the given range a valid range 
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} [end] - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     * @returns {boolean} result of range validation
+     * @private
+     */
+    isValidRange: function(begin, end) {
+      var beginHour = begin.hour;
+      var beginMin = begin.minute;
+      var endHour, endMin;
+
+      if (!this.isValidTime(beginHour, beginMin)) {
+        return false;
+      }
+
+      if (!end) {
+        return true;
+      }
+
+      endHour = end.hour;
+      endMin = end.minute;
+
+      return this.isValidTime(endHour, endMin) && this.compareTimes(begin, end) > 0;
+    },
+
+    /**
+     * Whether the given time a valid time 
+     * @param {number} hour - hour for validation
+     * @param {number} minute - minute for validation
+     * @returns {boolean} result of time validation
+     * @private
+     */
+    isValidTime: function(hour, minute) {
+      return hour >= START_NUMBER_OF_TIME &&
+      hour <= END_NUMBER_OF_HOUR &&
+      minute >= START_NUMBER_OF_TIME &&
+      minute <= END_NUMBER_OF_MINUTE;
+    },
+
+    /**
+     * Compare two times
+     * it returns
+     *  0: when begin equals end
+     *  positive: when end later than begin
+     *  negative: when begin later than end
+     * @param {Object} begin - Contain begin hour and minute of range
+     * @param {number} begin.hour - begin hour of range
+     * @param {number} begin.minute - begin minute of range
+     * @param {Object} end - Contain end hour and minute of range
+     * @param {number} end.hour - end hour of range
+     * @param {number} end.minute - end minute of range
+     * @returns {boolean} result of range validation
+     * @private
+     */
+    compareTimes: function(begin, end) {
+      var first = new Date(0);
+      var second = new Date(0);
+
+      first.setHours(begin.hour, begin.minute);
+      second.setHours(end.hour, end.minute);
+
+      return second.getTime() - first.getTime();
     },
 
     /**
@@ -2728,7 +2972,7 @@ var TimePicker = defineClass(
      * @returns {number} hour - (0~23)
      */
     getHour: function() {
-      return this._hour;
+      return this.hour;
     },
 
     /**
@@ -2736,7 +2980,7 @@ var TimePicker = defineClass(
      * @returns {number} minute
      */
     getMinute: function() {
-      return this._minute;
+      return this.minute;
     },
 
     /**
@@ -2744,28 +2988,28 @@ var TimePicker = defineClass(
      * @param {string} language - Language code
      */
     changeLanguage: function(language) {
-      this._localeText = localeTexts[language];
-      this._render();
+      this.localeText = localeTexts[language];
+      this.render();
     },
 
     /**
      * Destroy
      */
     destroy: function() {
-      this._removeEvents();
-      removeElement(this._element);
+      this.removeEvents();
+      removeElement(this.element);
 
-      this._container
-        = this._showMeridiem
-        = this._hourInput
-        = this._minuteInput
-        = this._hour
-        = this._minute
-        = this._inputType
-        = this._element
-        = this._meridiemElement
-        = this._amEl
-        = this._pmEl
+      this.container
+        = this.showMeridiem
+        = this.hourInput
+        = this.minuteInput
+        = this.hour
+        = this.minute
+        = this.inputType
+        = this.element
+        = this.meridiemElement
+        = this.amEl
+        = this.pmEl
         = null;
     }
   }
@@ -3091,7 +3335,7 @@ module.exports = matches;
 
 
 
-var forEachArray = __webpack_require__(3);
+var forEachArray = __webpack_require__(1);
 
 /**
  * Transform the Array-like object to Array.
@@ -3143,7 +3387,7 @@ module.exports = toArray;
 
 
 
-var forEachArray = __webpack_require__(3);
+var forEachArray = __webpack_require__(1);
 var inArray = __webpack_require__(0);
 var getClass = __webpack_require__(18);
 var setClassName = __webpack_require__(19);
@@ -3220,10 +3464,10 @@ module.exports = isNumber;
 
 
 var inArray = __webpack_require__(0);
-var forEachArray = __webpack_require__(3);
+var forEachArray = __webpack_require__(1);
 var CustomEvents = __webpack_require__(8);
 var defineClass = __webpack_require__(9);
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 var on = __webpack_require__(10);
 var off = __webpack_require__(11);
 var closest = __webpack_require__(12);
@@ -3698,7 +3942,7 @@ module.exports = function(context) {
 var inArray = __webpack_require__(0);
 var CustomEvents = __webpack_require__(8);
 var defineClass = __webpack_require__(9);
-var extend = __webpack_require__(1);
+var extend = __webpack_require__(2);
 var on = __webpack_require__(10);
 var off = __webpack_require__(11);
 var closest = __webpack_require__(12);
