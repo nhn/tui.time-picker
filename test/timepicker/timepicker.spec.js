@@ -136,8 +136,8 @@ describe('TimePicker', function() {
         language: 'ko'
       });
 
-      expect(timepickerMeridiem.amEl.innerText).toBe('오전');
-      expect(timepickerMeridiem.pmEl.innerText).toBe('오후');
+      expect(timepickerMeridiem.amEl.textContent).toBe('오전');
+      expect(timepickerMeridiem.pmEl.textContent).toBe('오후');
     });
 
     it('using "changeLanguage" method.', function() {
@@ -147,14 +147,14 @@ describe('TimePicker', function() {
       };
       timepickerMeridiem.changeLanguage('customKey');
 
-      expect(timepickerMeridiem.amEl.innerText).toBe('a.m.');
-      expect(timepickerMeridiem.pmEl.innerText).toBe('p.m.');
+      expect(timepickerMeridiem.amEl.textContent).toBe('a.m.');
+      expect(timepickerMeridiem.pmEl.textContent).toBe('p.m.');
     });
   });
   describe('usageStatistics', function() {
     var timePicker;
     beforeEach(function() {
-      spyOn(util, 'sendHostName');
+      util.sendHostName = jest.fn();
     });
 
     it('should send hostname by default', function() {

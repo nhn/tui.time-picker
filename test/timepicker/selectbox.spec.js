@@ -39,7 +39,7 @@ describe('TimePicker - Selectbox', function() {
         format: 'hh'
       });
 
-      expected = selectbox._element.querySelector('option:first-child').innerText;
+      expected = selectbox._element.querySelector('option:first-child').textContent;
       expect(expected).toEqual('01');
     });
 
@@ -53,7 +53,7 @@ describe('TimePicker - Selectbox', function() {
         format: 'h'
       });
 
-      expected = selectbox._element.querySelector('option:first-child').innerText;
+      expected = selectbox._element.querySelector('option:first-child').textContent;
       expect(expected).toEqual('1');
     });
   });
@@ -99,7 +99,7 @@ describe('TimePicker - Selectbox', function() {
 
   describe('custom event', function() {
     it('should fire change event when the value is changed', function() {
-      var spy = jasmine.createSpy();
+      var spy = jest.fn();
       selectbox.on('change', spy);
 
       selectbox.setValue(10);
