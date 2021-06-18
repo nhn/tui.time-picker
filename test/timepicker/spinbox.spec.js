@@ -158,7 +158,7 @@ describe('TimePicker - Spinbox', function() {
 
   describe('custom event', function() {
     it('should fire change event when the value is changed', function() {
-      var spy = jasmine.createSpy();
+      var spy = jest.fn();
       spinbox.on('change', spy);
 
       spinbox.setValue(10);
@@ -168,7 +168,7 @@ describe('TimePicker - Spinbox', function() {
     });
 
     it('should fire change event from key-down', function() {
-      var spy = jasmine.createSpy();
+      var spy = jest.fn();
       spinbox.on('change', spy);
 
       spinbox._onKeydownInputElement({
