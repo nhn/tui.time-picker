@@ -732,24 +732,32 @@ var TimePicker = defineClass(
      */
     setRangeMinute: function(beginHour, beginMin, endHour, endMin) {
       var disabledMinRanges = [];
+
+      if (!beginHour && !beginMin) {
+        return;
+      }
+
       disabledMinRanges.push({
         begin: START_NUMBER_OF_TIME,
         end: beginMin
       });
 
-      if (endMin) {
+      if (endHour && endMin) {
         disabledMinRanges.push({
           begin: endMin,
           end: END_NUMBER_OF_MINUTE
         });
-      }
 
-      if (disabledMinRanges.length > 1 && beginHour === endHour) {
-        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
-      } else {
-        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
+        if (beginHour === endHour) {
+          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
+
+          return;
+        }
+
         this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).concat();
       }
+
+      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
     },
 
     /**
