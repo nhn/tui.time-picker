@@ -337,6 +337,29 @@ describe('Set selectable range', function() {
     });
   });
 
+  it('should set selectable range with only begin', function() {
+    var start = makeRangeObj(9, 30);
+    var selector, hourSelect, minSelect, selectOption;
+
+    timepickerNoMeridiem.setRange(start);
+
+    selector = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]');
+    hourSelect = selector[0];
+    minSelect = selector[1];
+
+    selectOption = hourSelect.querySelector('option[value="8"]');
+    expect(selectOption.disabled).toBe(true);
+    selectOption = hourSelect.querySelector('option[value="9"]');
+    expect(selectOption.disabled).toBe(false);
+
+    timepickerNoMeridiem.setTime(9, 0);
+
+    selectOption = minSelect.querySelector('option[value="30"]');
+    expect(selectOption.disabled).toBe(true);
+    selectOption = minSelect.querySelector('option[value="31"]');
+    expect(selectOption.disabled).toBe(false);
+  });
+
   it('should disable a meridiem selector when range included in the other', function() {
     var start = makeRangeObj(6, 30);
     var end = makeRangeObj(11, 30);
