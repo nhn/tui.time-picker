@@ -391,7 +391,7 @@ var TimePicker = defineClass(
 
     makeDisabledStatItems: function(hourItems) {
       var result = [];
-      var disabledHours = this.disabledHours.concat();
+      var disabledHours = this.disabledHours.slice();
 
       if (this.showMeridiem) {
         disabledHours = this.meridiemableTime(disabledHours);
@@ -719,7 +719,7 @@ var TimePicker = defineClass(
         disabledHours = disabledHours.concat(util.getRangeArr(endHour + 1, END_NUMBER_OF_HOUR));
       }
 
-      this.disabledHours = disabledHours.concat();
+      this.disabledHours = disabledHours.slice();
     },
 
     /**
@@ -749,15 +749,15 @@ var TimePicker = defineClass(
         });
 
         if (beginHour === endHour) {
-          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
+          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).slice();
 
           return;
         }
 
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).concat();
+        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).slice();
       }
 
-      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
+      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).slice();
     },
 
     /**

@@ -337,27 +337,46 @@ describe('Set selectable range', function() {
     });
   });
 
-  it('should set selectable range with only begin', function() {
+  it('should set selectable range on hour with only begin', function() {
     var start = makeRangeObj(9, 30);
-    var selector, hourSelect, minSelect, selectOption;
+    var hourSelect, selectOptions, disabledHours, selectableHours;
 
     timepickerNoMeridiem.setRange(start);
 
-    selector = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]');
-    hourSelect = selector[0];
-    minSelect = selector[1];
+    hourSelect = timepickerNoMeridiem.element.querySelector('select[aria-label="Time"]');
 
-    selectOption = hourSelect.querySelector('option[value="8"]');
-    expect(selectOption.disabled).toBe(true);
-    selectOption = hourSelect.querySelector('option[value="9"]');
-    expect(selectOption.disabled).toBe(false);
+    selectOptions = Array.from(hourSelect.querySelectorAll('option'));
+    disabledHours = selectOptions.slice(0, 9);
+    selectableHours = selectOptions.slice(9);
 
+    disabledHours.forEach(function(disabledHour) {
+      expect(disabledHour).toMatchObject({disabled: true});
+    });
+
+    selectableHours.forEach(function(selectableHour) {
+      expect(selectableHour).toMatchObject({disabled: false});
+    });
+  });
+
+  it('should set selectable range on minute with only begin', function() {
+    var start = makeRangeObj(9, 30);
+    var minSelect, selectOptions, disabledMins, selectableMins;
+
+    timepickerNoMeridiem.setRange(start);
     timepickerNoMeridiem.setTime(9, 0);
 
-    selectOption = minSelect.querySelector('option[value="30"]');
-    expect(selectOption.disabled).toBe(true);
-    selectOption = minSelect.querySelector('option[value="31"]');
-    expect(selectOption.disabled).toBe(false);
+    minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
+    selectOptions = Array.from(minSelect.querySelectorAll('option'));
+    disabledMins = selectOptions.slice(0, 31);
+    selectableMins = selectOptions.slice(31);
+
+    disabledMins.forEach(function(disabledMin) {
+      expect(disabledMin).toMatchObject({disabled: true});
+    });
+
+    selectableMins.forEach(function(selectableMin) {
+      expect(selectableMin).toMatchObject({disabled: false});
+    });
   });
 
   it('should disable a meridiem selector when range included in the other', function() {
