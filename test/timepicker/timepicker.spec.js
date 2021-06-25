@@ -379,6 +379,38 @@ describe('Set selectable range', function() {
     });
   });
 
+  it('should reset selectable range on hour', function() {
+    var start = makeRangeObj(9, 30);
+    var hourSelect, selectOptions;
+
+    timepickerNoMeridiem.setRange(start);
+    timepickerNoMeridiem.resetRange();
+
+    hourSelect = timepickerNoMeridiem.element.querySelector('select[aria-label="Time"]');
+
+    selectOptions = hourSelect.querySelectorAll('option');
+
+    selectOptions.forEach(function(disabledHour) {
+      expect(disabledHour).toMatchObject({disabled: false});
+    });
+  });
+
+  it('should reset selectable range on minute', function() {
+    var start = makeRangeObj(9, 30);
+    var minSelect, selectOptions;
+
+    timepickerNoMeridiem.setRange(start);
+    timepickerNoMeridiem.setTime(9, 0);
+    timepickerNoMeridiem.resetRange();
+
+    minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
+    selectOptions = minSelect.querySelectorAll('option');
+
+    selectOptions.forEach(function(disabledMin) {
+      expect(disabledMin).toMatchObject({disabled: false});
+    });
+  });
+
   it('should disable a meridiem selector when range included in the other', function() {
     var start = makeRangeObj(6, 30);
     var end = makeRangeObj(11, 30);
