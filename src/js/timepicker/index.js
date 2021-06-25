@@ -780,6 +780,24 @@ var TimePicker = defineClass(
     },
 
     /**
+     * Reset selectable range 
+     */
+    resetRange: function() {
+      this.disabledHours = [];
+      this.disabledMinutes = {};
+
+      this.setDisabledHours();
+      this.setDisabledMinutes(this.hour);
+
+      if (this.showMeridiem) {
+        this.syncToMeridiemElements();
+
+        util.setDisabled(this.amEl, false);
+        util.setDisabled(this.pmEl, false);
+      }
+    },
+
+    /**
      * Whether the given range a valid range 
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
