@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.0
+ * @version 2.1.1
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -2518,7 +2518,7 @@ var TimePicker = defineClass(
 
     makeDisabledStatItems: function(hourItems) {
       var result = [];
-      var disabledHours = this.disabledHours.concat();
+      var disabledHours = this.disabledHours.slice();
 
       if (this.showMeridiem) {
         disabledHours = this.meridiemableTime(disabledHours);
@@ -2846,7 +2846,7 @@ var TimePicker = defineClass(
         disabledHours = disabledHours.concat(util.getRangeArr(endHour + 1, END_NUMBER_OF_HOUR));
       }
 
-      this.disabledHours = disabledHours.concat();
+      this.disabledHours = disabledHours.slice();
     },
 
     /**
@@ -2859,24 +2859,32 @@ var TimePicker = defineClass(
      */
     setRangeMinute: function(beginHour, beginMin, endHour, endMin) {
       var disabledMinRanges = [];
+
+      if (!beginHour && !beginMin) {
+        return;
+      }
+
       disabledMinRanges.push({
         begin: START_NUMBER_OF_TIME,
         end: beginMin
       });
 
-      if (endMin) {
+      if (endHour && endMin) {
         disabledMinRanges.push({
           begin: endMin,
           end: END_NUMBER_OF_MINUTE
         });
+
+        if (beginHour === endHour) {
+          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).slice();
+
+          return;
+        }
+
+        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).slice();
       }
 
-      if (disabledMinRanges.length > 1 && beginHour === endHour) {
-        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).concat();
-      } else {
-        this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).concat();
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).concat();
-      }
+      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).slice();
     },
 
     /**
