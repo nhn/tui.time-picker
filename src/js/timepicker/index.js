@@ -782,18 +782,13 @@ var TimePicker = defineClass(
     /**
      * Reset selectable range 
      */
-    resetRange: function() {
-      this.disabledHours = [];
+    resetMinuteRange: function() {
+      var i;
+
       this.disabledMinutes = {};
 
-      this.setDisabledHours();
-      this.setDisabledMinutes(this.hour);
-
-      if (this.showMeridiem) {
-        this.syncToMeridiemElements();
-
-        util.setDisabled(this.amEl, false);
-        util.setDisabled(this.pmEl, false);
+      for (i = 0; i <= END_NUMBER_OF_HOUR; i += 1) {
+        this.setDisabledMinutes(this.hour);
       }
     },
 
