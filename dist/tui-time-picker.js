@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.1
+ * @version 2.1.2
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -2903,6 +2903,19 @@ var TimePicker = defineClass(
 
         util.setDisabled(this.amEl, beginHour >= END_NUMBER_OF_HOUR_WITH_MERIDIEM);
         util.setDisabled(this.pmEl, endHour < END_NUMBER_OF_HOUR_WITH_MERIDIEM);
+      }
+    },
+
+    /**
+     * Reset minute selectable range
+     */
+    resetMinuteRange: function() {
+      var i;
+
+      this.disabledMinutes = {};
+
+      for (i = 0; i <= END_NUMBER_OF_HOUR; i += 1) {
+        this.setDisabledMinutes(this.hour);
       }
     },
 
