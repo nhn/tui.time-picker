@@ -780,7 +780,7 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Reset selectable range 
+     * Reset minute selectable range
      */
     resetMinuteRange: function() {
       var i;
