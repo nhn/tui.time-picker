@@ -13,6 +13,157 @@ var container2 = document.createElement('div');
 var timepickerNoMeridiem;
 var timepickerMeridiem;
 
+var rangedHours = [
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false}
+];
+var rangedMins = [
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: true},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false}
+];
+var unrangedMins = [
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false},
+  {disabled: false}
+];
+
 beforeEach(function() {
   timepickerNoMeridiem = new TimePicker(container1, {
     showMeridiem: false
@@ -339,44 +490,41 @@ describe('Set selectable range', function() {
 
   it('should set selectable range on hour with only begin', function() {
     var start = makeRangeObj(9, 30);
-    var hourSelect, selectOptions, disabledHours, selectableHours;
+    var hourSelect, selectOptions;
 
     timepickerNoMeridiem.setRange(start);
 
     hourSelect = timepickerNoMeridiem.element.querySelector('select[aria-label="Time"]');
 
     selectOptions = Array.from(hourSelect.querySelectorAll('option'));
-    disabledHours = selectOptions.slice(0, 9);
-    selectableHours = selectOptions.slice(9);
 
-    disabledHours.forEach(function(disabledHour) {
-      expect(disabledHour).toMatchObject({disabled: true});
-    });
-
-    selectableHours.forEach(function(selectableHour) {
-      expect(selectableHour).toMatchObject({disabled: false});
-    });
+    expect(selectOptions).toMatchObject(rangedHours);
   });
 
   it('should set selectable range on minute with only begin', function() {
     var start = makeRangeObj(9, 30);
-    var minSelect, selectOptions, disabledMins, selectableMins;
-
+    var minSelect, selectOptions;
     timepickerNoMeridiem.setRange(start);
     timepickerNoMeridiem.setTime(9, 0);
 
     minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
     selectOptions = Array.from(minSelect.querySelectorAll('option'));
-    disabledMins = selectOptions.slice(0, 31);
-    selectableMins = selectOptions.slice(31);
 
-    disabledMins.forEach(function(disabledMin) {
-      expect(disabledMin).toMatchObject({disabled: true});
-    });
+    expect(selectOptions).toMatchObject(rangedMins);
+  });
 
-    selectableMins.forEach(function(selectableMin) {
-      expect(selectableMin).toMatchObject({disabled: false});
-    });
+  it('should reset selectable range on minute', function() {
+    var start = makeRangeObj(9, 30);
+    var minSelect, selectOptions;
+
+    timepickerNoMeridiem.setRange(start);
+    timepickerNoMeridiem.setTime(9, 0);
+    timepickerNoMeridiem.resetMinuteRange();
+
+    minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
+    selectOptions = Array.from(minSelect.querySelectorAll('option'));
+
+    expect(selectOptions).toMatchObject(unrangedMins);
   });
 
   it('should disable a meridiem selector when range included in the other', function() {

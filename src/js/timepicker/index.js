@@ -780,6 +780,19 @@ var TimePicker = defineClass(
     },
 
     /**
+     * Reset minute selectable range
+     */
+    resetMinuteRange: function() {
+      var i;
+
+      this.disabledMinutes = {};
+
+      for (i = 0; i <= END_NUMBER_OF_HOUR; i += 1) {
+        this.setDisabledMinutes(this.hour);
+      }
+    },
+
+    /**
      * Whether the given range a valid range 
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
