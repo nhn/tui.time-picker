@@ -527,7 +527,7 @@ describe('Set selectable range', function() {
     expect(selectOptions).toMatchObject(unrangedMins);
   });
 
-  it('should set time to range begin if it is later than setted time', function() {
+  it('should set time to range begin if it is later than set time', function() {
     var start = makeRangeObj(10, 35);
 
     timepickerNoMeridiem.setTime(9, 30);
@@ -537,7 +537,7 @@ describe('Set selectable range', function() {
     expect(timepickerNoMeridiem.getMinute()).toBe(35);
   });
 
-  it('should not reset time if the time which is begin of range is earlier than setted time', function() {
+  it('should not reset time if the time which is begin of range is earlier than set time', function() {
     var start = makeRangeObj(8, 35);
 
     timepickerNoMeridiem.setTime(9, 30);

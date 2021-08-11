@@ -768,7 +768,7 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
-      if (this.isLaterThanSettedTime(beginHour, beginMin)) {
+      if (this.isLaterThanSetTime(beginHour, beginMin)) {
         this.setTime(beginHour, beginMin);
       }
       this.setDisabledHours();
@@ -839,13 +839,13 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Compare given time with setted time 
+     * Compare given time with set time 
      * @param {number} hour - given hour
      * @param {number} minute - given minute
      * @returns {boolean} result of compare
      * @private
      */
-    isLaterThanSettedTime: function(hour, minute) {
+    isLaterThanSetTime: function(hour, minute) {
       return hour > this.hour || (hour === this.hour && minute > this.minute);
     },
 
