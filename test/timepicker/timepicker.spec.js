@@ -527,6 +527,26 @@ describe('Set selectable range', function() {
     expect(selectOptions).toMatchObject(unrangedMins);
   });
 
+  it('should set time to range begin if it is later than set time', function() {
+    var start = makeRangeObj(10, 35);
+
+    timepickerNoMeridiem.setTime(9, 30);
+    timepickerNoMeridiem.setRange(start);
+
+    expect(timepickerNoMeridiem.getHour()).toBe(10);
+    expect(timepickerNoMeridiem.getMinute()).toBe(35);
+  });
+
+  it('should not reset time if the time which is begin of range is earlier than set time', function() {
+    var start = makeRangeObj(8, 35);
+
+    timepickerNoMeridiem.setTime(9, 30);
+    timepickerNoMeridiem.setRange(start);
+
+    expect(timepickerNoMeridiem.getHour()).toBe(9);
+    expect(timepickerNoMeridiem.getMinute()).toBe(30);
+  });
+
   it('should disable a meridiem selector when range included in the other', function() {
     var start = makeRangeObj(6, 30);
     var end = makeRangeObj(11, 30);
