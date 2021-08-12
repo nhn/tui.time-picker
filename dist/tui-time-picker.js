@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.2
+ * @version 2.1.3
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -2895,7 +2895,9 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
-      this.setTime(beginHour, beginMin);
+      if (this.isLaterThanSetTime(beginHour, beginMin)) {
+        this.setTime(beginHour, beginMin);
+      }
       this.setDisabledHours();
 
       if (this.showMeridiem) {
@@ -2961,6 +2963,17 @@ var TimePicker = defineClass(
       hour <= END_NUMBER_OF_HOUR &&
       minute >= START_NUMBER_OF_TIME &&
       minute <= END_NUMBER_OF_MINUTE;
+    },
+
+    /**
+     * Compare given time with set time 
+     * @param {number} hour - given hour
+     * @param {number} minute - given minute
+     * @returns {boolean} result of compare
+     * @private
+     */
+    isLaterThanSetTime: function(hour, minute) {
+      return hour > this.hour || (hour === this.hour && minute > this.minute);
     },
 
     /**
