@@ -749,15 +749,15 @@ var TimePicker = defineClass(
         });
 
         if (beginHour === endHour) {
-          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).slice();
+          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges, this.minuteStep).slice();
 
           return;
         }
 
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).slice();
+        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep).slice();
       }
 
-      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).slice();
+      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep).slice();
     },
 
     /**
@@ -768,8 +768,16 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
+      var toSetHour = beginHour;
+      var toSetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
+
       if (this.isLaterThanSetTime(beginHour, beginMin)) {
-        this.setTime(beginHour, beginMin);
+        if (this.hourStep !== 1 && beginHour % this.hourStep !== 1) {
+          toSetHour = beginHour + (beginHour % this.hourStep) + 1;
+          toSetMinute = 0;
+        }
+
+        this.setTime(toSetHour, toSetMinute);
       }
       this.setDisabledHours();
 
