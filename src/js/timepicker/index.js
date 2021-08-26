@@ -768,16 +768,16 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
-      var toSetHour = beginHour;
-      var toSetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
+      var targetHour = beginHour;
+      var targetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
 
       if (this.isLaterThanSetTime(beginHour, beginMin)) {
         if (this.hourStep !== 1 && beginHour % this.hourStep !== 1) {
-          toSetHour = beginHour + (beginHour % this.hourStep) + 1;
-          toSetMinute = 0;
+          targetHour = beginHour + (beginHour % this.hourStep) + 1;
+          targetMinute = 0;
         }
 
-        this.setTime(toSetHour, toSetMinute);
+        this.setTime(targetHour, targetMinute);
       }
       this.setDisabledHours();
 
