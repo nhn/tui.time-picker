@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.3
+ * @version 2.1.4
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -1909,11 +1909,14 @@ var utils = {
    * Get disabled minute array
    * @param {Array} enableRanges array of object which contains range
    */
-  getDisabledMinuteArr: function(enableRanges) {
-    var arr = this.fill(0, 60, false);
+  getDisabledMinuteArr: function(enableRanges, minuteStep) {
+    var arr = this.fill(0, Math.floor(60 / minuteStep) - 2, false);
 
     function setDisabled(enableRange) {
-      arr = this.fill(enableRange.begin, enableRange.end, true, arr);
+      var beginDisabledMinute = Math.ceil(enableRange.begin / minuteStep);
+      var endDisabledMinute = Math.floor(enableRange.end / minuteStep);
+
+      arr = this.fill(beginDisabledMinute, endDisabledMinute, true, arr);
     }
 
     forEachArray(enableRanges, setDisabled.bind(this));
@@ -2876,15 +2879,15 @@ var TimePicker = defineClass(
         });
 
         if (beginHour === endHour) {
-          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges).slice();
+          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges, this.minuteStep).slice();
 
           return;
         }
 
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]]).slice();
+        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep).slice();
       }
 
-      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]]).slice();
+      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep).slice();
     },
 
     /**
@@ -2895,8 +2898,16 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
+      var targetHour = beginHour;
+      var targetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
+
       if (this.isLaterThanSetTime(beginHour, beginMin)) {
-        this.setTime(beginHour, beginMin);
+        if (this.hourStep !== 1 && beginHour % this.hourStep !== 1) {
+          targetHour = beginHour + (beginHour % this.hourStep) + 1;
+          targetMinute = 0;
+        }
+
+        this.setTime(targetHour, targetMinute);
       }
       this.setDisabledHours();
 
