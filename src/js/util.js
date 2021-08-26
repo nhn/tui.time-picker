@@ -129,11 +129,14 @@ var utils = {
    * Get disabled minute array
    * @param {Array} enableRanges array of object which contains range
    */
-  getDisabledMinuteArr: function(enableRanges) {
-    var arr = this.fill(0, 60, false);
+  getDisabledMinuteArr: function(enableRanges, minuteStep) {
+    var arr = this.fill(0, Math.floor(60 / minuteStep) - 2, false);
 
     function setDisabled(enableRange) {
-      arr = this.fill(enableRange.begin, enableRange.end, true, arr);
+      var beginDisabledMinute = Math.ceil(enableRange.begin / minuteStep);
+      var endDisabledMinute = Math.floor(enableRange.end / minuteStep);
+
+      arr = this.fill(beginDisabledMinute, endDisabledMinute, true, arr);
     }
 
     forEachArray(enableRanges, setDisabled.bind(this));

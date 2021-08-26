@@ -555,4 +555,14 @@ describe('Set selectable range', function() {
 
     expect(timepickerMeridiem.pmEl.disabled).toBe(true);
   });
+
+  it('should set selectable time when use minute step', function() {
+    var start = makeRangeObj(10, 35);
+
+    timepickerNoMeridiem.setTime(9, 30);
+    timepickerNoMeridiem.setMinuteStep(2);
+    timepickerNoMeridiem.setRange(start);
+
+    expect(timepickerNoMeridiem.getMinute()).toBe(36);
+  });
 });
