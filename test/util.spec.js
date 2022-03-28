@@ -1,7 +1,3 @@
-/**
- * @fileoverview Util spec
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
 'use strict';
 
 var util = require('../src/js/util');

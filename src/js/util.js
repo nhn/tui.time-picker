@@ -1,8 +1,3 @@
-/**
- * @fileoverview Utils for Timepicker component
- * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
- */
-
 'use strict';
 
 var inArray = require('tui-code-snippet/array/inArray');
@@ -29,7 +24,7 @@ var utils = {
 
   /**
    * Convert a value to meet the format
-   * @param {number|string} value 
+   * @param {number|string} value
    * @param {string} format - ex) hh, h, mm, m
    * @returns {string}
    */
@@ -37,10 +32,7 @@ var utils = {
     var PADDING_ZERO_TYPES = ['hh', 'mm'];
     value = String(value);
 
-    return inArray(format, PADDING_ZERO_TYPES) >= 0
-      && value.length === 1
-      ? '0' + value
-      : value;
+    return inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1 ? '0' + value : value;
   },
 
   /**
@@ -112,7 +104,8 @@ var utils = {
    * Get a target element
    * @param {Event} ev Event object
    * @returns {HTMLElement} An event target element
-   */ 
+   */
+
   getTarget: function(ev) {
     return ev.target || ev.srcElement;
   },

@@ -1,8 +1,3 @@
-/**
- * @fileoverview TimePicker component
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 'use strict';
 
 var inArray = require('tui-code-snippet/array/inArray');
@@ -87,14 +82,14 @@ var mergeDefaultOptions = function(options) {
  * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
  * @example
  * // ES6
- * import TimePicker from 'tui-time-picker'; 
- * 
+ * import TimePicker from 'tui-time-picker';
+ *
  * // CommonJS
- * const TimePicker = require('tui-time-picker'); 
- * 
+ * const TimePicker = require('tui-time-picker');
+ *
  * // Browser
  * const TimePicker = tui.TimePicker;
- * 
+ *
  * const timepicker = new TimePicker('#timepicker-container', {
  *     initialHour: 15,
  *     initialMinute: 13,
@@ -135,9 +130,7 @@ var TimePicker = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this.container = isHTMLNode(container)
-        ? container
-        : document.querySelector(container);
+      this.container = isHTMLNode(container) ? container : document.querySelector(container);
 
       /**
        * @type {HTMLElement}
@@ -263,12 +256,7 @@ var TimePicker = defineClass(
 
       if (this.showMeridiem) {
         if (this.inputType === INPUT_TYPE_SELECTBOX) {
-          on(
-            this.meridiemElement.querySelector('select'),
-            'change',
-            this.onChangeMeridiem,
-            this
-          );
+          on(this.meridiemElement.querySelector('select'), 'change', this.onChangeMeridiem, this);
         } else if (this.inputType === INPUT_TYPE_SPINBOX) {
           on(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
@@ -287,12 +275,7 @@ var TimePicker = defineClass(
 
       if (this.showMeridiem) {
         if (this.inputType === INPUT_TYPE_SELECTBOX) {
-          off(
-            this.meridiemElement.querySelector('select'),
-            'change',
-            this.onChangeMeridiem,
-            this
-          );
+          off(this.meridiemElement.querySelector('select'), 'change', this.onChangeMeridiem, this);
         } else if (this.inputType === INPUT_TYPE_SPINBOX) {
           off(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
@@ -570,10 +553,7 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      return (
-        inArray(hour, this.getHourItems()) > -1 &&
-        inArray(minute, this.getMinuteItems()) > -1
-      );
+      return inArray(hour, this.getHourItems()) > -1 && inArray(minute, this.getMinuteItems()) > -1;
     },
 
     /**
@@ -678,7 +658,7 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Set selectable range 
+     * Set selectable range
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
      * @param {number} begin.minute - begin minute of range
@@ -749,15 +729,21 @@ var TimePicker = defineClass(
         });
 
         if (beginHour === endHour) {
-          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges, this.minuteStep).slice();
+          this.disabledMinutes[beginHour] = util
+            .getDisabledMinuteArr(disabledMinRanges, this.minuteStep)
+            .slice();
 
           return;
         }
 
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep).slice();
+        this.disabledMinutes[endHour] = util
+          .getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep)
+          .slice();
       }
 
-      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep).slice();
+      this.disabledMinutes[beginHour] = util
+        .getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep)
+        .slice();
     },
 
     /**
@@ -803,7 +789,7 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Whether the given range a valid range 
+     * Whether the given range a valid range
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
      * @param {number} begin.minute - begin minute of range
@@ -833,21 +819,23 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Whether the given time a valid time 
+     * Whether the given time a valid time
      * @param {number} hour - hour for validation
      * @param {number} minute - minute for validation
      * @returns {boolean} result of time validation
      * @private
      */
     isValidTime: function(hour, minute) {
-      return hour >= START_NUMBER_OF_TIME &&
-      hour <= END_NUMBER_OF_HOUR &&
-      minute >= START_NUMBER_OF_TIME &&
-      minute <= END_NUMBER_OF_MINUTE;
+      return (
+        hour >= START_NUMBER_OF_TIME &&
+        hour <= END_NUMBER_OF_HOUR &&
+        minute >= START_NUMBER_OF_TIME &&
+        minute <= END_NUMBER_OF_MINUTE
+      );
     },
 
     /**
-     * Compare given time with set time 
+     * Compare given time with set time
      * @param {number} hour - given hour
      * @param {number} minute - given minute
      * @returns {boolean} result of compare
@@ -914,18 +902,7 @@ var TimePicker = defineClass(
       this.removeEvents();
       removeElement(this.element);
 
-      this.container
-        = this.showMeridiem
-        = this.hourInput
-        = this.minuteInput
-        = this.hour
-        = this.minute
-        = this.inputType
-        = this.element
-        = this.meridiemElement
-        = this.amEl
-        = this.pmEl
-        = null;
+      this.container = this.showMeridiem = this.hourInput = this.minuteInput = this.hour = this.minute = this.inputType = this.element = this.meridiemElement = this.amEl = this.pmEl = null;
     }
   }
 );
