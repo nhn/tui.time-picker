@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/tui-time-picker.svg)](https://www.npmjs.com/package/tui-time-picker)
 [![GitHub license](https://img.shields.io/github/license/nhn/tui.time-picker.svg)](https://github.com/nhn/tui.time-picker/blob/production/LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)](https://github.com/nhn/tui.project-name/labels/help%20wanted)
-[![code with hearth by NHN](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN-ff1414.svg)](https://github.com/nhn)
+[![code with hearth by NHN Cloud](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN_Cloud-ff1414.svg)](https://github.com/nhn)
 
 
 <p><a href="https://nhn.github.io/tui.time-picker/latest/"><img src="https://user-images.githubusercontent.com/8615506/64507615-27ae8200-d316-11e9-85a0-8f384d74cc02.gif" /></a></p>
@@ -246,7 +246,7 @@ For more information on PR's step, please see links of Contributing section.
 ## 🍞 TOAST UI Family
 
 * [TOAST UI Editor](https://github.com/nhn/tui.editor)
-* [TOAST UI Calendar](https://github.com/nhn/tui.calendar)
+* [TOAST UI Calendar](https://github.com/nhn/tui.calendar)
 * [TOAST UI Chart](https://github.com/nhn/tui.chart)
 * [TOAST UI Image-Editor](https://github.com/nhn/tui.image-editor)
 * [TOAST UI Grid](https://github.com/nhn/tui.grid)
@@ -255,4 +255,4 @@ For more information on PR's step, please see links of Contributing section.
 
 ## 📜 License
 
-This software is licensed under the [MIT](https://github.com/nhn/tui.time-picker/blob/production/LICENSE) © [NHN](https://github.com/nhn).
+This software is licensed under the [MIT](https://github.com/nhn/tui.time-picker/blob/production/LICENSE) © [NHN Cloud](https://github.com/nhn).
