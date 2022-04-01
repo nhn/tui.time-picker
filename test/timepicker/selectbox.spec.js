@@ -1,7 +1,3 @@
-/**
- * @fileoverview Selectbox spec
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
 'use strict';
 
 var Selectbox = require('../../src/js/timepicker/selectbox');

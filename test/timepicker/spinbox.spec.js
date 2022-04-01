@@ -1,7 +1,3 @@
-/**
- * @fileoverview Spinbox spec
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
 'use strict';
 
 var Spinbox = require('../../src/js/timepicker/spinbox');

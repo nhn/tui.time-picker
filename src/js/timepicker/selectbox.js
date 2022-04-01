@@ -1,8 +1,3 @@
-/**
- * @fileoverview Selectbox (in TimePicker)
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 'use strict';
 
 var inArray = require('tui-code-snippet/array/inArray');
@@ -41,9 +36,7 @@ var Selectbox = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._container = isHTMLNode(container)
-        ? container
-        : document.querySelector(container);
+      this._container = isHTMLNode(container) ? container : document.querySelector(container);
 
       /**
        * Selectbox items
