@@ -1,8 +1,3 @@
-/**
- * @fileoverview Default locale texts
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 'use strict';
 
 module.exports = {

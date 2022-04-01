@@ -1,8 +1,3 @@
-/**
- * Configs file for bundling
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 'use strict';
 
 var path = require('path');
@@ -36,12 +31,9 @@ module.exports = function(env, argv) {
   var isProduction = argv.mode === 'production';
   var isMinified = !!argv.minify;
   var FILENAME = pkg.name + (isMinified ? '.min' : '');
-  var BANNER = [
-    'TOAST UI Time Picker',
-    '@version ' + pkg.version,
-    '@author ' + pkg.author,
-    '@license ' + pkg.license
-  ].join('\n');
+  var BANNER = ['TOAST UI Time Picker', '@version ' + pkg.version, '@license ' + pkg.license].join(
+    '\n'
+  );
 
   return {
     mode: isProduction ? 'production' : 'development',
@@ -66,10 +58,7 @@ module.exports = function(env, argv) {
         },
         {
           test: /\.css/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader'
-          ]
+          use: [MiniCssExtractPlugin.loader, 'css-loader']
         },
         {
           test: /\.png/,
@@ -79,7 +68,7 @@ module.exports = function(env, argv) {
     },
     plugins: [
       new webpack.BannerPlugin(BANNER),
-      new MiniCssExtractPlugin({filename: FILENAME + '.css'})
+      new MiniCssExtractPlugin({ filename: FILENAME + '.css' })
     ],
     optimization: getOptimization(isMinified),
     devServer: {
