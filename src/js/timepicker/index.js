@@ -770,6 +770,7 @@ var TimePicker = defineClass(
         this.setTime(targetHour, targetMinute);
       }
       this.setDisabledHours();
+      this.setDisabledMinutes(this.hour);
 
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
