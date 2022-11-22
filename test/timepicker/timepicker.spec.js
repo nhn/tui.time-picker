@@ -562,3 +562,21 @@ describe('Set selectable range', function() {
     expect(timepickerNoMeridiem.getMinute()).toBe(36);
   });
 });
+
+describe('custom event', function() {
+  it('should fire change event when the value is changed', function() {
+    var spy = jest.fn();
+    timepickerNoMeridiem.on('change', spy);
+
+    timepickerNoMeridiem.setTime(10, 9);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not fire change event when the value is changed', function() {
+    var spy = jest.fn();
+    timepickerNoMeridiem.on('change', spy);
+
+    timepickerNoMeridiem.setTime(10, 9, true);
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
