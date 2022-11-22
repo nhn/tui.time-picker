@@ -627,7 +627,7 @@ var TimePicker = defineClass(
      * Set time
      * @param {number} hour for time picker - (0~23)
      * @param {number} minute for time picker
-     * @param {boolean} silent if it set true, 'change' event will not be fired.
+     * @param {boolean} [silent] if it set true, 'change' event will not be fired.
      */
     setTime: function(hour, minute, silent) {
       if (!this.validItems(hour, minute)) {
