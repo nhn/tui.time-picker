@@ -247,8 +247,9 @@ var Spinbox = defineClass(
     /**
      * Change value to input-box if it is valid.
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    _changeToInputValue: function() {
+    _changeToInputValue: function(silent) {
       var newValue = Number(this._inputElement.value);
       var newIndex = inArray(newValue, this._items);
 
@@ -260,22 +261,26 @@ var Spinbox = defineClass(
       }
 
       if (newIndex === -1) {
-        this.setValue(this._items[this._selectedIndex]);
+        this.setValue(this._items[this._selectedIndex], silent);
       } else {
         this._selectedIndex = newIndex;
-        this.fire('change', {
-          value: newValue
-        });
+
+        if (!silent) {
+          this.fire('change', {
+            value: newValue
+          });
+        }
       }
     },
 
     /**
      * Set value to input-box.
      * @param {number} value - Value
+     * @param {boolean} silent - prevents firing 'change' event if it is true.
      */
-    setValue: function(value) {
+    setValue: function(value, silent) {
       this._inputElement.value = util.formatTime(value, this._format);
-      this._changeToInputValue();
+      this._changeToInputValue(silent);
     },
 
     /**

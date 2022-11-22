@@ -441,8 +441,9 @@ var TimePicker = defineClass(
     /**
      * Set values in spinboxes from time
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    syncToInputs: function() {
+    syncToInputs: function(silent) {
       var hour = this.hour;
       var minute = this.minute;
 
@@ -450,8 +451,8 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      this.hourInput.setValue(hour);
-      this.minuteInput.setValue(minute);
+      this.hourInput.setValue(hour, silent);
+      this.minuteInput.setValue(minute, silent);
     },
 
     /**
@@ -626,8 +627,9 @@ var TimePicker = defineClass(
      * Set time
      * @param {number} hour for time picker - (0~23)
      * @param {number} minute for time picker
+     * @param {boolean} [silent] if it set true, 'change' event will not be fired.
      */
-    setTime: function(hour, minute) {
+    setTime: function(hour, minute, silent) {
       if (!this.validItems(hour, minute)) {
         return;
       }
@@ -635,7 +637,7 @@ var TimePicker = defineClass(
       this.hour = hour;
       this.minute = minute;
 
-      this.syncToInputs();
+      this.syncToInputs(silent);
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
       }
@@ -651,10 +653,12 @@ var TimePicker = defineClass(
        *   console.log(e.hour, e.minute);
        * });
        */
-      this.fire('change', {
-        hour: this.hour,
-        minute: this.minute
-      });
+      if (!silent) {
+        this.fire('change', {
+          hour: this.hour,
+          minute: this.minute
+        });
+      }
     },
 
     /**
@@ -902,6 +906,7 @@ var TimePicker = defineClass(
       this.removeEvents();
       removeElement(this.element);
 
+      // eslint-disable-next-line max-len
       this.container = this.showMeridiem = this.hourInput = this.minuteInput = this.hour = this.minute = this.inputType = this.element = this.meridiemElement = this.amEl = this.pmEl = null;
     }
   }
