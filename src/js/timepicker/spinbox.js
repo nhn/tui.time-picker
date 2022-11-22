@@ -247,7 +247,7 @@ var Spinbox = defineClass(
     /**
      * Change value to input-box if it is valid.
      * @private
-     * @param {boolean} silent flag for firing 'change' event
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
     _changeToInputValue: function(silent) {
       var newValue = Number(this._inputElement.value);
@@ -276,7 +276,7 @@ var Spinbox = defineClass(
     /**
      * Set value to input-box.
      * @param {number} value - Value
-     * @param {boolean} silent - flag for firing 'change' event
+     * @param {boolean} silent - prevents firing 'change' event if it is true.
      */
     setValue: function(value, silent) {
       this._inputElement.value = util.formatTime(value, this._format);

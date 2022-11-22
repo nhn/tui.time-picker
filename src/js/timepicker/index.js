@@ -441,7 +441,7 @@ var TimePicker = defineClass(
     /**
      * Set values in spinboxes from time
      * @private
-     * @param {boolean} silent flag for firing 'change' event
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
     syncToInputs: function(silent) {
       var hour = this.hour;
