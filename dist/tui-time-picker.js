@@ -1,7 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.4
- * @author NHN FE Development Lab <dl_javascript@nhn.com>
+ * @version 2.1.5
  * @license MIT
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -1778,11 +1777,6 @@ module.exports = isHTMLNode;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview Utils for Timepicker component
- * @author NHN. FE dev Lab. <dl_javascript@nhn.com>
- */
-
 
 
 var inArray = __webpack_require__(0);
@@ -1809,7 +1803,7 @@ var utils = {
 
   /**
    * Convert a value to meet the format
-   * @param {number|string} value 
+   * @param {number|string} value
    * @param {string} format - ex) hh, h, mm, m
    * @returns {string}
    */
@@ -1817,10 +1811,7 @@ var utils = {
     var PADDING_ZERO_TYPES = ['hh', 'mm'];
     value = String(value);
 
-    return inArray(format, PADDING_ZERO_TYPES) >= 0
-      && value.length === 1
-      ? '0' + value
-      : value;
+    return inArray(format, PADDING_ZERO_TYPES) >= 0 && value.length === 1 ? '0' + value : value;
   },
 
   /**
@@ -1892,7 +1883,8 @@ var utils = {
    * Get a target element
    * @param {Event} ev Event object
    * @returns {HTMLElement} An event target element
-   */ 
+   */
+
   getTarget: function(ev) {
     return ev.target || ev.srcElement;
   },
@@ -2105,11 +2097,6 @@ module.exports = setClassName;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview The entry file of TimePicker components
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 
 
 __webpack_require__(21);
@@ -2128,11 +2115,6 @@ module.exports = __webpack_require__(22);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview TimePicker component
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 
 
 var inArray = __webpack_require__(0);
@@ -2217,14 +2199,14 @@ var mergeDefaultOptions = function(options) {
  * @param {Boolean} [options.usageStatistics=true|false] send hostname to google analytics [default value is true]
  * @example
  * // ES6
- * import TimePicker from 'tui-time-picker'; 
- * 
+ * import TimePicker from 'tui-time-picker';
+ *
  * // CommonJS
- * const TimePicker = require('tui-time-picker'); 
- * 
+ * const TimePicker = require('tui-time-picker');
+ *
  * // Browser
  * const TimePicker = tui.TimePicker;
- * 
+ *
  * const timepicker = new TimePicker('#timepicker-container', {
  *     initialHour: 15,
  *     initialMinute: 13,
@@ -2265,9 +2247,7 @@ var TimePicker = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this.container = isHTMLNode(container)
-        ? container
-        : document.querySelector(container);
+      this.container = isHTMLNode(container) ? container : document.querySelector(container);
 
       /**
        * @type {HTMLElement}
@@ -2393,12 +2373,7 @@ var TimePicker = defineClass(
 
       if (this.showMeridiem) {
         if (this.inputType === INPUT_TYPE_SELECTBOX) {
-          on(
-            this.meridiemElement.querySelector('select'),
-            'change',
-            this.onChangeMeridiem,
-            this
-          );
+          on(this.meridiemElement.querySelector('select'), 'change', this.onChangeMeridiem, this);
         } else if (this.inputType === INPUT_TYPE_SPINBOX) {
           on(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
@@ -2417,12 +2392,7 @@ var TimePicker = defineClass(
 
       if (this.showMeridiem) {
         if (this.inputType === INPUT_TYPE_SELECTBOX) {
-          off(
-            this.meridiemElement.querySelector('select'),
-            'change',
-            this.onChangeMeridiem,
-            this
-          );
+          off(this.meridiemElement.querySelector('select'), 'change', this.onChangeMeridiem, this);
         } else if (this.inputType === INPUT_TYPE_SPINBOX) {
           off(this.meridiemElement, 'click', this.onChangeMeridiem, this);
         }
@@ -2588,8 +2558,9 @@ var TimePicker = defineClass(
     /**
      * Set values in spinboxes from time
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    syncToInputs: function() {
+    syncToInputs: function(silent) {
       var hour = this.hour;
       var minute = this.minute;
 
@@ -2597,8 +2568,8 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      this.hourInput.setValue(hour);
-      this.minuteInput.setValue(minute);
+      this.hourInput.setValue(hour, silent);
+      this.minuteInput.setValue(minute, silent);
     },
 
     /**
@@ -2700,10 +2671,7 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      return (
-        inArray(hour, this.getHourItems()) > -1 &&
-        inArray(minute, this.getMinuteItems()) > -1
-      );
+      return inArray(hour, this.getHourItems()) > -1 && inArray(minute, this.getMinuteItems()) > -1;
     },
 
     /**
@@ -2776,8 +2744,9 @@ var TimePicker = defineClass(
      * Set time
      * @param {number} hour for time picker - (0~23)
      * @param {number} minute for time picker
+     * @param {boolean} [silent] if it set true, 'change' event will not be fired.
      */
-    setTime: function(hour, minute) {
+    setTime: function(hour, minute, silent) {
       if (!this.validItems(hour, minute)) {
         return;
       }
@@ -2785,7 +2754,7 @@ var TimePicker = defineClass(
       this.hour = hour;
       this.minute = minute;
 
-      this.syncToInputs();
+      this.syncToInputs(silent);
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
       }
@@ -2801,14 +2770,16 @@ var TimePicker = defineClass(
        *   console.log(e.hour, e.minute);
        * });
        */
-      this.fire('change', {
-        hour: this.hour,
-        minute: this.minute
-      });
+      if (!silent) {
+        this.fire('change', {
+          hour: this.hour,
+          minute: this.minute
+        });
+      }
     },
 
     /**
-     * Set selectable range 
+     * Set selectable range
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
      * @param {number} begin.minute - begin minute of range
@@ -2879,15 +2850,21 @@ var TimePicker = defineClass(
         });
 
         if (beginHour === endHour) {
-          this.disabledMinutes[beginHour] = util.getDisabledMinuteArr(disabledMinRanges, this.minuteStep).slice();
+          this.disabledMinutes[beginHour] = util
+            .getDisabledMinuteArr(disabledMinRanges, this.minuteStep)
+            .slice();
 
           return;
         }
 
-        this.disabledMinutes[endHour] = util.getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep).slice();
+        this.disabledMinutes[endHour] = util
+          .getDisabledMinuteArr([disabledMinRanges[1]], this.minuteStep)
+          .slice();
       }
 
-      this.disabledMinutes[beginHour] = util.getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep).slice();
+      this.disabledMinutes[beginHour] = util
+        .getDisabledMinuteArr([disabledMinRanges[0]], this.minuteStep)
+        .slice();
     },
 
     /**
@@ -2910,6 +2887,7 @@ var TimePicker = defineClass(
         this.setTime(targetHour, targetMinute);
       }
       this.setDisabledHours();
+      this.setDisabledMinutes(this.hour);
 
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
@@ -2933,7 +2911,7 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Whether the given range a valid range 
+     * Whether the given range a valid range
      * @param {Object} begin - Contain begin hour and minute of range
      * @param {number} begin.hour - begin hour of range
      * @param {number} begin.minute - begin minute of range
@@ -2963,21 +2941,23 @@ var TimePicker = defineClass(
     },
 
     /**
-     * Whether the given time a valid time 
+     * Whether the given time a valid time
      * @param {number} hour - hour for validation
      * @param {number} minute - minute for validation
      * @returns {boolean} result of time validation
      * @private
      */
     isValidTime: function(hour, minute) {
-      return hour >= START_NUMBER_OF_TIME &&
-      hour <= END_NUMBER_OF_HOUR &&
-      minute >= START_NUMBER_OF_TIME &&
-      minute <= END_NUMBER_OF_MINUTE;
+      return (
+        hour >= START_NUMBER_OF_TIME &&
+        hour <= END_NUMBER_OF_HOUR &&
+        minute >= START_NUMBER_OF_TIME &&
+        minute <= END_NUMBER_OF_MINUTE
+      );
     },
 
     /**
-     * Compare given time with set time 
+     * Compare given time with set time
      * @param {number} hour - given hour
      * @param {number} minute - given minute
      * @returns {boolean} result of compare
@@ -3044,18 +3024,8 @@ var TimePicker = defineClass(
       this.removeEvents();
       removeElement(this.element);
 
-      this.container
-        = this.showMeridiem
-        = this.hourInput
-        = this.minuteInput
-        = this.hour
-        = this.minute
-        = this.inputType
-        = this.element
-        = this.meridiemElement
-        = this.amEl
-        = this.pmEl
-        = null;
+      // eslint-disable-next-line max-len
+      this.container = this.showMeridiem = this.hourInput = this.minuteInput = this.hour = this.minute = this.inputType = this.element = this.meridiemElement = this.amEl = this.pmEl = null;
     }
   }
 );
@@ -3501,11 +3471,6 @@ module.exports = isNumber;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview Spinbox (in TimePicker)
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 
 
 var inArray = __webpack_require__(0);
@@ -3547,9 +3512,7 @@ var Spinbox = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._container = isHTMLNode(container)
-        ? container
-        : document.querySelector(container);
+      this._container = isHTMLNode(container) ? container : document.querySelector(container);
 
       /**
        * Spinbox element
@@ -3757,8 +3720,9 @@ var Spinbox = defineClass(
     /**
      * Change value to input-box if it is valid.
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    _changeToInputValue: function() {
+    _changeToInputValue: function(silent) {
       var newValue = Number(this._inputElement.value);
       var newIndex = inArray(newValue, this._items);
 
@@ -3770,22 +3734,26 @@ var Spinbox = defineClass(
       }
 
       if (newIndex === -1) {
-        this.setValue(this._items[this._selectedIndex]);
+        this.setValue(this._items[this._selectedIndex], silent);
       } else {
         this._selectedIndex = newIndex;
-        this.fire('change', {
-          value: newValue
-        });
+
+        if (!silent) {
+          this.fire('change', {
+            value: newValue
+          });
+        }
       }
     },
 
     /**
      * Set value to input-box.
      * @param {number} value - Value
+     * @param {boolean} silent - prevents firing 'change' event if it is true.
      */
-    setValue: function(value) {
+    setValue: function(value, silent) {
       this._inputElement.value = util.formatTime(value, this._format);
-      this._changeToInputValue();
+      this._changeToInputValue(silent);
     },
 
     /**
@@ -3977,11 +3945,6 @@ module.exports = function(context) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview Selectbox (in TimePicker)
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 
 
 var inArray = __webpack_require__(0);
@@ -4020,9 +3983,7 @@ var Selectbox = defineClass(
        * @type {HTMLElement}
        * @private
        */
-      this._container = isHTMLNode(container)
-        ? container
-        : document.querySelector(container);
+      this._container = isHTMLNode(container) ? container : document.querySelector(container);
 
       /**
        * Selectbox items
@@ -4158,13 +4119,16 @@ var Selectbox = defineClass(
     /**
      * Set new value
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    _setNewValue: function() {
+    _setNewValue: function(silent) {
       var newValue = Number(this._element.value);
       this._selectedIndex = inArray(newValue, this._items);
-      this.fire('change', {
-        value: newValue
-      });
+      if (!silent) {
+        this.fire('change', {
+          value: newValue
+        });
+      }
     },
 
     /**
@@ -4178,14 +4142,15 @@ var Selectbox = defineClass(
     /**
      * Set value
      * @param {number} value - New value
+     * @param {boolean} silent - prevents firing 'change' event if it is true.
      */
-    setValue: function(value) {
+    setValue: function(value, silent) {
       var newIndex = inArray(value, this._items);
 
       if (newIndex > -1 && newIndex !== this._selectedIndex) {
         this._selectedIndex = newIndex;
         this._element.value = value;
-        this._setNewValue();
+        this._setNewValue(silent);
       }
     },
 
@@ -4235,11 +4200,6 @@ module.exports = function(context) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * @fileoverview Default locale texts
- * @author NHN. FE Development Lab <dl_javascript@nhn.com>
- */
-
 
 
 module.exports = {
