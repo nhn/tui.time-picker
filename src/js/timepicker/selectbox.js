@@ -172,13 +172,16 @@ var Selectbox = defineClass(
     /**
      * Set new value
      * @private
+     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    _setNewValue: function() {
+    _setNewValue: function(silent) {
       var newValue = Number(this._element.value);
       this._selectedIndex = inArray(newValue, this._items);
-      this.fire('change', {
-        value: newValue
-      });
+      if (!silent) {
+        this.fire('change', {
+          value: newValue
+        });
+      }
     },
 
     /**
@@ -192,14 +195,15 @@ var Selectbox = defineClass(
     /**
      * Set value
      * @param {number} value - New value
+     * @param {boolean} silent - prevents firing 'change' event if it is true.
      */
-    setValue: function(value) {
+    setValue: function(value, silent) {
       var newIndex = inArray(value, this._items);
 
       if (newIndex > -1 && newIndex !== this._selectedIndex) {
         this._selectedIndex = newIndex;
         this._element.value = value;
-        this._setNewValue();
+        this._setNewValue(silent);
       }
     },
 

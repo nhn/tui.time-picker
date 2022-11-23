@@ -561,4 +561,35 @@ describe('Set selectable range', function() {
 
     expect(timepickerNoMeridiem.getMinute()).toBe(36);
   });
+
+  it('should set minute selectable range right after setting minute range', function() {
+    var minSelect, selectOptions;
+    var start = makeRangeObj(6, 30);
+
+    timepickerNoMeridiem.setTime(6, 35);
+    timepickerNoMeridiem.setRange(start);
+
+    minSelect = timepickerNoMeridiem.element.querySelectorAll('select[aria-label="Time"]')[1];
+    selectOptions = Array.from(minSelect.querySelectorAll('option'));
+
+    expect(selectOptions).toMatchObject(rangedMins);
+  });
+});
+
+describe('custom event', function() {
+  it('should fire change event when the value is changed', function() {
+    var spy = jest.fn();
+    timepickerNoMeridiem.on('change', spy);
+
+    timepickerNoMeridiem.setTime(10, 9);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not fire change event when the value is changed', function() {
+    var spy = jest.fn();
+    timepickerNoMeridiem.on('change', spy);
+
+    timepickerNoMeridiem.setTime(10, 9, true);
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
