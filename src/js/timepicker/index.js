@@ -767,8 +767,19 @@ var TimePicker = defineClass(
           targetMinute = 0;
         }
 
+        if (this.disabledMinutes[targetHour][targetMinute]) {
+          targetMinute =
+            targetMinute +
+            this.disabledMinutes[targetHour]
+              .slice(targetMinute)
+              .findIndex(function(isMinuteDisabled) {
+                return !isMinuteDisabled;
+              });
+        }
+
         this.setTime(targetHour, targetMinute);
       }
+
       this.setDisabledHours();
       this.setDisabledMinutes(this.hour);
 
