@@ -441,9 +441,8 @@ var TimePicker = defineClass(
     /**
      * Set values in spinboxes from time
      * @private
-     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    syncToInputs: function(silent) {
+    syncToInputs: function() {
       var hour = this.hour;
       var minute = this.minute;
 
@@ -451,8 +450,8 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      this.hourInput.setValue(hour, silent);
-      this.minuteInput.setValue(minute, silent);
+      this.hourInput.setValue(hour, true);
+      this.minuteInput.setValue(minute, true);
     },
 
     /**
@@ -637,7 +636,7 @@ var TimePicker = defineClass(
       this.hour = hour;
       this.minute = minute;
 
-      this.syncToInputs(silent);
+      this.syncToInputs();
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
       }
