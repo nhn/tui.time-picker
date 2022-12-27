@@ -575,7 +575,7 @@ var TimePicker = defineClass(
 
     /**
      * Set step of minute
-     * @param {array} step - Step to create items of minute
+     * @param {number} step - Step to create items of minute
      */
     setMinuteStep: function(step) {
       this.minuteStep = step;
@@ -707,10 +707,10 @@ var TimePicker = defineClass(
 
     /**
      * Set selectable range on minute
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} begin.minute - begin minute of range
-     * @param {number} [end.hour] - end hour of range
-     * @param {number} [end.minute] - end minute of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} beginMin - begin minute of range
+     * @param {number} [endHour] - end hour of range
+     * @param {number} [endMin] - end minute of range
      * @private
      */
     setRangeMinute: function(beginHour, beginMin, endHour, endMin) {
@@ -751,9 +751,9 @@ var TimePicker = defineClass(
 
     /**
      * Apply range
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} begin.minute - begin minute of range
-     * @param {number} [end.hour] - end hour of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} beginMin - begin minute of range
+     * @param {number} [endHour] - end hour of range
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
