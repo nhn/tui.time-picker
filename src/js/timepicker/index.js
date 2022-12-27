@@ -757,23 +757,27 @@ var TimePicker = defineClass(
      * @private
      */
     applyRange: function(beginHour, beginMin, endHour) {
+      var targetMinuteIndex = Math.ceil(beginMin / this.minuteStep);
       var targetHour = beginHour;
-      var targetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
+      var targetMinute = targetMinuteIndex * this.minuteStep;
+      var diffFromSelectableMinute;
 
       if (this.isLaterThanSetTime(beginHour, beginMin)) {
-        if (this.hourStep !== 1 && beginHour % this.hourStep !== 1) {
-          targetHour = beginHour + (beginHour % this.hourStep) + 1;
-          targetMinute = 0;
-        }
-
-        if (this.disabledMinutes[targetHour][targetMinute]) {
-          targetMinute =
-            targetMinute +
+        if (this.disabledMinutes[targetHour][targetMinuteIndex]) {
+          diffFromSelectableMinute =
             this.disabledMinutes[targetHour]
-              .slice(targetMinute)
+              .slice(targetMinuteIndex)
               .findIndex(function(isMinuteDisabled) {
                 return !isMinuteDisabled;
-              });
+              }) * this.minuteStep;
+
+          targetMinute =
+            diffFromSelectableMinute >= 0 ? targetMinute + diffFromSelectableMinute : 60;
+        }
+
+        if ((this.hourStep !== 1 && beginHour % this.hourStep !== 1) || targetMinute >= 60) {
+          targetHour = beginHour + (beginHour % this.hourStep) + 1;
+          targetMinute = 0;
         }
 
         this.setTime(targetHour, targetMinute);
