@@ -756,6 +756,7 @@ var TimePicker = defineClass(
      * @param {number} [endHour] - end hour of range
      * @private
      */
+    // eslint-disable-next-line complexity
     applyRange: function(beginHour, beginMin, endHour) {
       var targetMinuteIndex = Math.ceil(beginMin / this.minuteStep);
       var targetHour = beginHour;
