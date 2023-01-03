@@ -691,8 +691,8 @@ var TimePicker = defineClass(
 
     /**
      * Set selectable range on hour
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} [end.hour] - end hour of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} [endHour] - end hour of range
      * @private
      */
     setRangeHour: function(beginHour, endHour) {
