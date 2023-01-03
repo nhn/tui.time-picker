@@ -1,6 +1,6 @@
 {
   "name": "tui-time-picker",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "main": "dist/tui-time-picker",
   "files": [
     "dist"
