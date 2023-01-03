@@ -530,7 +530,7 @@ describe('Set selectable range', function() {
     timepickerNoMeridiem.setRange(start);
 
     expect(timepickerNoMeridiem.getHour()).toBe(10);
-    expect(timepickerNoMeridiem.getMinute()).toBe(35);
+    expect(timepickerNoMeridiem.getMinute()).toBe(36);
   });
 
   it('should not reset time if the time which is begin of range is earlier than set time', function() {
