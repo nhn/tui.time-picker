@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Time Picker
- * @version 2.1.5
+ * @version 2.1.6
  * @license MIT
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -2558,9 +2558,8 @@ var TimePicker = defineClass(
     /**
      * Set values in spinboxes from time
      * @private
-     * @param {boolean} silent prevents firing 'change' event if it is true.
      */
-    syncToInputs: function(silent) {
+    syncToInputs: function() {
       var hour = this.hour;
       var minute = this.minute;
 
@@ -2568,8 +2567,8 @@ var TimePicker = defineClass(
         hour = util.getMeridiemHour(hour);
       }
 
-      this.hourInput.setValue(hour, silent);
-      this.minuteInput.setValue(minute, silent);
+      this.hourInput.setValue(hour, true);
+      this.minuteInput.setValue(minute, true);
     },
 
     /**
@@ -2693,7 +2692,7 @@ var TimePicker = defineClass(
 
     /**
      * Set step of minute
-     * @param {array} step - Step to create items of minute
+     * @param {number} step - Step to create items of minute
      */
     setMinuteStep: function(step) {
       this.minuteStep = step;
@@ -2754,7 +2753,7 @@ var TimePicker = defineClass(
       this.hour = hour;
       this.minute = minute;
 
-      this.syncToInputs(silent);
+      this.syncToInputs();
       if (this.showMeridiem) {
         this.syncToMeridiemElements();
       }
@@ -2809,8 +2808,8 @@ var TimePicker = defineClass(
 
     /**
      * Set selectable range on hour
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} [end.hour] - end hour of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} [endHour] - end hour of range
      * @private
      */
     setRangeHour: function(beginHour, endHour) {
@@ -2825,10 +2824,10 @@ var TimePicker = defineClass(
 
     /**
      * Set selectable range on minute
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} begin.minute - begin minute of range
-     * @param {number} [end.hour] - end hour of range
-     * @param {number} [end.minute] - end minute of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} beginMin - begin minute of range
+     * @param {number} [endHour] - end hour of range
+     * @param {number} [endMin] - end minute of range
      * @private
      */
     setRangeMinute: function(beginHour, beginMin, endHour, endMin) {
@@ -2869,23 +2868,39 @@ var TimePicker = defineClass(
 
     /**
      * Apply range
-     * @param {number} begin.hour - begin hour of range
-     * @param {number} begin.minute - begin minute of range
-     * @param {number} [end.hour] - end hour of range
+     * @param {number} beginHour - begin hour of range
+     * @param {number} beginMin - begin minute of range
+     * @param {number} [endHour] - end hour of range
      * @private
      */
+    // eslint-disable-next-line complexity
     applyRange: function(beginHour, beginMin, endHour) {
+      var targetMinuteIndex = Math.ceil(beginMin / this.minuteStep);
       var targetHour = beginHour;
-      var targetMinute = Math.ceil(beginMin / this.minuteStep) * this.minuteStep;
+      var targetMinute = targetMinuteIndex * this.minuteStep;
+      var diffFromSelectableMinute;
 
       if (this.isLaterThanSetTime(beginHour, beginMin)) {
-        if (this.hourStep !== 1 && beginHour % this.hourStep !== 1) {
+        if (this.disabledMinutes[targetHour][targetMinuteIndex]) {
+          diffFromSelectableMinute =
+            this.disabledMinutes[targetHour]
+              .slice(targetMinuteIndex)
+              .findIndex(function(isMinuteDisabled) {
+                return !isMinuteDisabled;
+              }) * this.minuteStep;
+
+          targetMinute =
+            diffFromSelectableMinute >= 0 ? targetMinute + diffFromSelectableMinute : 60;
+        }
+
+        if ((this.hourStep !== 1 && beginHour % this.hourStep !== 1) || targetMinute >= 60) {
           targetHour = beginHour + (beginHour % this.hourStep) + 1;
           targetMinute = 0;
         }
 
         this.setTime(targetHour, targetMinute);
       }
+
       this.setDisabledHours();
       this.setDisabledMinutes(this.hour);
 
